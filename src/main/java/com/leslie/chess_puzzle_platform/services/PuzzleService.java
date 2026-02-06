@@ -49,7 +49,7 @@ public class PuzzleService {
     }
 
     public void populatePuzzles() throws IOException {
-        Resource resource = fileStorageService.loadAsResource("puzzle_aa.csv");
+        Resource resource = fileStorageService.loadAsResource("puzzleSetaa.csv");
         try (InputStream inputStream = resource.getInputStream()){
             Set<Puzzle> puzzles = parseFromInputStream(inputStream);
             puzzleRepository.saveAll(puzzles);
