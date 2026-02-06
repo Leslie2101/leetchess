@@ -8,10 +8,13 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,6 +28,14 @@ public class PuzzleService {
         Set<Puzzle> puzzles = parseCSV(file);
         repository.saveAll(puzzles);
         return puzzles.size();
+    }
+
+    public Page<Puzzle> findAll(Pageable pageable){
+        return repository.findAll(pageable);
+    }
+
+    public Page<Puzzle> findPuzzles(int ratingMin, int ratingMax, Pageable pageable) {
+        return repository.findByRatingBetween(ratingMin, ratingMax, pageable);
     }
 
     public void populatePuzzles() throws IOException {
@@ -64,5 +75,10 @@ public class PuzzleService {
 
     private Set<Puzzle> parseCSV(MultipartFile file) throws IOException {
         return parseFromInputStream(file.getInputStream());
+    }
+
+
+    public Optional<Puzzle> findById(long puzzleId) {
+        return repository.findById(puzzleId);
     }
 }
