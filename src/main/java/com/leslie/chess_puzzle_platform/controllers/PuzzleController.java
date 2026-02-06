@@ -26,6 +26,7 @@ public class PuzzleController {
             @RequestParam(required = false) String theme,
             @RequestParam(defaultValue = "0") int ratingMin,
             @RequestParam(defaultValue = "3000") int ratingMax,
+            @RequestParam(required = false) List<String> themes,
             @RequestParam(defaultValue = "true") boolean ascending,
             @RequestParam(defaultValue = "id") String sortBy) {
 
@@ -35,7 +36,7 @@ public class PuzzleController {
 
         Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        return puzzleService.findPuzzles(ratingMin, ratingMax, pageable);
+        return puzzleService.searchAndFilter(ratingMin, ratingMax, themes, pageable);
     }
 
     @GetMapping("/{id}")

@@ -1,9 +1,9 @@
 package com.leslie.chess_puzzle_platform.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Set;
 
 @Setter
 @Getter
@@ -19,7 +19,14 @@ public class Puzzle {
     private String fen;
     private int rating;
     private String moves;
-    private String themes;
+
+    @ManyToMany
+    @JoinTable(
+            name = "puzzle_theme",
+            joinColumns = @JoinColumn(name="puzzle_id"),
+            inverseJoinColumns = @JoinColumn(name="theme_id")
+    )
+    private Set<Theme> themes;
 
 
 

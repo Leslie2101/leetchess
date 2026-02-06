@@ -2,7 +2,9 @@ package com.leslie.chess_puzzle_platform.services;
 
 
 import com.leslie.chess_puzzle_platform.models.Puzzle;
+import com.leslie.chess_puzzle_platform.models.Theme;
 import com.leslie.chess_puzzle_platform.repository.PuzzleRepository;
+import com.leslie.chess_puzzle_platform.repository.ThemeRepository;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,28 +25,34 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class PuzzleService {
-    private final PuzzleRepository repository;
+    private final PuzzleRepository puzzleRepository;
+    private final ThemeRepository themeRepository;
     private final FileStorageService fileStorageService;
 
     public Integer uploadPuzzles(MultipartFile file) throws IOException {
         Set<Puzzle> puzzles = parseCSV(file);
-        repository.saveAll(puzzles);
+        puzzleRepository.saveAll(puzzles);
         return puzzles.size();
     }
 
     public Page<Puzzle> findAll(Pageable pageable){
-        return repository.findAll(pageable);
+        return puzzleRepository.findAll(pageable);
     }
 
-    public Page<Puzzle> findPuzzles(int ratingMin, int ratingMax, Pageable pageable) {
-        return repository.findByRatingBetween(ratingMin, ratingMax, pageable);
+
+    public Page<Puzzle> searchAndFilter(int ratingMin, int ratingMax, List<String> themes, Pageable pageable){
+        if (themes == null || themes.isEmpty()){
+            return puzzleRepository.findByRatingBetween(ratingMin, ratingMax, pageable);
+        }
+
+        return puzzleRepository.findByAnyThemeAndRating(ratingMin, ratingMax, themes, pageable);
     }
 
     public void populatePuzzles() throws IOException {
         Resource resource = fileStorageService.loadAsResource("puzzle_aa.csv");
         try (InputStream inputStream = resource.getInputStream()){
             Set<Puzzle> puzzles = parseFromInputStream(inputStream);
-            repository.saveAll(puzzles);
+            puzzleRepository.saveAll(puzzles);
 
         }
     }
@@ -65,7 +75,10 @@ public class PuzzleService {
                             .fen(csvLine.getFen())
                             .moves(csvLine.getMoves())
                             .rating(csvLine.getRating())
-                            .themes(csvLine.getThemes())
+                            .themes(Arrays.stream(csvLine.getThemes().split(" "))
+                                    .map(name -> themeRepository.findByName(name)
+                                            .orElseGet(() -> themeRepository.save(Theme.builder().name(name).build())))
+                                    .collect(Collectors.toSet()))
                             .build())
                     .collect(Collectors.toSet());
         } catch (IOException e) {
@@ -79,6 +92,6 @@ public class PuzzleService {
 
 
     public Optional<Puzzle> findById(long puzzleId) {
-        return repository.findById(puzzleId);
+        return puzzleRepository.findById(puzzleId);
     }
 }
