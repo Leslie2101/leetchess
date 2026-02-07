@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChessCode - Competitions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-hover: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --text-tertiary: #94a3b8;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --gold: #f59e0b;
+            --silver: #94a3b8;
+            --bronze: #c2410c;
+            --success-green: #22c55e;
+            --live-red: #ef4444;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-link.active {
+            color: var(--text-primary);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary-blue);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .premium-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #92400e;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            border-radius: 16px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-pattern {
+            position: absolute;
+            right: -100px;
+            top: -100px;
+            width: 400px;
+            height: 400px;
+            opacity: 0.1;
+            background-image: repeating-linear-gradient(45deg, white 0, white 20px, transparent 20px, transparent 40px);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .hero p {
+            font-size: 1.125rem;
+            opacity: 0.95;
+            max-width: 600px;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+            animation: fadeIn 0.6s ease-out 0.2s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tab-nav-item {
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+
+        .tab-nav-item:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-nav-item.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+        }
+
+        /* Competition Grid */
+        .competition-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .competition-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .competition-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+
+        .competition-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            position: relative;
+        }
+
+        .competition-header.live {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        }
+
+        .competition-header.upcoming {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        }
+
+        .live-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.375rem 0.875rem;
+            background: var(--live-red);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .competition-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .competition-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .competition-body {
+            padding: 1.5rem;
+        }
+
+        .competition-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 0.25rem;
+        }
+
+        .competition-time {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: var(--bg-hover);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .time-icon {
+            color: var(--text-tertiary);
+        }
+
+        .competition-footer {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.875rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        /* Leaderboard */
+        .leaderboard {
+            background: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .leaderboard-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .leaderboard-title {
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+
+        .view-all {
+            color: var(--primary-blue);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .view-all:hover {
+            text-decoration: underline;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+        }
+
+        .leaderboard-table tr {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .leaderboard-table tr:last-child {
+            border-bottom: none;
+        }
+
+        .leaderboard-table td {
+            padding: 1rem 1.5rem;
+        }
+
+        .rank {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.125rem;
+            width: 60px;
+        }
+
+        .rank.gold { color: var(--gold); }
+        .rank.silver { color: var(--silver); }
+        .rank.bronze { color: var(--bronze); }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        }
+
+        .player-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .player-rating {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .score {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.125rem;
+            text-align: right;
+        }
+
+        .medal-icon {
+            font-size: 1.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .competition-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                padding: 2rem;
+            }
+
+            .hero h1 {
+                font-size: 1.75rem;
+            }
+        }
+
+/* PASTEL THEME INJECTED */
+/* ========================================
+   CHESSCODE PASTEL CALM / COZY CAFÉ THEME
+   ======================================== */
+
+/* Import Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap');
+
+/* ========================================
+   COLOR PALETTE
+   ======================================== */
+:root {
+    /* Primary Colors */
+    --primary-peach: #F2A7A0;
+    --primary-peach-hover: #E89088;
+    --secondary-sage: #A8CBB7;
+    --secondary-sage-hover: #96B9A5;
+
+    /* Backgrounds */
+    --bg-cream: #FFF7F0;
+    --bg-warm: #FDF3EA;
+    --bg-card: #FEFBF8;
+    --bg-hover: #F9F0E8;
+
+    /* Text Colors */
+    --text-primary: #4A3F3A;
+    --text-secondary: #8B7D77;
+    --text-tertiary: #B5A9A3;
+
+    /* UI Elements */
+    --border-color: #E8DDD5;
+    --shadow-soft: 0 2px 8px rgba(74, 63, 58, 0.08);
+    --shadow-card: 0 4px 16px rgba(74, 63, 58, 0.1);
+    --shadow-hover: 0 6px 24px rgba(74, 63, 58, 0.12);
+
+    /* Semantic Colors */
+    --difficulty-easy: #A8CBB7;
+    --difficulty-medium: #F2C078;
+    --difficulty-hard: #E89088;
+    --success-green: #A8CBB7;
+    --error-red: #E89088;
+
+    /* Accents */
+    --premium-gold: #E8B65F;
+    --accent-lavender: #C9B8D8;
+    --accent-sky: #B8D8E8;
+    --accent-warm: #F5D4B8;
+
+    /* Chess Board */
+    --board-light: #F6EDE4;
+    --board-dark: #D9C2AD;
+    --highlight-yellow: #FFE9CC;
+}
+
+/* ========================================
+   BASE STYLES
+   ======================================== */
+body {
+    font-family: 'Quicksand', 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    background: var(--bg-cream) !important;
+    color: var(--text-primary) !important;
+    line-height: 1.7 !important;
+}
+
+/* ========================================
+   TYPOGRAPHY
+   ======================================== */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Nunito', 'Quicksand', sans-serif;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+button, .btn, .btn-primary, .btn-secondary {
+    border-radius: 20px !important;
+    font-weight: 700 !important;
+    transition: all 0.3s ease !important;
+    letter-spacing: 0.02em;
+    box-shadow: var(--shadow-soft) !important;
+}
+
+.btn-primary, button[class*="primary"], .solve-now-btn, .apply-filters-btn, .submit-btn {
+    background: linear-gradient(135deg, var(--primary-peach) 0%, #F5B5AE 100%) !important;
+    color: white !important;
+    border: none !important;
+}
+
+.btn-primary:hover, button[class*="primary"]:hover, .solve-now-btn:hover, .apply-filters-btn:hover, .submit-btn:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 6px 24px rgba(242, 167, 160, 0.4) !important;
+}
+
+.btn-secondary, .hint-btn, .reset-all-btn {
+    background: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+    border: 1.5px solid var(--border-color) !important;
+}
+
+.btn-secondary:hover, .hint-btn:hover, .reset-all-btn:hover {
+    background: var(--bg-hover) !important;
+    border-color: var(--primary-peach) !important;
+    color: var(--primary-peach) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* ========================================
+   CARDS & PANELS
+   ======================================== */
+.card, .filter-card, .sidebar-card, .puzzle-table, .sidebar-section,
+.puzzle-info, .ai-consultant, .competition-card, .leaderboard,
+.board-wrapper, .board-header, .board-footer {
+    background: var(--bg-card) !important;
+    border-radius: 16px !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: var(--shadow-card) !important;
+}
+
+.card:hover, .competition-card:hover {
+    box-shadow: var(--shadow-hover) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* ========================================
+   INPUTS & FORMS
+   ======================================== */
+input, textarea, select, .search-input, .range-input, .chat-input input {
+    background: var(--bg-warm) !important;
+    border: 1.5px solid var(--border-color) !important;
+    border-radius: 12px !important;
+    color: var(--text-primary) !important;
+    transition: all 0.2s ease !important;
+}
+
+input:focus, textarea:focus, select:focus, .search-input:focus, .chat-input input:focus {
+    border-color: var(--primary-peach) !important;
+    box-shadow: 0 0 0 3px rgba(242, 167, 160, 0.15) !important;
+    background: var(--bg-card) !important;
+}
+
+input::placeholder, textarea::placeholder {
+    color: var(--text-tertiary) !important;
+}
+
+/* ========================================
+   BADGES & PILLS
+   ======================================== */
+.difficulty-badge, .filter-tag, .theme-pill, .live-badge, .attempt-status {
+    border-radius: 16px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+
+.difficulty-badge.easy, .stat-value, .rating.easy {
+    color: var(--difficulty-easy) !important;
+    background: rgba(168, 203, 183, 0.15) !important;
+}
+
+.difficulty-badge.medium, .rating.medium {
+    color: var(--difficulty-medium) !important;
+    background: rgba(242, 192, 120, 0.15) !important;
+}
+
+.difficulty-badge.hard, .rating.hard {
+    color: var(--difficulty-hard) !important;
+    background: rgba(232, 144, 136, 0.15) !important;
+}
+
+.theme-pill {
+    background: var(--bg-hover) !important;
+    border: 1.5px solid var(--border-color) !important;
+}
+
+.theme-pill:hover {
+    background: var(--bg-card) !important;
+    border-color: var(--primary-peach) !important;
+    color: var(--primary-peach) !important;
+    transform: translateY(-1px) scale(1.02) !important;
+}
+
+.theme-pill.selected {
+    background: linear-gradient(135deg, var(--primary-peach) 0%, #F5B5AE 100%) !important;
+    color: white !important;
+    border-color: var(--primary-peach) !important;
+}
+
+.filter-tag.active {
+    background: var(--primary-peach) !important;
+    color: white !important;
+}
+
+/* ========================================
+   CHESS BOARD
+   ======================================== */
+.chessboard {
+    border: 3px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    box-shadow: var(--shadow-card) !important;
+}
+
+.square.light {
+    background: var(--board-light) !important;
+}
+
+.square.dark {
+    background: var(--board-dark) !important;
+}
+
+.square.highlight {
+    background: var(--highlight-yellow) !important;
+    box-shadow: inset 0 0 0 2px var(--primary-peach) !important;
+}
+
+.square:hover {
+    filter: brightness(0.97) !important;
+}
+
+.piece {
+    filter: drop-shadow(0 1px 2px rgba(74, 63, 58, 0.2));
+}
+
+/* ========================================
+   TABLE STYLING
+   ======================================== */
+table thead {
+    background: var(--bg-hover) !important;
+}
+
+table th {
+    color: var(--text-secondary) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+table tbody tr {
+    border-bottom: 1px solid var(--border-color) !important;
+    transition: all 0.2s ease !important;
+}
+
+table tbody tr:hover {
+    background: var(--bg-hover) !important;
+}
+
+/* ========================================
+   STATUS INDICATORS
+   ======================================== */
+.status-icon.solved {
+    background: var(--success-green) !important;
+    border-color: var(--success-green) !important;
+    box-shadow: 0 2px 8px rgba(168, 203, 183, 0.3) !important;
+}
+
+.attempt-status.solved {
+    color: var(--success-green) !important;
+    background: rgba(168, 203, 183, 0.15) !important;
+}
+
+.attempt-status.unsolved {
+    color: var(--text-secondary) !important;
+    background: var(--bg-hover) !important;
+}
+
+/* ========================================
+   SLIDER & RANGE INPUTS
+   ======================================== */
+.slider-track {
+    background: var(--primary-peach) !important;
+    border-radius: 4px !important;
+}
+
+.slider-thumb {
+    background: white !important;
+    border: 3px solid var(--primary-peach) !important;
+    box-shadow: var(--shadow-card) !important;
+}
+
+.slider-thumb:hover {
+    transform: translate(-50%, -50%) scale(1.15) !important;
+    box-shadow: var(--shadow-hover) !important;
+}
+
+.slider-container {
+    background: var(--border-color) !important;
+    border-radius: 4px !important;
+}
+
+/* ========================================
+   MODAL & OVERLAYS
+   ======================================== */
+.filter-modal {
+    background: rgba(74, 63, 58, 0.4) !important;
+    backdrop-filter: blur(4px);
+}
+
+.filter-modal-content {
+    background: var(--bg-card) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 20px 50px rgba(74, 63, 58, 0.2) !important;
+}
+
+.filter-modal-header, .filter-modal-footer {
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* ========================================
+   CHAT & MESSAGES
+   ======================================== */
+.message.ai .message-bubble {
+    background: var(--bg-hover) !important;
+    color: var(--text-primary) !important;
+    border-radius: 16px 16px 16px 4px !important;
+    box-shadow: var(--shadow-soft) !important;
+}
+
+.message.user .message-bubble {
+    background: linear-gradient(135deg, var(--primary-peach) 0%, #F5B5AE 100%) !important;
+    color: white !important;
+    border-radius: 16px 16px 4px 16px !important;
+    box-shadow: var(--shadow-soft) !important;
+}
+
+.message-avatar.ai {
+    background: linear-gradient(135deg, var(--secondary-sage) 0%, #B8CFC1 100%) !important;
+}
+
+.message-avatar.user {
+    background: linear-gradient(135deg, var(--accent-lavender) 0%, var(--accent-sky) 100%) !important;
+}
+
+/* ========================================
+   ICON BUTTONS
+   ======================================== */
+.icon-btn, .control-btn, .close-modal-btn {
+    border-radius: 12px !important;
+    transition: all 0.2s ease !important;
+}
+
+.icon-btn:hover, .control-btn:hover, .close-modal-btn:hover {
+    background: var(--bg-hover) !important;
+    color: var(--primary-peach) !important;
+    transform: scale(1.05) !important;
+}
+
+/* ========================================
+   TABS & NAVIGATION
+   ======================================== */
+.tab, .tab-nav-item {
+    color: var(--text-secondary) !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+
+.tab.active, .tab-nav-item.active {
+    color: var(--primary-peach) !important;
+    border-bottom-color: var(--primary-peach) !important;
+}
+
+.tab:hover, .tab-nav-item:hover {
+    color: var(--text-primary) !important;
+}
+
+/* ========================================
+   SPECIALTY COMPONENTS
+   ======================================== */
+
+/* Premium Badge */
+.premium-badge {
+    background: linear-gradient(135deg, #FFF4E6 0%, #FFE9CC 100%) !important;
+    color: #8B6914 !important;
+    border-radius: 20px !important;
+    box-shadow: var(--shadow-soft) !important;
+}
+
+/* Live Badge */
+.live-badge {
+    background: var(--error-red) !important;
+    border-radius: 20px !important;
+}
+
+/* Progress Indicators */
+.progress-ring-fill {
+    stroke: var(--primary-peach) !important;
+}
+
+.progress-number {
+    color: var(--text-primary) !important;
+}
+
+/* Difficulty Checkboxes */
+.difficulty-option.selected .difficulty-checkbox {
+    background: var(--primary-peach) !important;
+    border-color: var(--primary-peach) !important;
+}
+
+/* ========================================
+   ANIMATIONS & MICRO-INTERACTIONS
+   ======================================== */
+* {
+    transition-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1) !important;
+}
+
+/* Gentle hover lift */
+.card, .competition-card, .attempt-item, .puzzle-table tbody tr {
+    transition: all 0.3s ease !important;
+}
+
+/* Soft glow on focus */
+*:focus-visible {
+    outline: 2px solid var(--primary-peach) !important;
+    outline-offset: 2px;
+}
+
+/* ========================================
+   SPACING ADJUSTMENTS
+   ======================================== */
+.container {
+    padding: 2.5rem !important;
+}
+
+/* Increase line height for readability */
+p, li, td, .message-bubble {
+    line-height: 1.7 !important;
+}
+
+/* More generous padding on interactive elements */
+button, .btn, input, select, textarea {
+    padding: 0.75rem 1.25rem !important;
+}
+
+/* ========================================
+   ACCESSIBILITY
+   ======================================== */
+
+/* Ensure sufficient contrast */
+.text-primary {
+    color: var(--text-primary) !important;
+}
+
+.text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+/* Clear focus indicators */
+button:focus-visible, input:focus-visible, a:focus-visible {
+    outline: 2px solid var(--primary-peach) !important;
+    outline-offset: 2px;
+}
+
+/* ========================================
+   RESPONSIVE ADJUSTMENTS
+   ======================================== */
+@media (max-width: 768px) {
+    .container {
+        padding: 1.5rem !important;
+    }
+
+    h1 {
+        font-size: 1.75rem !important;
+    }
+
+    h2 {
+        font-size: 1.5rem !important;
+    }
+}
+
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <a href="puzzle-list.html" class="logo">
+            <div class="logo-icon">♔</div>
+            ChessCode
+        </a>
+        <nav class="nav">
+            <a href="puzzle-list.html" class="nav-link">Puzzles</a>
+            <a href="#" class="nav-link">Learn</a>
+            <a href="competitions.html" class="nav-link active">Compete</a>
+            <a href="#" class="nav-link">Discuss</a>
+        </nav>
+        <div class="header-actions">
+            <button class="icon-btn">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="10" cy="10" r="8"/>
+                    <path d="M14.5 14.5l4 4"/>
+                </svg>
+            </button>
+            <div class="premium-badge">
+                <span>👑</span> PREMIUM
+            </div>
+            <button class="icon-btn">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10 5v7m0 0l4-3m-4 3L6 9m11 8H3"/>
+                </svg>
+            </button>
+            <div class="avatar"></div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Container -->
+<div class="container">
+    <!-- Hero -->
+    <div class="hero">
+        <div class="hero-pattern"></div>
+        <div class="hero-content">
+            <h1>🏆 Chess Puzzle Competitions</h1>
+            <p>Compete against players worldwide. Solve puzzles faster, climb the leaderboard, and win prizes!</p>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tab-nav">
+        <div class="tab-nav-item active">Live Now</div>
+        <div class="tab-nav-item">Upcoming</div>
+        <div class="tab-nav-item">Past Events</div>
+    </div>
+
+    <!-- Competition Grid -->
+    <div class="competition-grid">
+        <!-- Live Competition -->
+        <div class="competition-card">
+            <div class="competition-header live">
+                <div class="live-badge">
+                    <div class="live-dot"></div>
+                    LIVE
+                </div>
+                <div class="competition-title">Speed Tactics Blitz</div>
+                <div class="competition-subtitle">Rapid-fire puzzle solving</div>
+            </div>
+            <div class="competition-body">
+                <div class="competition-stats">
+                    <div class="stat">
+                        <div class="stat-value">1,247</div>
+                        <div class="stat-label">Players</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">15</div>
+                        <div class="stat-label">Puzzles</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">$500</div>
+                        <div class="stat-label">Prize Pool</div>
+                    </div>
+                </div>
+                <div class="competition-time">
+                    <span class="time-icon">⏱️</span>
+                    <span>Ends in 42 minutes</span>
+                </div>
+                <div class="competition-footer">
+                    <button class="btn btn-primary">Join Now</button>
+                    <button class="btn btn-secondary">Leaderboard</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Competition 2 -->
+        <div class="competition-card">
+            <div class="competition-header live">
+                <div class="live-badge">
+                    <div class="live-dot"></div>
+                    LIVE
+                </div>
+                <div class="competition-title">Endgame Marathon</div>
+                <div class="competition-subtitle">Master complex endgames</div>
+            </div>
+            <div class="competition-body">
+                <div class="competition-stats">
+                    <div class="stat">
+                        <div class="stat-value">876</div>
+                        <div class="stat-label">Players</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">20</div>
+                        <div class="stat-label">Puzzles</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">$300</div>
+                        <div class="stat-label">Prize Pool</div>
+                    </div>
+                </div>
+                <div class="competition-time">
+                    <span class="time-icon">⏱️</span>
+                    <span>Ends in 1 hour 18 minutes</span>
+                </div>
+                <div class="competition-footer">
+                    <button class="btn btn-primary">Join Now</button>
+                    <button class="btn btn-secondary">Leaderboard</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Competition -->
+        <div class="competition-card">
+            <div class="competition-header upcoming">
+                <div class="competition-title">Weekly Grand Prix</div>
+                <div class="competition-subtitle">All difficulty levels</div>
+            </div>
+            <div class="competition-body">
+                <div class="competition-stats">
+                    <div class="stat">
+                        <div class="stat-value">2.1k</div>
+                        <div class="stat-label">Registered</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">30</div>
+                        <div class="stat-label">Puzzles</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">$1,000</div>
+                        <div class="stat-label">Prize Pool</div>
+                    </div>
+                </div>
+                <div class="competition-time">
+                    <span class="time-icon">📅</span>
+                    <span>Starts in 3 hours</span>
+                </div>
+                <div class="competition-footer">
+                    <button class="btn btn-primary">Register</button>
+                    <button class="btn btn-secondary">Details</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Competition 2 -->
+        <div class="competition-card">
+            <div class="competition-header upcoming">
+                <div class="competition-title">Tactical Sacrifice Challenge</div>
+                <div class="competition-subtitle">Advanced tactics only</div>
+            </div>
+            <div class="competition-body">
+                <div class="competition-stats">
+                    <div class="stat">
+                        <div class="stat-value">1.5k</div>
+                        <div class="stat-label">Registered</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">25</div>
+                        <div class="stat-label">Puzzles</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">$750</div>
+                        <div class="stat-label">Prize Pool</div>
+                    </div>
+                </div>
+                <div class="competition-time">
+                    <span class="time-icon">📅</span>
+                    <span>Starts tomorrow at 2:00 PM</span>
+                </div>
+                <div class="competition-footer">
+                    <button class="btn btn-primary">Register</button>
+                    <button class="btn btn-secondary">Details</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Competition 3 -->
+        <div class="competition-card">
+            <div class="competition-header">
+                <div class="competition-title">Beginner's Tournament</div>
+                <div class="competition-subtitle">Rating under 1200</div>
+            </div>
+            <div class="competition-body">
+                <div class="competition-stats">
+                    <div class="stat">
+                        <div class="stat-value">945</div>
+                        <div class="stat-label">Registered</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Puzzles</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">$200</div>
+                        <div class="stat-label">Prize Pool</div>
+                    </div>
+                </div>
+                <div class="competition-time">
+                    <span class="time-icon">📅</span>
+                    <span>Starts Feb 10 at 10:00 AM</span>
+                </div>
+                <div class="competition-footer">
+                    <button class="btn btn-primary">Register</button>
+                    <button class="btn btn-secondary">Details</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Competition 4 -->
+        <div class="competition-card">
+            <div class="competition-header">
+                <div class="competition-title">Monthly Championship</div>
+                <div class="competition-subtitle">Elite players only</div>
+            </div>
+            <div class="competition-body">
+                <div class="competition-stats">
+                    <div class="stat">
+                        <div class="stat-value">3.2k</div>
+                        <div class="stat-label">Registered</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">50</div>
+                        <div class="stat-label">Puzzles</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">$5,000</div>
+                        <div class="stat-label">Prize Pool</div>
+                    </div>
+                </div>
+                <div class="competition-time">
+                    <span class="time-icon">📅</span>
+                    <span>Starts Feb 15 at 6:00 PM</span>
+                </div>
+                <div class="competition-footer">
+                    <button class="btn btn-primary">Register</button>
+                    <button class="btn btn-secondary">Details</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard -->
+    <div class="leaderboard">
+        <div class="leaderboard-header">
+            <div class="leaderboard-title">🏆 Top Players This Week</div>
+            <div class="view-all">View All →</div>
+        </div>
+        <table class="leaderboard-table">
+            <tr>
+                <td><div class="rank gold"><span class="medal-icon">🥇</span></div></td>
+                <td>
+                    <div class="player-info">
+                        <div class="player-avatar"></div>
+                        <div>
+                            <div class="player-name">ChessMaster2024</div>
+                            <div class="player-rating">Rating: 2650</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="score">15,847</div></td>
+            </tr>
+            <tr>
+                <td><div class="rank silver"><span class="medal-icon">🥈</span></div></td>
+                <td>
+                    <div class="player-info">
+                        <div class="player-avatar"></div>
+                        <div>
+                            <div class="player-name">TacticalGenius</div>
+                            <div class="player-rating">Rating: 2580</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="score">14,692</div></td>
+            </tr>
+            <tr>
+                <td><div class="rank bronze"><span class="medal-icon">🥉</span></div></td>
+                <td>
+                    <div class="player-info">
+                        <div class="player-avatar"></div>
+                        <div>
+                            <div class="player-name">PuzzleWizard</div>
+                            <div class="player-rating">Rating: 2490</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="score">13,421</div></td>
+            </tr>
+            <tr>
+                <td><div class="rank">4</div></td>
+                <td>
+                    <div class="player-info">
+                        <div class="player-avatar"></div>
+                        <div>
+                            <div class="player-name">EndgameExpert</div>
+                            <div class="player-rating">Rating: 2455</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="score">12,789</div></td>
+            </tr>
+            <tr>
+                <td><div class="rank">5</div></td>
+                <td>
+                    <div class="player-info">
+                        <div class="player-avatar"></div>
+                        <div>
+                            <div class="player-name">StrategyKing</div>
+                            <div class="player-rating">Rating: 2398</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="score">11,945</div></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Tab switching
+    document.querySelectorAll('.tab-nav-item').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab-nav-item').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            // Here you would filter competitions based on selected tab
+            console.log('Tab switched:', tab.textContent);
+        });
+    });
+
+    // Competition card clicks
+    document.querySelectorAll('.competition-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('btn')) {
+                console.log('Competition clicked');
+                // Navigate to competition details
+            }
+        });
+    });
+</script>
+</body>
+</html>

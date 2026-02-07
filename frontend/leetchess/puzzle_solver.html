@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChessCode - Puzzle Solver</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-hover: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --text-tertiary: #94a3b8;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --board-light: #f0d9b5;
+            --board-dark: #b58863;
+            --highlight-yellow: #fef08a;
+            --success-green: #22c55e;
+            --error-red: #ef4444;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .premium-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #92400e;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 280px 1fr 400px;
+            gap: 2rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Sidebar - Previous Attempts */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            width: 56px;
+            height: 56px;
+            background: var(--primary-blue);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+            z-index: 99;
+            transition: all 0.2s;
+        }
+
+        .sidebar-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 98;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .sidebar-section {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 0.625rem 0;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .tab.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+        }
+
+        .tab:hover:not(.active) {
+            color: var(--text-primary);
+        }
+
+        .attempt-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 0.5rem;
+            border: 1px solid transparent;
+        }
+
+        .attempt-item:hover {
+            background: var(--bg-hover);
+            border-color: var(--border-color);
+        }
+
+        .attempt-item.active {
+            background: var(--bg-hover);
+            border-color: var(--primary-blue);
+        }
+
+        .attempt-thumb {
+            width: 48px;
+            height: 48px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .attempt-thumb::after {
+            content: '♟';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            opacity: 0.3;
+        }
+
+        .attempt-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .attempt-id {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .attempt-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .attempt-status {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .attempt-status.solved {
+            color: var(--success-green);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .attempt-status.unsolved {
+            color: var(--text-secondary);
+            background: var(--bg-hover);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+        }
+
+        /* Center - Chess Board */
+        .board-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .board-wrapper {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .chessboard {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            aspect-ratio: 1;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            border: 3px solid #3c3633;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .square {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .square.light {
+            background: var(--board-light);
+        }
+
+        .square.dark {
+            background: var(--board-dark);
+        }
+
+        .square.highlight {
+            background: var(--highlight-yellow) !important;
+        }
+
+        .square:hover {
+            filter: brightness(0.95);
+        }
+
+        .square::before {
+            content: attr(data-coord);
+            position: absolute;
+            font-size: 0.5rem;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.3);
+        }
+
+        .square[data-file="a"]::before {
+            bottom: 2px;
+            left: 2px;
+        }
+
+        .square[data-rank="8"]::before {
+            top: 2px;
+            right: 2px;
+        }
+
+        .piece {
+            user-select: none;
+            pointer-events: none;
+        }
+
+        .board-footer {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .move-history {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .move-number {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .control-btn {
+            width: 44px;
+            height: 44px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+        }
+
+        .control-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        /* Right Panel */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .puzzle-info {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .puzzle-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .puzzle-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .difficulty-badge {
+            padding: 0.375rem 0.75rem;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error-red);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .puzzle-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.125rem;
+            color: var(--text-primary);
+        }
+
+        .turn-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--bg-hover);
+            border-radius: 8px;
+        }
+
+        .turn-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            background: white;
+        }
+
+        .turn-text {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* AI Consultant */
+        .ai-consultant {
+            background: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            max-height: 450px;
+        }
+
+        .consultant-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .clear-chat-btn {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .clear-chat-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1.25rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            min-height: 200px;
+        }
+
+        .chat-placeholder {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+        }
+
+        .chat-placeholder-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.3;
+        }
+
+        .message {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+            animation: messageSlide 0.3s ease-out;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .message-avatar.ai {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .message-avatar.user {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        }
+
+        .message-bubble {
+            max-width: 80%;
+            padding: 0.875rem 1.125rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .message.ai .message-bubble {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-radius: 12px 12px 12px 4px;
+        }
+
+        .message.user .message-bubble {
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 12px 12px 4px 12px;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 1rem;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-tertiary);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.7;
+            }
+            30% {
+                transform: translateY(-8px);
+                opacity: 1;
+            }
+        }
+
+        .chat-input {
+            padding: 1.25rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: var(--bg-hover);
+            transition: all 0.2s;
+        }
+
+        .chat-input input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            background: var(--bg-card);
+        }
+
+        .chat-input input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .send-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-blue);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .send-btn:hover {
+            background: var(--primary-hover);
+            transform: scale(1.05);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .hint-btn {
+            flex: 1;
+            padding: 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            color: var(--text-primary);
+        }
+
+        .hint-btn:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        .submit-btn {
+            flex: 2;
+            padding: 1rem 2rem;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: -100%;
+                top: 64px;
+                bottom: 0;
+                width: 320px;
+                background: var(--bg-main);
+                z-index: 99;
+                padding: 1rem;
+                transition: left 0.3s ease;
+                overflow-y: auto;
+                box-shadow: var(--shadow-lg);
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .sidebar-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .right-panel {
+                margin-top: 1rem;
+            }
+        }
+
+        @media (min-width: 1200px) and (max-width: 1400px) {
+            .container {
+                grid-template-columns: 240px 1fr 380px;
+                gap: 1.5rem;
+            }
+        }
+
+/* PASTEL THEME INJECTED */
+/* ========================================
+   CHESSCODE PASTEL CALM / COZY CAFÉ THEME
+   ======================================== */
+
+/* Import Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap');
+
+/* ========================================
+   COLOR PALETTE
+   ======================================== */
+:root {
+    /* Primary Colors */
+    --primary-peach: #F2A7A0;
+    --primary-peach-hover: #E89088;
+    --secondary-sage: #A8CBB7;
+    --secondary-sage-hover: #96B9A5;
+
+    /* Backgrounds */
+    --bg-cream: #FFF7F0;
+    --bg-warm: #FDF3EA;
+    --bg-card: #FEFBF8;
+    --bg-hover: #F9F0E8;
+
+    /* Text Colors */
+    --text-primary: #4A3F3A;
+    --text-secondary: #8B7D77;
+    --text-tertiary: #B5A9A3;
+
+    /* UI Elements */
+    --border-color: #E8DDD5;
+    --shadow-soft: 0 2px 8px rgba(74, 63, 58, 0.08);
+    --shadow-card: 0 4px 16px rgba(74, 63, 58, 0.1);
+    --shadow-hover: 0 6px 24px rgba(74, 63, 58, 0.12);
+
+    /* Semantic Colors */
+    --difficulty-easy: #A8CBB7;
+    --difficulty-medium: #F2C078;
+    --difficulty-hard: #E89088;
+    --success-green: #A8CBB7;
+    --error-red: #E89088;
+
+    /* Accents */
+    --premium-gold: #E8B65F;
+    --accent-lavender: #C9B8D8;
+    --accent-sky: #B8D8E8;
+    --accent-warm: #F5D4B8;
+
+    /* Chess Board */
+    --board-light: #F6EDE4;
+    --board-dark: #D9C2AD;
+    --highlight-yellow: #FFE9CC;
+}
+
+/* ========================================
+   BASE STYLES
+   ======================================== */
+body {
+    font-family: 'Quicksand', 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    background: var(--bg-cream) !important;
+    color: var(--text-primary) !important;
+    line-height: 1.7 !important;
+}
+
+/* ========================================
+   TYPOGRAPHY
+   ======================================== */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Nunito', 'Quicksand', sans-serif;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+button, .btn, .btn-primary, .btn-secondary {
+    border-radius: 20px !important;
+    font-weight: 700 !important;
+    transition: all 0.3s ease !important;
+    letter-spacing: 0.02em;
+    box-shadow: var(--shadow-soft) !important;
+}
+
+.btn-primary, button[class*="primary"], .solve-now-btn, .apply-filters-btn, .submit-btn {
+    background: linear-gradient(135deg, var(--primary-peach) 0%, #F5B5AE 100%) !important;
+    color: white !important;
+    border: none !important;
+}
+
+.btn-primary:hover, button[class*="primary"]:hover, .solve-now-btn:hover, .apply-filters-btn:hover, .submit-btn:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 6px 24px rgba(242, 167, 160, 0.4) !important;
+}
+
+.btn-secondary, .hint-btn, .reset-all-btn {
+    background: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+    border: 1.5px solid var(--border-color) !important;
+}
+
+.btn-secondary:hover, .hint-btn:hover, .reset-all-btn:hover {
+    background: var(--bg-hover) !important;
+    border-color: var(--primary-peach) !important;
+    color: var(--primary-peach) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* ========================================
+   CARDS & PANELS
+   ======================================== */
+.card, .filter-card, .sidebar-card, .puzzle-table, .sidebar-section,
+.puzzle-info, .ai-consultant, .competition-card, .leaderboard,
+.board-wrapper, .board-header, .board-footer {
+    background: var(--bg-card) !important;
+    border-radius: 16px !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: var(--shadow-card) !important;
+}
+
+.card:hover, .competition-card:hover {
+    box-shadow: var(--shadow-hover) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* ========================================
+   INPUTS & FORMS
+   ======================================== */
+input, textarea, select, .search-input, .range-input, .chat-input input {
+    background: var(--bg-warm) !important;
+    border: 1.5px solid var(--border-color) !important;
+    border-radius: 12px !important;
+    color: var(--text-primary) !important;
+    transition: all 0.2s ease !important;
+}
+
+input:focus, textarea:focus, select:focus, .search-input:focus, .chat-input input:focus {
+    border-color: var(--primary-peach) !important;
+    box-shadow: 0 0 0 3px rgba(242, 167, 160, 0.15) !important;
+    background: var(--bg-card) !important;
+}
+
+input::placeholder, textarea::placeholder {
+    color: var(--text-tertiary) !important;
+}
+
+/* ========================================
+   BADGES & PILLS
+   ======================================== */
+.difficulty-badge, .filter-tag, .theme-pill, .live-badge, .attempt-status {
+    border-radius: 16px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+
+.difficulty-badge.easy, .stat-value, .rating.easy {
+    color: var(--difficulty-easy) !important;
+    background: rgba(168, 203, 183, 0.15) !important;
+}
+
+.difficulty-badge.medium, .rating.medium {
+    color: var(--difficulty-medium) !important;
+    background: rgba(242, 192, 120, 0.15) !important;
+}
+
+.difficulty-badge.hard, .rating.hard {
+    color: var(--difficulty-hard) !important;
+    background: rgba(232, 144, 136, 0.15) !important;
+}
+
+.theme-pill {
+    background: var(--bg-hover) !important;
+    border: 1.5px solid var(--border-color) !important;
+}
+
+.theme-pill:hover {
+    background: var(--bg-card) !important;
+    border-color: var(--primary-peach) !important;
+    color: var(--primary-peach) !important;
+    transform: translateY(-1px) scale(1.02) !important;
+}
+
+.theme-pill.selected {
+    background: linear-gradient(135deg, var(--primary-peach) 0%, #F5B5AE 100%) !important;
+    color: white !important;
+    border-color: var(--primary-peach) !important;
+}
+
+.filter-tag.active {
+    background: var(--primary-peach) !important;
+    color: white !important;
+}
+
+/* ========================================
+   CHESS BOARD
+   ======================================== */
+.chessboard {
+    border: 3px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    box-shadow: var(--shadow-card) !important;
+}
+
+.square.light {
+    background: var(--board-light) !important;
+}
+
+.square.dark {
+    background: var(--board-dark) !important;
+}
+
+.square.highlight {
+    background: var(--highlight-yellow) !important;
+    box-shadow: inset 0 0 0 2px var(--primary-peach) !important;
+}
+
+.square:hover {
+    filter: brightness(0.97) !important;
+}
+
+.piece {
+    filter: drop-shadow(0 1px 2px rgba(74, 63, 58, 0.2));
+}
+
+/* ========================================
+   TABLE STYLING
+   ======================================== */
+table thead {
+    background: var(--bg-hover) !important;
+}
+
+table th {
+    color: var(--text-secondary) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+table tbody tr {
+    border-bottom: 1px solid var(--border-color) !important;
+    transition: all 0.2s ease !important;
+}
+
+table tbody tr:hover {
+    background: var(--bg-hover) !important;
+}
+
+/* ========================================
+   STATUS INDICATORS
+   ======================================== */
+.status-icon.solved {
+    background: var(--success-green) !important;
+    border-color: var(--success-green) !important;
+    box-shadow: 0 2px 8px rgba(168, 203, 183, 0.3) !important;
+}
+
+.attempt-status.solved {
+    color: var(--success-green) !important;
+    background: rgba(168, 203, 183, 0.15) !important;
+}
+
+.attempt-status.unsolved {
+    color: var(--text-secondary) !important;
+    background: var(--bg-hover) !important;
+}
+
+/* ========================================
+   SLIDER & RANGE INPUTS
+   ======================================== */
+.slider-track {
+    background: var(--primary-peach) !important;
+    border-radius: 4px !important;
+}
+
+.slider-thumb {
+    background: white !important;
+    border: 3px solid var(--primary-peach) !important;
+    box-shadow: var(--shadow-card) !important;
+}
+
+.slider-thumb:hover {
+    transform: translate(-50%, -50%) scale(1.15) !important;
+    box-shadow: var(--shadow-hover) !important;
+}
+
+.slider-container {
+    background: var(--border-color) !important;
+    border-radius: 4px !important;
+}
+
+/* ========================================
+   MODAL & OVERLAYS
+   ======================================== */
+.filter-modal {
+    background: rgba(74, 63, 58, 0.4) !important;
+    backdrop-filter: blur(4px);
+}
+
+.filter-modal-content {
+    background: var(--bg-card) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 20px 50px rgba(74, 63, 58, 0.2) !important;
+}
+
+.filter-modal-header, .filter-modal-footer {
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* ========================================
+   CHAT & MESSAGES
+   ======================================== */
+.message.ai .message-bubble {
+    background: var(--bg-hover) !important;
+    color: var(--text-primary) !important;
+    border-radius: 16px 16px 16px 4px !important;
+    box-shadow: var(--shadow-soft) !important;
+}
+
+.message.user .message-bubble {
+    background: linear-gradient(135deg, var(--primary-peach) 0%, #F5B5AE 100%) !important;
+    color: white !important;
+    border-radius: 16px 16px 4px 16px !important;
+    box-shadow: var(--shadow-soft) !important;
+}
+
+.message-avatar.ai {
+    background: linear-gradient(135deg, var(--secondary-sage) 0%, #B8CFC1 100%) !important;
+}
+
+.message-avatar.user {
+    background: linear-gradient(135deg, var(--accent-lavender) 0%, var(--accent-sky) 100%) !important;
+}
+
+/* ========================================
+   ICON BUTTONS
+   ======================================== */
+.icon-btn, .control-btn, .close-modal-btn {
+    border-radius: 12px !important;
+    transition: all 0.2s ease !important;
+}
+
+.icon-btn:hover, .control-btn:hover, .close-modal-btn:hover {
+    background: var(--bg-hover) !important;
+    color: var(--primary-peach) !important;
+    transform: scale(1.05) !important;
+}
+
+/* ========================================
+   TABS & NAVIGATION
+   ======================================== */
+.tab, .tab-nav-item {
+    color: var(--text-secondary) !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+
+.tab.active, .tab-nav-item.active {
+    color: var(--primary-peach) !important;
+    border-bottom-color: var(--primary-peach) !important;
+}
+
+.tab:hover, .tab-nav-item:hover {
+    color: var(--text-primary) !important;
+}
+
+/* ========================================
+   SPECIALTY COMPONENTS
+   ======================================== */
+
+/* Premium Badge */
+.premium-badge {
+    background: linear-gradient(135deg, #FFF4E6 0%, #FFE9CC 100%) !important;
+    color: #8B6914 !important;
+    border-radius: 20px !important;
+    box-shadow: var(--shadow-soft) !important;
+}
+
+/* Live Badge */
+.live-badge {
+    background: var(--error-red) !important;
+    border-radius: 20px !important;
+}
+
+/* Progress Indicators */
+.progress-ring-fill {
+    stroke: var(--primary-peach) !important;
+}
+
+.progress-number {
+    color: var(--text-primary) !important;
+}
+
+/* Difficulty Checkboxes */
+.difficulty-option.selected .difficulty-checkbox {
+    background: var(--primary-peach) !important;
+    border-color: var(--primary-peach) !important;
+}
+
+/* ========================================
+   ANIMATIONS & MICRO-INTERACTIONS
+   ======================================== */
+* {
+    transition-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1) !important;
+}
+
+/* Gentle hover lift */
+.card, .competition-card, .attempt-item, .puzzle-table tbody tr {
+    transition: all 0.3s ease !important;
+}
+
+/* Soft glow on focus */
+*:focus-visible {
+    outline: 2px solid var(--primary-peach) !important;
+    outline-offset: 2px;
+}
+
+/* ========================================
+   SPACING ADJUSTMENTS
+   ======================================== */
+.container {
+    padding: 2.5rem !important;
+}
+
+/* Increase line height for readability */
+p, li, td, .message-bubble {
+    line-height: 1.7 !important;
+}
+
+/* More generous padding on interactive elements */
+button, .btn, input, select, textarea {
+    padding: 0.75rem 1.25rem !important;
+}
+
+/* ========================================
+   ACCESSIBILITY
+   ======================================== */
+
+/* Ensure sufficient contrast */
+.text-primary {
+    color: var(--text-primary) !important;
+}
+
+.text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+/* Clear focus indicators */
+button:focus-visible, input:focus-visible, a:focus-visible {
+    outline: 2px solid var(--primary-peach) !important;
+    outline-offset: 2px;
+}
+
+/* ========================================
+   RESPONSIVE ADJUSTMENTS
+   ======================================== */
+@media (max-width: 768px) {
+    .container {
+        padding: 1.5rem !important;
+    }
+
+    h1 {
+        font-size: 1.75rem !important;
+    }
+
+    h2 {
+        font-size: 1.5rem !important;
+    }
+}
+
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <a href="puzzle-list.html" class="logo">
+            <div class="logo-icon">♔</div>
+            ChessCode
+        </a>
+        <nav class="nav">
+            <a href="puzzle-list.html" class="nav-link">Puzzles</a>
+            <a href="#" class="nav-link">Learn</a>
+            <a href="#" class="nav-link">Compete</a>
+            <a href="#" class="nav-link">Discuss</a>
+        </nav>
+        <div class="header-actions">
+            <button class="icon-btn">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="10" cy="10" r="8"/>
+                    <path d="M14.5 14.5l4 4"/>
+                </svg>
+            </button>
+            <div class="premium-badge">
+                <span>👑</span> PREMIUM
+            </div>
+            <button class="icon-btn">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10 5v7m0 0l4-3m-4 3L6 9m11 8H3"/>
+                </svg>
+            </button>
+            <div class="avatar"></div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Container -->
+<div class="container">
+    <!-- Mobile Sidebar Toggle -->
+    <button class="sidebar-toggle" onclick="toggleSidebar()">📋</button>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Left Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-section">
+            <div class="section-title">Previous Attempts</div>
+            <div class="section-subtitle">TODAY'S SESSION</div>
+
+            <div class="tabs">
+                <div class="tab active" data-tab="all">All</div>
+                <div class="tab" data-tab="unsolved">Unsolved</div>
+            </div>
+
+            <div id="attemptsList">
+                <div class="attempt-item active" data-id="89231">
+                    <div class="attempt-thumb"></div>
+                    <div class="attempt-info">
+                        <div class="attempt-id">#89231</div>
+                        <div class="attempt-time">In Progress</div>
+                    </div>
+                    <div class="attempt-status unsolved">Current</div>
+                </div>
+
+                <div class="attempt-item" data-id="89201" data-solved="true">
+                    <div class="attempt-thumb"></div>
+                    <div class="attempt-info">
+                        <div class="attempt-id">#89201</div>
+                        <div class="attempt-time">2m 30s</div>
+                    </div>
+                    <div class="attempt-status solved">Solved</div>
+                </div>
+
+                <div class="attempt-item" data-id="89215" data-solved="false">
+                    <div class="attempt-thumb"></div>
+                    <div class="attempt-info">
+                        <div class="attempt-id">#89215</div>
+                        <div class="attempt-time">45s</div>
+                    </div>
+                    <div class="attempt-status unsolved">Resume</div>
+                </div>
+
+                <div class="attempt-item" data-id="89222" data-solved="true">
+                    <div class="attempt-thumb"></div>
+                    <div class="attempt-info">
+                        <div class="attempt-id">#89222</div>
+                        <div class="attempt-time">1m 12s</div>
+                    </div>
+                    <div class="attempt-status solved">Solved</div>
+                </div>
+
+                <div class="attempt-item" data-id="89198" data-solved="false">
+                    <div class="attempt-thumb"></div>
+                    <div class="attempt-info">
+                        <div class="attempt-id">#89198</div>
+                        <div class="attempt-time">3m 05s</div>
+                    </div>
+                    <div class="attempt-status unsolved">Resume</div>
+                </div>
+
+                <div class="attempt-item" data-id="89150" data-solved="true">
+                    <div class="attempt-thumb"></div>
+                    <div class="attempt-info">
+                        <div class="attempt-id">#89150</div>
+                        <div class="attempt-time">55s</div>
+                    </div>
+                    <div class="attempt-status solved">Solved</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Center - Chess Board -->
+    <div class="board-container">
+        <!-- Chess Board -->
+        <div class="board-wrapper">
+            <div class="chessboard" id="board">
+                <!-- Board will be generated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Board Footer -->
+        <div class="board-footer">
+            <div class="move-history">
+                <span class="move-number">Move 1:</span>
+                <span>Nf3 - Nf6</span>
+            </div>
+            <div class="controls">
+                <button class="control-btn" title="Expand">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4l6 6m0-6l-6 6"/>
+                    </svg>
+                </button>
+                <button class="control-btn" title="Download">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 2v10m0 0l3-3m-3 3l-3-3m8 5v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2"/>
+                    </svg>
+                </button>
+                <button class="control-btn" title="First Move">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 5l-7 7 7 7M4 12h14"/>
+                    </svg>
+                </button>
+                <button class="control-btn" title="Previous">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <button class="control-btn" title="Next">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+                <button class="control-btn" title="Last Move">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M13 5l7 7-7 7M4 12h14"/>
+                    </svg>
+                </button>
+                <button class="control-btn" title="Settings">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="9" r="3"/>
+                        <path d="M9 1v2m0 12v2M3.22 3.22l1.42 1.42m9.9 9.9l1.42 1.42M1 9h2m12 0h2M3.22 14.78l1.42-1.42m9.9-9.9l1.42-1.42"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="right-panel">
+        <!-- Puzzle Info -->
+        <div class="puzzle-info">
+            <div class="puzzle-header">
+                <div>
+                    <div class="puzzle-number">Puzzle #89231</div>
+                    <div style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.5rem;">
+                        <svg width="16" height="16" fill="none">
+                            <circle cx="8" cy="8" r="8" fill="currentColor" opacity="0.2"/>
+                            <circle cx="8" cy="8" r="3" fill="currentColor"/>
+                        </svg>
+                        <span class="difficulty-badge">HARD</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="puzzle-stats">
+                <div class="stat">
+                    <div class="stat-label">Rating</div>
+                    <div class="stat-value">2350</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Played</div>
+                    <div class="stat-value">12k</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Success</div>
+                    <div class="stat-value">42%</div>
+                </div>
+            </div>
+
+            <div class="turn-indicator">
+                <div class="turn-dot"></div>
+                <div class="turn-text">White to Move</div>
+            </div>
+        </div>
+
+        <!-- AI Consultant -->
+        <div class="ai-consultant">
+            <div class="consultant-header">
+                AI Consultant
+                <button class="clear-chat-btn" onclick="clearChat()">Clear</button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-placeholder">
+                    <div class="chat-placeholder-icon">💬</div>
+                    <div>Ask for hints or tactical advice</div>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="Ask for a hint..." onkeypress="handleChatKeyPress(event)">
+                <button class="send-btn" onclick="sendMessage()">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14m0 0l-6-6m6 6l-6 6"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="hint-btn">
+                <span>💡</span> Get Hint
+            </button>
+            <button class="submit-btn">Submit Move</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Mobile sidebar toggle
+    function toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+    }
+
+    // Chess board generation
+    const board = document.getElementById('board');
+    const initialPosition = [
+        ['♜', '♞', '♝', '♛', '♚', '', '', '♜'],
+        ['♟', '♟', '♞', '', '', '♟', '♟', '♟'],
+        ['', '', '', '♟', '♞', '', '', ''],
+        ['', '', '', '♚', '', '', '', ''],
+        ['', '♗', '', '♙', '', '', '', ''],
+        ['', '', '♘', '', '', '', '', ''],
+        ['♙', '♙', '♙', '', '', '♙', '♙', '♙'],
+        ['♖', '', '', '♔', '', '♖', '', '']
+    ];
+
+    const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
+    for (let rank = 0; rank < 8; rank++) {
+        for (let file = 0; file < 8; file++) {
+            const square = document.createElement('div');
+            const isLight = (rank + file) % 2 === 0;
+            square.className = `square ${isLight ? 'light' : 'dark'}`;
+
+            const piece = initialPosition[rank][file];
+            if (piece) {
+                square.innerHTML = `<span class="piece">${piece}</span>`;
+            }
+
+            square.dataset.file = files[file];
+            square.dataset.rank = 8 - rank;
+            square.dataset.coord = files[file] + (8 - rank);
+
+            if (square.dataset.coord === 'f7') {
+                square.classList.add('highlight');
+            }
+
+            board.appendChild(square);
+        }
+    }
+
+    // Click handlers for interactive board
+    document.querySelectorAll('.square').forEach(square => {
+        square.addEventListener('click', () => {
+            console.log('Square clicked:', square.dataset.coord);
+            // Here you would send move to backend
+            // makeMove(square.dataset.coord);
+        });
+    });
+
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            const tabType = tab.dataset.tab;
+            const attemptsList = document.getElementById('attemptsList');
+            const attempts = attemptsList.querySelectorAll('.attempt-item');
+
+            attempts.forEach(attempt => {
+                if (tabType === 'unsolved') {
+                    const isSolved = attempt.dataset.solved === 'true';
+                    attempt.style.display = isSolved ? 'none' : 'flex';
+                } else {
+                    attempt.style.display = 'flex';
+                }
+            });
+        });
+    });
+
+    // Attempt selection
+    document.querySelectorAll('.attempt-item').forEach(item => {
+        item.addEventListener('click', () => {
+            document.querySelectorAll('.attempt-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+
+            const puzzleId = item.dataset.id;
+            console.log('Loading puzzle:', puzzleId);
+            // Here you would load the puzzle from backend
+            // loadPuzzle(puzzleId);
+
+            // Clear chat when switching puzzles
+            clearChat();
+        });
+    });
+
+    // Chat functionality
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+
+    function sendMessage() {
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        // Remove placeholder if it exists
+        const placeholder = chatMessages.querySelector('.chat-placeholder');
+        if (placeholder) {
+            placeholder.remove();
+        }
+
+        // Add user message
+        addMessage('user', message);
+        chatInput.value = '';
+
+        // Show typing indicator
+        showTyping();
+
+        // Simulate AI response (replace with actual backend call)
+        setTimeout(() => {
+            hideTyping();
+            addMessage('ai', 'Consider the weakness on f7. The knight on d5 is pinning a key defender. What tactical motif can you use here?');
+        }, 1500);
+    }
+
+    function addMessage(type, text) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${type}`;
+
+        const avatar = document.createElement('div');
+        avatar.className = `message-avatar ${type}`;
+        avatar.textContent = type === 'ai' ? '🤖' : '👤';
+
+        const bubble = document.createElement('div');
+        bubble.className = 'message-bubble';
+        bubble.textContent = text;
+
+        messageDiv.appendChild(avatar);
+        messageDiv.appendChild(bubble);
+        chatMessages.appendChild(messageDiv);
+
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function showTyping() {
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'message ai typing';
+        typingDiv.innerHTML = `
+            <div class="message-avatar ai">🤖</div>
+            <div class="message-bubble">
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+        `;
+        chatMessages.appendChild(typingDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function hideTyping() {
+        const typing = chatMessages.querySelector('.typing');
+        if (typing) typing.remove();
+    }
+
+    function clearChat() {
+        chatMessages.innerHTML = `
+            <div class="chat-placeholder">
+                <div class="chat-placeholder-icon">💬</div>
+                <div>Ask for hints or tactical advice</div>
+            </div>
+        `;
+    }
+
+    function handleChatKeyPress(event) {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    }
+</script>
+</body>
+</html>

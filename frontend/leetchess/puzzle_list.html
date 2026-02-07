@@ -1,0 +1,2013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChessCode - Puzzles</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-peach: #F2A7A0;
+            --primary-peach-hover: #E89088;
+            --secondary-sage: #A8CBB7;
+            --secondary-sage-hover: #96B9A5;
+            --bg-cream: #FFF7F0;
+            --bg-warm: #FDF3EA;
+            --bg-card: #FEFBF8;
+            --bg-hover: #F9F0E8;
+            --text-primary: #4A3F3A;
+            --text-secondary: #8B7D77;
+            --text-tertiary: #B5A9A3;
+            --border-color: #E8DDD5;
+            --shadow-soft: 0 2px 8px rgba(74, 63, 58, 0.08);
+            --shadow-card: 0 4px 16px rgba(74, 63, 58, 0.1);
+            --shadow-hover: 0 6px 24px rgba(74, 63, 58, 0.12);
+            --difficulty-easy: #A8CBB7;
+            --difficulty-medium: #F2C078;
+            --difficulty-hard: #E89088;
+            --premium-gold: #E8B65F;
+            --accent-lavender: #C9B8D8;
+            --accent-sky: #B8D8E8;
+        }
+
+        body {
+            font-family: 'Quicksand', 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-cream);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-soft);
+            backdrop-filter: blur(8px);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            font-weight: 700;
+            font-size: 1.375rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: transform 0.2s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.02);
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary-peach) 0%, var(--secondary-sage) 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .nav {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+            transform: translateY(-1px);
+        }
+
+        .nav-link.active {
+            color: var(--primary-peach);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -24px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-peach), var(--secondary-sage));
+            border-radius: 2px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .icon-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .icon-btn:hover {
+            background: var(--bg-hover);
+            color: var(--primary-peach);
+            transform: scale(1.05);
+        }
+
+        .premium-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.125rem;
+            background: linear-gradient(135deg, #FFF4E6 0%, #FFE9CC 100%);
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.875rem;
+            color: #8B6914;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .premium-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-lavender) 0%, var(--accent-sky) 100%);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .avatar:hover {
+            transform: scale(1.08);
+            box-shadow: var(--shadow-card);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Daily Challenge Banner */
+        .daily-challenge {
+            background: linear-gradient(135deg, #FFF4E6 0%, #FFE9CC 100%);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out;
+            box-shadow: var(--shadow-card);
+            border: 1px solid rgba(232, 182, 95, 0.2);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .challenge-pattern {
+            position: absolute;
+            right: -50px;
+            top: -50px;
+            width: 300px;
+            height: 300px;
+            opacity: 0.08;
+            background-image: repeating-linear-gradient(45deg, var(--primary-peach) 0, var(--primary-peach) 10px, transparent 10px, transparent 20px);
+            border-radius: 50%;
+        }
+
+        .challenge-content h2 {
+            font-size: 1.625rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .challenge-content p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .solve-now-btn {
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, var(--primary-peach) 0%, #F5B5AE 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(242, 167, 160, 0.3);
+            z-index: 1;
+            letter-spacing: 0.02em;
+        }
+
+        .solve-now-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 24px rgba(242, 167, 160, 0.4);
+        }
+
+        .solve-now-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Main Content */
+        .main-content {
+            animation: fadeIn 0.6s ease-out 0.2s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Filter Widget */
+        .filter-widget-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-trigger {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filter-trigger:hover {
+            border-color: var(--primary-blue);
+            box-shadow: var(--shadow-md);
+        }
+
+        .filter-trigger-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .filter-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .filter-summary {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .filter-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tag {
+            padding: 0.25rem 0.625rem;
+            background: var(--bg-hover);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .filter-tag.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .expand-icon {
+            color: var(--text-tertiary);
+            transition: transform 0.3s;
+        }
+
+        .expand-icon.expanded {
+            transform: rotate(180deg);
+        }
+
+        /* Filter Modal */
+        .filter-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fadeInModal 0.3s ease-out;
+        }
+
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .filter-modal.active {
+            display: flex;
+        }
+
+        .filter-modal-content {
+            background: var(--bg-card);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            animation: slideUpModal 0.3s ease-out;
+        }
+
+        @keyframes slideUpModal {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .filter-modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            z-index: 1;
+        }
+
+        .filter-modal-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+        }
+
+        .close-modal-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--bg-hover);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .close-modal-btn:hover {
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .filter-modal-body {
+            padding: 2rem;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Filter Sections */
+        .filter-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .filter-section-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .clear-btn {
+            font-size: 0.8rem;
+            color: var(--primary-blue);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .clear-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        .search-bar {
+            width: 100%;
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: var(--bg-card);
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+        }
+
+        /* Table */
+        .puzzle-table {
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--bg-hover);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-tertiary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th:first-child {
+            width: 60px;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr {
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-hover);
+        }
+
+        .status-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .status-icon.solved {
+            background: #22c55e;
+            border-color: #22c55e;
+            color: white;
+        }
+
+        .puzzle-title {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .rating {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .rating.easy { color: var(--difficulty-easy); }
+        .rating.medium { color: var(--difficulty-medium); }
+        .rating.hard { color: var(--difficulty-hard); }
+
+        .acceptance {
+            color: var(--text-secondary);
+        }
+
+        .difficulty-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .difficulty-badge.easy {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--difficulty-easy);
+        }
+
+        .difficulty-badge.medium {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--difficulty-medium);
+        }
+
+        .difficulty-badge.hard {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--difficulty-hard);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .pagination-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .pagination-select {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-card);
+            cursor: pointer;
+        }
+
+        .page-numbers {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .page-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .page-btn:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        .page-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .sidebar-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .sidebar-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Rating Range Slider */
+        .range-inputs {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            align-items: center;
+        }
+
+        .range-input {
+            padding: 0.625rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .range-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .range-label {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .slider-container {
+            margin: 1.5rem 0 1rem;
+            position: relative;
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .slider-track {
+            position: absolute;
+            height: 100%;
+            background: var(--primary-blue);
+            border-radius: 3px;
+            transition: all 0.1s ease;
+        }
+
+        .slider-thumb {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border: 3px solid var(--primary-blue);
+            border-radius: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            cursor: grab;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.1s ease;
+        }
+
+        .slider-thumb:active {
+            cursor: grabbing;
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+
+        .slider-thumb:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        /* Themes */
+        .theme-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .theme-pill {
+            padding: 0.5rem 1rem;
+            background: var(--bg-hover);
+            border: 1.5px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .theme-pill:hover {
+            background: var(--bg-card);
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+            transform: translateY(-1px);
+        }
+
+        .theme-pill.selected {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .theme-pill.selected:hover {
+            background: var(--primary-hover);
+        }
+
+        .selected-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-left: 0.5rem;
+            padding: 0 0.4rem;
+        }
+
+        .show-more {
+            color: var(--primary-blue);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .show-more:hover {
+            text-decoration: underline;
+        }
+
+        .difficulty-filters {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .difficulty-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .difficulty-option:hover {
+            background: var(--bg-hover);
+        }
+
+        .difficulty-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .difficulty-option.selected .difficulty-checkbox {
+            background: var(--primary-blue);
+            border-color: var(--primary-blue);
+        }
+
+        .difficulty-option.selected .difficulty-checkbox::after {
+            content: '✓';
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .difficulty-label {
+            flex: 1;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .apply-filters-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .apply-filters-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .apply-filters-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .filter-modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 1rem;
+            position: sticky;
+            bottom: 0;
+            background: var(--bg-card);
+        }
+
+        .reset-all-btn {
+            flex: 1;
+            padding: 1rem;
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .reset-all-btn:hover {
+            background: var(--bg-card);
+            border-color: var(--text-secondary);
+        }
+
+        @media (max-width: 1024px) {
+            .filter-modal-content {
+                width: 95%;
+                max-height: 90vh;
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-modal-body {
+                padding: 1.5rem;
+            }
+        }
+
+/* PASTEL THEME INJECTED */
+/* ========================================
+   CHESSCODE PASTEL CALM / COZY CAFÉ THEME
+   ======================================== */
+
+/* Import Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap');
+
+/* ========================================
+   COLOR PALETTE
+   ======================================== */
+:root {
+    /* Primary Colors */
+    --primary-peach: #F2A7A0;
+    --primary-peach-hover: #E89088;
+    --secondary-sage: #A8CBB7;
+    --secondary-sage-hover: #96B9A5;
+
+    /* Backgrounds */
+    --bg-cream: #FFF7F0;
+    --bg-warm: #FDF3EA;
+    --bg-card: #FEFBF8;
+    --bg-hover: #F9F0E8;
+
+    /* Text Colors */
+    --text-primary: #4A3F3A;
+    --text-secondary: #8B7D77;
+    --text-tertiary: #B5A9A3;
+
+    /* UI Elements */
+    --border-color: #E8DDD5;
+    --shadow-soft: 0 2px 8px rgba(74, 63, 58, 0.08);
+    --shadow-card: 0 4px 16px rgba(74, 63, 58, 0.1);
+    --shadow-hover: 0 6px 24px rgba(74, 63, 58, 0.12);
+
+    /* Semantic Colors */
+    --difficulty-easy: #A8CBB7;
+    --difficulty-medium: #F2C078;
+    --difficulty-hard: #E89088;
+    --success-green: #A8CBB7;
+    --error-red: #E89088;
+
+    /* Accents */
+    --premium-gold: #E8B65F;
+    --accent-lavender: #C9B8D8;
+    --accent-sky: #B8D8E8;
+    --accent-warm: #F5D4B8;
+
+    /* Chess Board */
+    --board-light: #F6EDE4;
+    --board-dark: #D9C2AD;
+    --highlight-yellow: #FFE9CC;
+}
+
+/* ========================================
+   BASE STYLES
+   ======================================== */
+body {
+    font-family: 'Quicksand', 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    background: var(--bg-cream) !important;
+    color: var(--text-primary) !important;
+    line-height: 1.7 !important;
+}
+
+/* ========================================
+   TYPOGRAPHY
+   ======================================== */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Nunito', 'Quicksand', sans-serif;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+button, .btn, .btn-primary, .btn-secondary {
+    border-radius: 20px !important;
+    font-weight: 700 !important;
+    transition: all 0.3s ease !important;
+    letter-spacing: 0.02em;
+    box-shadow: var(--shadow-soft) !important;
+}
+
+.btn-primary, button[class*="primary"], .solve-now-btn, .apply-filters-btn, .submit-btn {
+    background: linear-gradient(135deg, var(--primary-peach) 0%, #F5B5AE 100%) !important;
+    color: white !important;
+    border: none !important;
+}
+
+.btn-primary:hover, button[class*="primary"]:hover, .solve-now-btn:hover, .apply-filters-btn:hover, .submit-btn:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 6px 24px rgba(242, 167, 160, 0.4) !important;
+}
+
+.btn-secondary, .hint-btn, .reset-all-btn {
+    background: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+    border: 1.5px solid var(--border-color) !important;
+}
+
+.btn-secondary:hover, .hint-btn:hover, .reset-all-btn:hover {
+    background: var(--bg-hover) !important;
+    border-color: var(--primary-peach) !important;
+    color: var(--primary-peach) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* ========================================
+   CARDS & PANELS
+   ======================================== */
+.card, .filter-card, .sidebar-card, .puzzle-table, .sidebar-section,
+.puzzle-info, .ai-consultant, .competition-card, .leaderboard,
+.board-wrapper, .board-header, .board-footer {
+    background: var(--bg-card) !important;
+    border-radius: 16px !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: var(--shadow-card) !important;
+}
+
+.card:hover, .competition-card:hover {
+    box-shadow: var(--shadow-hover) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* ========================================
+   INPUTS & FORMS
+   ======================================== */
+input, textarea, select, .search-input, .range-input, .chat-input input {
+    background: var(--bg-warm) !important;
+    border: 1.5px solid var(--border-color) !important;
+    border-radius: 12px !important;
+    color: var(--text-primary) !important;
+    transition: all 0.2s ease !important;
+}
+
+input:focus, textarea:focus, select:focus, .search-input:focus, .chat-input input:focus {
+    border-color: var(--primary-peach) !important;
+    box-shadow: 0 0 0 3px rgba(242, 167, 160, 0.15) !important;
+    background: var(--bg-card) !important;
+}
+
+input::placeholder, textarea::placeholder {
+    color: var(--text-tertiary) !important;
+}
+
+/* ========================================
+   BADGES & PILLS
+   ======================================== */
+.difficulty-badge, .filter-tag, .theme-pill, .live-badge, .attempt-status {
+    border-radius: 16px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+
+.difficulty-badge.easy, .stat-value, .rating.easy {
+    color: var(--difficulty-easy) !important;
+    background: rgba(168, 203, 183, 0.15) !important;
+}
+
+.difficulty-badge.medium, .rating.medium {
+    color: var(--difficulty-medium) !important;
+    background: rgba(242, 192, 120, 0.15) !important;
+}
+
+.difficulty-badge.hard, .rating.hard {
+    color: var(--difficulty-hard) !important;
+    background: rgba(232, 144, 136, 0.15) !important;
+}
+
+.theme-pill {
+    background: var(--bg-hover) !important;
+    border: 1.5px solid var(--border-color) !important;
+}
+
+.theme-pill:hover {
+    background: var(--bg-card) !important;
+    border-color: var(--primary-peach) !important;
+    color: var(--primary-peach) !important;
+    transform: translateY(-1px) scale(1.02) !important;
+}
+
+.theme-pill.selected {
+    background: linear-gradient(135deg, var(--primary-peach) 0%, #F5B5AE 100%) !important;
+    color: white !important;
+    border-color: var(--primary-peach) !important;
+}
+
+.filter-tag.active {
+    background: var(--primary-peach) !important;
+    color: white !important;
+}
+
+/* ========================================
+   CHESS BOARD
+   ======================================== */
+.chessboard {
+    border: 3px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    box-shadow: var(--shadow-card) !important;
+}
+
+.square.light {
+    background: var(--board-light) !important;
+}
+
+.square.dark {
+    background: var(--board-dark) !important;
+}
+
+.square.highlight {
+    background: var(--highlight-yellow) !important;
+    box-shadow: inset 0 0 0 2px var(--primary-peach) !important;
+}
+
+.square:hover {
+    filter: brightness(0.97) !important;
+}
+
+.piece {
+    filter: drop-shadow(0 1px 2px rgba(74, 63, 58, 0.2));
+}
+
+/* ========================================
+   TABLE STYLING
+   ======================================== */
+table thead {
+    background: var(--bg-hover) !important;
+}
+
+table th {
+    color: var(--text-secondary) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+table tbody tr {
+    border-bottom: 1px solid var(--border-color) !important;
+    transition: all 0.2s ease !important;
+}
+
+table tbody tr:hover {
+    background: var(--bg-hover) !important;
+}
+
+/* ========================================
+   STATUS INDICATORS
+   ======================================== */
+.status-icon.solved {
+    background: var(--success-green) !important;
+    border-color: var(--success-green) !important;
+    box-shadow: 0 2px 8px rgba(168, 203, 183, 0.3) !important;
+}
+
+.attempt-status.solved {
+    color: var(--success-green) !important;
+    background: rgba(168, 203, 183, 0.15) !important;
+}
+
+.attempt-status.unsolved {
+    color: var(--text-secondary) !important;
+    background: var(--bg-hover) !important;
+}
+
+/* ========================================
+   SLIDER & RANGE INPUTS
+   ======================================== */
+.slider-track {
+    background: var(--primary-peach) !important;
+    border-radius: 4px !important;
+}
+
+.slider-thumb {
+    background: white !important;
+    border: 3px solid var(--primary-peach) !important;
+    box-shadow: var(--shadow-card) !important;
+}
+
+.slider-thumb:hover {
+    transform: translate(-50%, -50%) scale(1.15) !important;
+    box-shadow: var(--shadow-hover) !important;
+}
+
+.slider-container {
+    background: var(--border-color) !important;
+    border-radius: 4px !important;
+}
+
+/* ========================================
+   MODAL & OVERLAYS
+   ======================================== */
+.filter-modal {
+    background: rgba(74, 63, 58, 0.4) !important;
+    backdrop-filter: blur(4px);
+}
+
+.filter-modal-content {
+    background: var(--bg-card) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 20px 50px rgba(74, 63, 58, 0.2) !important;
+}
+
+.filter-modal-header, .filter-modal-footer {
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* ========================================
+   CHAT & MESSAGES
+   ======================================== */
+.message.ai .message-bubble {
+    background: var(--bg-hover) !important;
+    color: var(--text-primary) !important;
+    border-radius: 16px 16px 16px 4px !important;
+    box-shadow: var(--shadow-soft) !important;
+}
+
+.message.user .message-bubble {
+    background: linear-gradient(135deg, var(--primary-peach) 0%, #F5B5AE 100%) !important;
+    color: white !important;
+    border-radius: 16px 16px 4px 16px !important;
+    box-shadow: var(--shadow-soft) !important;
+}
+
+.message-avatar.ai {
+    background: linear-gradient(135deg, var(--secondary-sage) 0%, #B8CFC1 100%) !important;
+}
+
+.message-avatar.user {
+    background: linear-gradient(135deg, var(--accent-lavender) 0%, var(--accent-sky) 100%) !important;
+}
+
+/* ========================================
+   ICON BUTTONS
+   ======================================== */
+.icon-btn, .control-btn, .close-modal-btn {
+    border-radius: 12px !important;
+    transition: all 0.2s ease !important;
+}
+
+.icon-btn:hover, .control-btn:hover, .close-modal-btn:hover {
+    background: var(--bg-hover) !important;
+    color: var(--primary-peach) !important;
+    transform: scale(1.05) !important;
+}
+
+/* ========================================
+   TABS & NAVIGATION
+   ======================================== */
+.tab, .tab-nav-item {
+    color: var(--text-secondary) !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+
+.tab.active, .tab-nav-item.active {
+    color: var(--primary-peach) !important;
+    border-bottom-color: var(--primary-peach) !important;
+}
+
+.tab:hover, .tab-nav-item:hover {
+    color: var(--text-primary) !important;
+}
+
+/* ========================================
+   SPECIALTY COMPONENTS
+   ======================================== */
+
+/* Premium Badge */
+.premium-badge {
+    background: linear-gradient(135deg, #FFF4E6 0%, #FFE9CC 100%) !important;
+    color: #8B6914 !important;
+    border-radius: 20px !important;
+    box-shadow: var(--shadow-soft) !important;
+}
+
+/* Live Badge */
+.live-badge {
+    background: var(--error-red) !important;
+    border-radius: 20px !important;
+}
+
+/* Progress Indicators */
+.progress-ring-fill {
+    stroke: var(--primary-peach) !important;
+}
+
+.progress-number {
+    color: var(--text-primary) !important;
+}
+
+/* Difficulty Checkboxes */
+.difficulty-option.selected .difficulty-checkbox {
+    background: var(--primary-peach) !important;
+    border-color: var(--primary-peach) !important;
+}
+
+/* ========================================
+   ANIMATIONS & MICRO-INTERACTIONS
+   ======================================== */
+* {
+    transition-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1) !important;
+}
+
+/* Gentle hover lift */
+.card, .competition-card, .attempt-item, .puzzle-table tbody tr {
+    transition: all 0.3s ease !important;
+}
+
+/* Soft glow on focus */
+*:focus-visible {
+    outline: 2px solid var(--primary-peach) !important;
+    outline-offset: 2px;
+}
+
+/* ========================================
+   SPACING ADJUSTMENTS
+   ======================================== */
+.container {
+    padding: 2.5rem !important;
+}
+
+/* Increase line height for readability */
+p, li, td, .message-bubble {
+    line-height: 1.7 !important;
+}
+
+/* More generous padding on interactive elements */
+button, .btn, input, select, textarea {
+    padding: 0.75rem 1.25rem !important;
+}
+
+/* ========================================
+   ACCESSIBILITY
+   ======================================== */
+
+/* Ensure sufficient contrast */
+.text-primary {
+    color: var(--text-primary) !important;
+}
+
+.text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+/* Clear focus indicators */
+button:focus-visible, input:focus-visible, a:focus-visible {
+    outline: 2px solid var(--primary-peach) !important;
+    outline-offset: 2px;
+}
+
+/* ========================================
+   RESPONSIVE ADJUSTMENTS
+   ======================================== */
+@media (max-width: 768px) {
+    .container {
+        padding: 1.5rem !important;
+    }
+
+    h1 {
+        font-size: 1.75rem !important;
+    }
+
+    h2 {
+        font-size: 1.5rem !important;
+    }
+}
+
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <a href="#" class="logo">
+            <div class="logo-icon">♔</div>
+            ChessCode
+        </a>
+        <nav class="nav">
+            <a href="#" class="nav-link active">Puzzles</a>
+            <a href="#" class="nav-link">Learn</a>
+            <a href="#" class="nav-link">Compete</a>
+            <a href="#" class="nav-link">Discuss</a>
+        </nav>
+        <div class="header-actions">
+            <button class="icon-btn">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="10" cy="10" r="8"/>
+                    <path d="M14.5 14.5l4 4"/>
+                </svg>
+            </button>
+            <div class="premium-badge">
+                <span>👑</span> PREMIUM
+            </div>
+            <button class="icon-btn">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10 5v7m0 0l4-3m-4 3L6 9m11 8H3"/>
+                </svg>
+            </button>
+            <div class="avatar"></div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Container -->
+<div class="container">
+    <!-- Daily Challenge -->
+    <div class="daily-challenge">
+        <div class="challenge-pattern"></div>
+        <div class="challenge-content">
+            <h2>Daily Puzzle Challenge</h2>
+            <p>Master the "Greek Gift" sacrifice today!</p>
+        </div>
+        <button class="solve-now-btn">Solve Now</button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Filter Widget -->
+        <div class="filter-widget-container">
+            <div class="filter-trigger" onclick="openFilterModal()">
+                <div class="filter-trigger-left">
+                    <div class="filter-icon">🎯</div>
+                    <div class="filter-summary">
+                        <div class="filter-title">Filters</div>
+                        <div class="filter-tags" id="filterSummary">
+                            <span class="filter-tag">All Puzzles</span>
+                        </div>
+                    </div>
+                </div>
+                <svg class="expand-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 9l6 6 6-6"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Filter Modal -->
+        <div class="filter-modal" id="filterModal">
+            <div class="filter-modal-content" onclick="event.stopPropagation()">
+                <div class="filter-modal-header">
+                    <div class="filter-modal-title">Filter Puzzles</div>
+                    <button class="close-modal-btn" onclick="closeFilterModal()">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 6l12 12M18 6L6 18"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="filter-modal-body">
+                    <!-- Search -->
+                    <div class="search-bar">
+                        <svg class="search-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="8" cy="8" r="6"/>
+                            <path d="M12.5 12.5l4 4"/>
+                        </svg>
+                        <input type="text" class="search-input" placeholder="Search puzzles..." id="searchInput">
+                    </div>
+
+                    <div class="filter-grid">
+                        <!-- Rating Range -->
+                        <div class="filter-section">
+                            <div class="filter-section-title">
+                                Rating Range
+                                <button class="clear-btn" onclick="resetRatingRange()">Reset</button>
+                            </div>
+                            <div class="slider-container" id="sliderContainer">
+                                <div class="slider-track" id="sliderTrack"></div>
+                                <div class="slider-thumb" id="minThumb"></div>
+                                <div class="slider-thumb" id="maxThumb"></div>
+                            </div>
+                            <div class="range-inputs">
+                                <div>
+                                    <div class="range-label">Min</div>
+                                    <input type="number" class="range-input" id="minInput" value="800" min="400" max="2800" step="50">
+                                </div>
+                                <span style="color: var(--text-tertiary);">—</span>
+                                <div>
+                                    <div class="range-label">Max</div>
+                                    <input type="number" class="range-input" id="maxInput" value="2400" min="400" max="2800" step="50">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Difficulty -->
+                        <div class="filter-section">
+                            <div class="filter-section-title">
+                                Difficulty
+                                <button class="clear-btn" onclick="clearDifficulty()">Clear</button>
+                            </div>
+                            <div class="difficulty-filters">
+                                <div class="difficulty-option" data-difficulty="easy">
+                                    <div class="difficulty-checkbox"></div>
+                                    <div class="difficulty-label">Easy</div>
+                                    <div style="color: var(--difficulty-easy); font-size: 0.85rem; font-weight: 600;">800-1200</div>
+                                </div>
+                                <div class="difficulty-option" data-difficulty="medium">
+                                    <div class="difficulty-checkbox"></div>
+                                    <div class="difficulty-label">Medium</div>
+                                    <div style="color: var(--difficulty-medium); font-size: 0.85rem; font-weight: 600;">1200-1800</div>
+                                </div>
+                                <div class="difficulty-option" data-difficulty="hard">
+                                    <div class="difficulty-checkbox"></div>
+                                    <div class="difficulty-label">Hard</div>
+                                    <div style="color: var(--difficulty-hard); font-size: 0.85rem; font-weight: 600;">1800+</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Themes (Full Width) -->
+                    <div class="filter-section" style="margin-top: 1.5rem;">
+                        <div class="filter-section-title">
+                            <span>Themes <span id="themeCount" class="selected-count" style="display: none;">0</span></span>
+                            <button class="clear-btn" onclick="clearThemes()">Clear All</button>
+                        </div>
+                        <div class="theme-pills" id="themePills">
+                            <div class="theme-pill" data-theme="pin">Pin</div>
+                            <div class="theme-pill" data-theme="fork">Fork</div>
+                            <div class="theme-pill" data-theme="skewer">Skewer</div>
+                            <div class="theme-pill" data-theme="discovered-attack">Discovered Attack</div>
+                            <div class="theme-pill" data-theme="endgame">Endgame</div>
+                            <div class="theme-pill" data-theme="opening">Opening</div>
+                            <div class="theme-pill" data-theme="pawn-structure">Pawn Structure</div>
+                            <div class="theme-pill" data-theme="zugzwang">Zugzwang</div>
+                            <div class="theme-pill" data-theme="checkmate">Checkmate Pattern</div>
+                            <div class="theme-pill" data-theme="king-safety">King Safety</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-modal-footer">
+                    <button class="reset-all-btn" onclick="resetAllFilters()">Reset All</button>
+                    <button class="apply-filters-btn" onclick="applyFilters()">Apply Filters</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Puzzle List -->
+        <div class="puzzle-table">
+            <table>
+                <thead>
+                <tr>
+                    <th>STATUS</th>
+                    <th>TITLE</th>
+                    <th>RATING</th>
+                    <th>ACCEPTANCE</th>
+                    <th>DIFFICULTY</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="status-cell">
+                        <div class="status-icon solved">✓</div>
+                    </td>
+                    <td><div class="puzzle-title">1. Smothered Mate in Corner</div></td>
+                    <td><span class="rating hard">1850</span></td>
+                    <td class="acceptance">45.2%</td>
+                    <td><span class="difficulty-badge hard">Hard</span></td>
+                </tr>
+                <tr>
+                    <td class="status-cell">
+                        <div class="status-icon"></div>
+                    </td>
+                    <td><div class="puzzle-title">2. Queen Sacrifice on h7</div></td>
+                    <td><span class="rating hard">2100</span></td>
+                    <td class="acceptance">32.1%</td>
+                    <td><span class="difficulty-badge hard">Hard</span></td>
+                </tr>
+                <tr>
+                    <td class="status-cell">
+                        <div class="status-icon solved">✓</div>
+                    </td>
+                    <td><div class="puzzle-title">3. Back Rank Mate Pattern</div></td>
+                    <td><span class="rating easy">800</span></td>
+                    <td class="acceptance">88.5%</td>
+                    <td><span class="difficulty-badge easy">Easy</span></td>
+                </tr>
+                <tr>
+                    <td class="status-cell">
+                        <div class="status-icon"></div>
+                    </td>
+                    <td><div class="puzzle-title">4. Pin Against King</div></td>
+                    <td><span class="rating medium">1400</span></td>
+                    <td class="acceptance">62.3%</td>
+                    <td><span class="difficulty-badge medium">Medium</span></td>
+                </tr>
+                <tr>
+                    <td class="status-cell">
+                        <div class="status-icon"></div>
+                    </td>
+                    <td><div class="puzzle-title">5. Discovered Attack Tactics</div></td>
+                    <td><span class="rating medium">1550</span></td>
+                    <td class="acceptance">55.8%</td>
+                    <td><span class="difficulty-badge medium">Medium</span></td>
+                </tr>
+                <tr>
+                    <td class="status-cell">
+                        <div class="status-icon"></div>
+                    </td>
+                    <td><div class="puzzle-title">6. Zugzwang in Pawn Endgame</div></td>
+                    <td><span class="rating hard">2300</span></td>
+                    <td class="acceptance">28.4%</td>
+                    <td><span class="difficulty-badge hard">Hard</span></td>
+                </tr>
+                <tr>
+                    <td class="status-cell">
+                        <div class="status-icon solved">✓</div>
+                    </td>
+                    <td><div class="puzzle-title">7. Knight Fork Double Attack</div></td>
+                    <td><span class="rating easy">950</span></td>
+                    <td class="acceptance">76.9%</td>
+                    <td><span class="difficulty-badge easy">Easy</span></td>
+                </tr>
+                <tr>
+                    <td class="status-cell">
+                        <div class="status-icon"></div>
+                    </td>
+                    <td><div class="puzzle-title">8. Removing the Defender</div></td>
+                    <td><span class="rating medium">1250</span></td>
+                    <td class="acceptance">68.1%</td>
+                    <td><span class="difficulty-badge medium">Medium</span></td>
+                </tr>
+                <tr>
+                    <td class="status-cell">
+                        <div class="status-icon"></div>
+                    </td>
+                    <td><div class="puzzle-title">9. Greek Gift Sacrifice</div></td>
+                    <td><span class="rating hard">1950</span></td>
+                    <td class="acceptance">38.7%</td>
+                    <td><span class="difficulty-badge hard">Hard</span></td>
+                </tr>
+                <tr>
+                    <td class="status-cell">
+                        <div class="status-icon solved">✓</div>
+                    </td>
+                    <td><div class="puzzle-title">10. Skewer Tactics</div></td>
+                    <td><span class="rating easy">1100</span></td>
+                    <td class="acceptance">72.4%</td>
+                    <td><span class="difficulty-badge easy">Easy</span></td>
+                </tr>
+                <tr>
+                    <td class="status-cell">
+                        <div class="status-icon"></div>
+                    </td>
+                    <td><div class="puzzle-title">11. Interference Strategy</div></td>
+                    <td><span class="rating hard">2050</span></td>
+                    <td class="acceptance">35.2%</td>
+                    <td><span class="difficulty-badge hard">Hard</span></td>
+                </tr>
+                <tr>
+                    <td class="status-cell">
+                        <div class="status-icon"></div>
+                    </td>
+                    <td><div class="puzzle-title">12. Windmill Tactic</div></td>
+                    <td><span class="rating medium">1750</span></td>
+                    <td class="acceptance">48.9%</td>
+                    <td><span class="difficulty-badge medium">Medium</span></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <div class="pagination-info">
+                    Rows per page:
+                    <select class="pagination-select">
+                        <option>20</option>
+                        <option>50</option>
+                        <option>100</option>
+                    </select>
+                </div>
+                <div class="page-numbers">
+                    <button class="page-btn">‹</button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <button class="page-btn">...</button>
+                    <button class="page-btn">›</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+    // Modal Controls
+    const filterModal = document.getElementById('filterModal');
+
+    function openFilterModal() {
+        filterModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeFilterModal() {
+        filterModal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Close modal when clicking outside
+    filterModal.addEventListener('click', (e) => {
+        if (e.target === filterModal) {
+            closeFilterModal();
+        }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && filterModal.classList.contains('active')) {
+            closeFilterModal();
+        }
+    });
+
+    // Update Filter Summary
+    function updateFilterSummary() {
+        const summary = document.getElementById('filterSummary');
+        const tags = [];
+
+        // Rating range
+        if (filterState.minRating !== 800 || filterState.maxRating !== 2400) {
+            tags.push(`${filterState.minRating}-${filterState.maxRating}`);
+        }
+
+        // Difficulties
+        filterState.difficulties.forEach(diff => {
+            tags.push(diff.charAt(0).toUpperCase() + diff.slice(1));
+        });
+
+        // Themes
+        if (filterState.themes.length > 0) {
+            if (filterState.themes.length === 1) {
+                tags.push(filterState.themes[0].replace(/-/g, ' '));
+            } else {
+                tags.push(`${filterState.themes.length} Themes`);
+            }
+        }
+
+        // Render tags
+        if (tags.length === 0) {
+            summary.innerHTML = '<span class="filter-tag">All Puzzles</span>';
+        } else {
+            summary.innerHTML = tags.map(tag =>
+                `<span class="filter-tag active">${tag}</span>`
+            ).join('');
+        }
+    }
+
+    // Filter State
+    const filterState = {
+        minRating: 800,
+        maxRating: 2400,
+        difficulties: [],
+        themes: [],
+        searchQuery: ''
+    };
+
+    // Rating Range Slider
+    const sliderContainer = document.getElementById('sliderContainer');
+    const sliderTrack = document.getElementById('sliderTrack');
+    const minThumb = document.getElementById('minThumb');
+    const maxThumb = document.getElementById('maxThumb');
+    const minInput = document.getElementById('minInput');
+    const maxInput = document.getElementById('maxInput');
+
+    const MIN_RATING = 400;
+    const MAX_RATING = 2800;
+
+    let isDragging = null;
+
+    function ratingToPercent(rating) {
+        return ((rating - MIN_RATING) / (MAX_RATING - MIN_RATING)) * 100;
+    }
+
+    function percentToRating(percent) {
+        return Math.round(MIN_RATING + (percent / 100) * (MAX_RATING - MIN_RATING));
+    }
+
+    function updateSlider() {
+        const minPercent = ratingToPercent(filterState.minRating);
+        const maxPercent = ratingToPercent(filterState.maxRating);
+
+        minThumb.style.left = minPercent + '%';
+        maxThumb.style.left = maxPercent + '%';
+        sliderTrack.style.left = minPercent + '%';
+        sliderTrack.style.width = (maxPercent - minPercent) + '%';
+
+        minInput.value = filterState.minRating;
+        maxInput.value = filterState.maxRating;
+    }
+
+    function handleMouseDown(e, thumb) {
+        isDragging = thumb;
+        e.preventDefault();
+    }
+
+    function handleMouseMove(e) {
+        if (!isDragging) return;
+
+        const rect = sliderContainer.getBoundingClientRect();
+        let percent = ((e.clientX - rect.left) / rect.width) * 100;
+        percent = Math.max(0, Math.min(100, percent));
+
+        const rating = Math.round(percentToRating(percent) / 50) * 50;
+
+        if (isDragging === 'min') {
+            filterState.minRating = Math.min(rating, filterState.maxRating - 100);
+        } else {
+            filterState.maxRating = Math.max(rating, filterState.minRating + 100);
+        }
+
+        updateSlider();
+    }
+
+    function handleMouseUp() {
+        isDragging = null;
+    }
+
+    minThumb.addEventListener('mousedown', (e) => handleMouseDown(e, 'min'));
+    maxThumb.addEventListener('mousedown', (e) => handleMouseDown(e, 'max'));
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    minInput.addEventListener('change', (e) => {
+        filterState.minRating = Math.max(MIN_RATING, Math.min(parseInt(e.target.value), filterState.maxRating - 100));
+        updateSlider();
+    });
+
+    maxInput.addEventListener('change', (e) => {
+        filterState.maxRating = Math.min(MAX_RATING, Math.max(parseInt(e.target.value), filterState.minRating + 100));
+        updateSlider();
+    });
+
+    function resetRatingRange() {
+        filterState.minRating = 800;
+        filterState.maxRating = 2400;
+        updateSlider();
+        updateFilterSummary();
+    }
+
+    // Difficulty Filters
+    document.querySelectorAll('.difficulty-option').forEach(option => {
+        option.addEventListener('click', () => {
+            const difficulty = option.dataset.difficulty;
+            const isSelected = option.classList.contains('selected');
+
+            if (isSelected) {
+                option.classList.remove('selected');
+                filterState.difficulties = filterState.difficulties.filter(d => d !== difficulty);
+            } else {
+                option.classList.add('selected');
+                filterState.difficulties.push(difficulty);
+            }
+            updateFilterSummary();
+        });
+    });
+
+    function clearDifficulty() {
+        document.querySelectorAll('.difficulty-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+        filterState.difficulties = [];
+        updateFilterSummary();
+    }
+
+    // Theme Filters
+    const themePills = document.querySelectorAll('.theme-pill');
+    const themeCount = document.getElementById('themeCount');
+
+    themePills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            const theme = pill.dataset.theme;
+            const isSelected = pill.classList.contains('selected');
+
+            if (isSelected) {
+                pill.classList.remove('selected');
+                filterState.themes = filterState.themes.filter(t => t !== theme);
+            } else {
+                pill.classList.add('selected');
+                filterState.themes.push(theme);
+            }
+
+            updateThemeCount();
+        });
+    });
+
+    function updateThemeCount() {
+        const count = filterState.themes.length;
+        if (count > 0) {
+            themeCount.textContent = count;
+            themeCount.style.display = 'inline-flex';
+        } else {
+            themeCount.style.display = 'none';
+        }
+        updateFilterSummary();
+    }
+
+    function clearThemes() {
+        themePills.forEach(pill => pill.classList.remove('selected'));
+        filterState.themes = [];
+        updateThemeCount();
+    }
+
+    function resetAllFilters() {
+        resetRatingRange();
+        clearDifficulty();
+        clearThemes();
+        document.getElementById('searchInput').value = '';
+        filterState.searchQuery = '';
+        updateFilterSummary();
+    }
+
+    // Apply Filters
+    function applyFilters() {
+        filterState.searchQuery = document.getElementById('searchInput').value;
+        console.log('Applying filters:', filterState);
+        // Here you would make your backend API call with filterState
+        // Example:
+        // fetch('/api/puzzles', {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify(filterState)
+        // }).then(response => response.json())
+        //   .then(data => updatePuzzleList(data));
+
+        updateFilterSummary();
+        closeFilterModal();
+    }
+
+    // Initialize slider
+    updateSlider();
+    // Add row click handlers
+    document.querySelectorAll('tbody tr').forEach(row => {
+        row.addEventListener('click', () => {
+            window.location.href = 'puzzle-solver.html';
+        });
+    });
+</script>
+</body>
+</html>
