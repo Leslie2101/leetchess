@@ -13,8 +13,9 @@ function App() {
     <>
     <Router>
       <Navbar/>
+      
       <Routes>
-        <Route exact path = "/" element={<PuzzleListPage/>} />
+        <Route exact path= "/" element={<PuzzleListPage/>} />
       </Routes>
 
     </Router>

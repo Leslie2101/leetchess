@@ -638,6 +638,32 @@
             color: var(--difficulty-hard);
         }
 
+        /* Theme Tags in Table */
+        .theme-tags {
+            display: flex;
+            gap: 0.375rem;
+            flex-wrap: wrap;
+        }
+
+        .theme-tag-small {
+            padding: 0.25rem 0.625rem;
+            background: var(--bg-hover);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            white-space: nowrap;
+            border: 1px solid var(--border-color);
+        }
+
+        .theme-tag-small:hover {
+            background: var(--primary-peach);
+            color: white;
+            border-color: var(--primary-peach);
+            transform: translateY(-1px);
+            cursor: pointer;
+        }
+
         /* Pagination */
         .pagination {
             display: flex;
@@ -970,7 +996,7 @@
                 padding: 1.5rem;
             }
         }
-
+    
 /* PASTEL THEME INJECTED */
 /* ========================================
    CHESSCODE PASTEL CALM / COZY CAFÉ THEME
@@ -988,37 +1014,37 @@
     --primary-peach-hover: #E89088;
     --secondary-sage: #A8CBB7;
     --secondary-sage-hover: #96B9A5;
-
+    
     /* Backgrounds */
     --bg-cream: #FFF7F0;
     --bg-warm: #FDF3EA;
     --bg-card: #FEFBF8;
     --bg-hover: #F9F0E8;
-
+    
     /* Text Colors */
     --text-primary: #4A3F3A;
     --text-secondary: #8B7D77;
     --text-tertiary: #B5A9A3;
-
+    
     /* UI Elements */
     --border-color: #E8DDD5;
     --shadow-soft: 0 2px 8px rgba(74, 63, 58, 0.08);
     --shadow-card: 0 4px 16px rgba(74, 63, 58, 0.1);
     --shadow-hover: 0 6px 24px rgba(74, 63, 58, 0.12);
-
+    
     /* Semantic Colors */
     --difficulty-easy: #A8CBB7;
     --difficulty-medium: #F2C078;
     --difficulty-hard: #E89088;
     --success-green: #A8CBB7;
     --error-red: #E89088;
-
+    
     /* Accents */
     --premium-gold: #E8B65F;
     --accent-lavender: #C9B8D8;
     --accent-sky: #B8D8E8;
     --accent-warm: #F5D4B8;
-
+    
     /* Chess Board */
     --board-light: #F6EDE4;
     --board-dark: #D9C2AD;
@@ -1430,584 +1456,666 @@ button:focus-visible, input:focus-visible, a:focus-visible {
     .container {
         padding: 1.5rem !important;
     }
-
+    
     h1 {
         font-size: 1.75rem !important;
     }
-
+    
     h2 {
         font-size: 1.5rem !important;
     }
 }
 
-    </style>
+</style>
 </head>
 <body>
-<!-- Header -->
-<header class="header">
-    <div class="header-content">
-        <a href="#" class="logo">
-            <div class="logo-icon">♔</div>
-            ChessCode
-        </a>
-        <nav class="nav">
-            <a href="#" class="nav-link active">Puzzles</a>
-            <a href="#" class="nav-link">Learn</a>
-            <a href="#" class="nav-link">Compete</a>
-            <a href="#" class="nav-link">Discuss</a>
-        </nav>
-        <div class="header-actions">
-            <button class="icon-btn">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="10" cy="10" r="8"/>
-                    <path d="M14.5 14.5l4 4"/>
-                </svg>
-            </button>
-            <div class="premium-badge">
-                <span>👑</span> PREMIUM
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="#" class="logo">
+                <div class="logo-icon">♔</div>
+                ChessCode
+            </a>
+            <nav class="nav">
+                <a href="#" class="nav-link active">Puzzles</a>
+                <a href="#" class="nav-link">Learn</a>
+                <a href="#" class="nav-link">Compete</a>
+                <a href="#" class="nav-link">Discuss</a>
+            </nav>
+            <div class="header-actions">
+                <button class="icon-btn">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="10" cy="10" r="8"/>
+                        <path d="M14.5 14.5l4 4"/>
+                    </svg>
+                </button>
+                <div class="premium-badge">
+                    <span>👑</span> PREMIUM
+                </div>
+                <button class="icon-btn">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10 5v7m0 0l4-3m-4 3L6 9m11 8H3"/>
+                    </svg>
+                </button>
+                <div class="avatar"></div>
             </div>
-            <button class="icon-btn">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M10 5v7m0 0l4-3m-4 3L6 9m11 8H3"/>
-                </svg>
-            </button>
-            <div class="avatar"></div>
         </div>
-    </div>
-</header>
+    </header>
 
-<!-- Main Container -->
-<div class="container">
-    <!-- Daily Challenge -->
-    <div class="daily-challenge">
-        <div class="challenge-pattern"></div>
-        <div class="challenge-content">
-            <h2>Daily Puzzle Challenge</h2>
-            <p>Master the "Greek Gift" sacrifice today!</p>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Daily Challenge -->
+        <div class="daily-challenge">
+            <div class="challenge-pattern"></div>
+            <div class="challenge-content">
+                <h2>Daily Puzzle Challenge</h2>
+                <p>Master the "Greek Gift" sacrifice today!</p>
+            </div>
+            <button class="solve-now-btn">Solve Now</button>
         </div>
-        <button class="solve-now-btn">Solve Now</button>
-    </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Filter Widget -->
-        <div class="filter-widget-container">
-            <div class="filter-trigger" onclick="openFilterModal()">
-                <div class="filter-trigger-left">
-                    <div class="filter-icon">🎯</div>
-                    <div class="filter-summary">
-                        <div class="filter-title">Filters</div>
-                        <div class="filter-tags" id="filterSummary">
-                            <span class="filter-tag">All Puzzles</span>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Filter Widget -->
+            <div class="filter-widget-container">
+                <div class="filter-trigger" onclick="openFilterModal()">
+                    <div class="filter-trigger-left">
+                        <div class="filter-icon">🎯</div>
+                        <div class="filter-summary">
+                            <div class="filter-title">Filters</div>
+                            <div class="filter-tags" id="filterSummary">
+                                <span class="filter-tag">All Puzzles</span>
+                            </div>
                         </div>
                     </div>
+                    <svg class="expand-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 9l6 6 6-6"/>
+                    </svg>
                 </div>
-                <svg class="expand-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M6 9l6 6 6-6"/>
-                </svg>
             </div>
-        </div>
 
-        <!-- Filter Modal -->
-        <div class="filter-modal" id="filterModal">
-            <div class="filter-modal-content" onclick="event.stopPropagation()">
-                <div class="filter-modal-header">
-                    <div class="filter-modal-title">Filter Puzzles</div>
-                    <button class="close-modal-btn" onclick="closeFilterModal()">
-                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M6 6l12 12M18 6L6 18"/>
-                        </svg>
-                    </button>
-                </div>
-
-                <div class="filter-modal-body">
-                    <!-- Search -->
-                    <div class="search-bar">
-                        <svg class="search-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="8" cy="8" r="6"/>
-                            <path d="M12.5 12.5l4 4"/>
-                        </svg>
-                        <input type="text" class="search-input" placeholder="Search puzzles..." id="searchInput">
+            <!-- Filter Modal -->
+            <div class="filter-modal" id="filterModal">
+                <div class="filter-modal-content" onclick="event.stopPropagation()">
+                    <div class="filter-modal-header">
+                        <div class="filter-modal-title">Filter Puzzles</div>
+                        <button class="close-modal-btn" onclick="closeFilterModal()">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 6l12 12M18 6L6 18"/>
+                            </svg>
+                        </button>
                     </div>
 
-                    <div class="filter-grid">
-                        <!-- Rating Range -->
-                        <div class="filter-section">
+                    <div class="filter-modal-body">
+                        <!-- Search -->
+                        <div class="search-bar">
+                            <svg class="search-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="8" cy="8" r="6"/>
+                                <path d="M12.5 12.5l4 4"/>
+                            </svg>
+                            <input type="text" class="search-input" placeholder="Search puzzles..." id="searchInput">
+                        </div>
+
+                        <div class="filter-grid">
+                            <!-- Rating Range -->
+                            <div class="filter-section">
+                                <div class="filter-section-title">
+                                    Rating Range
+                                    <button class="clear-btn" onclick="resetRatingRange()">Reset</button>
+                                </div>
+                                <div class="slider-container" id="sliderContainer">
+                                    <div class="slider-track" id="sliderTrack"></div>
+                                    <div class="slider-thumb" id="minThumb"></div>
+                                    <div class="slider-thumb" id="maxThumb"></div>
+                                </div>
+                                <div class="range-inputs">
+                                    <div>
+                                        <div class="range-label">Min</div>
+                                        <input type="number" class="range-input" id="minInput" value="800" min="400" max="2800" step="50">
+                                    </div>
+                                    <span style="color: var(--text-tertiary);">—</span>
+                                    <div>
+                                        <div class="range-label">Max</div>
+                                        <input type="number" class="range-input" id="maxInput" value="2400" min="400" max="2800" step="50">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Difficulty -->
+                            <div class="filter-section">
+                                <div class="filter-section-title">
+                                    Difficulty
+                                    <button class="clear-btn" onclick="clearDifficulty()">Clear</button>
+                                </div>
+                                <div class="difficulty-filters">
+                                    <div class="difficulty-option" data-difficulty="easy">
+                                        <div class="difficulty-checkbox"></div>
+                                        <div class="difficulty-label">Easy</div>
+                                        <div style="color: var(--difficulty-easy); font-size: 0.85rem; font-weight: 600;">800-1200</div>
+                                    </div>
+                                    <div class="difficulty-option" data-difficulty="medium">
+                                        <div class="difficulty-checkbox"></div>
+                                        <div class="difficulty-label">Medium</div>
+                                        <div style="color: var(--difficulty-medium); font-size: 0.85rem; font-weight: 600;">1200-1800</div>
+                                    </div>
+                                    <div class="difficulty-option" data-difficulty="hard">
+                                        <div class="difficulty-checkbox"></div>
+                                        <div class="difficulty-label">Hard</div>
+                                        <div style="color: var(--difficulty-hard); font-size: 0.85rem; font-weight: 600;">1800+</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Themes (Full Width) -->
+                        <div class="filter-section" style="margin-top: 1.5rem;">
                             <div class="filter-section-title">
-                                Rating Range
-                                <button class="clear-btn" onclick="resetRatingRange()">Reset</button>
+                                <span>Themes <span id="themeCount" class="selected-count" style="display: none;">0</span></span>
+                                <button class="clear-btn" onclick="clearThemes()">Clear All</button>
                             </div>
-                            <div class="slider-container" id="sliderContainer">
-                                <div class="slider-track" id="sliderTrack"></div>
-                                <div class="slider-thumb" id="minThumb"></div>
-                                <div class="slider-thumb" id="maxThumb"></div>
-                            </div>
-                            <div class="range-inputs">
-                                <div>
-                                    <div class="range-label">Min</div>
-                                    <input type="number" class="range-input" id="minInput" value="800" min="400" max="2800" step="50">
-                                </div>
-                                <span style="color: var(--text-tertiary);">—</span>
-                                <div>
-                                    <div class="range-label">Max</div>
-                                    <input type="number" class="range-input" id="maxInput" value="2400" min="400" max="2800" step="50">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Difficulty -->
-                        <div class="filter-section">
-                            <div class="filter-section-title">
-                                Difficulty
-                                <button class="clear-btn" onclick="clearDifficulty()">Clear</button>
-                            </div>
-                            <div class="difficulty-filters">
-                                <div class="difficulty-option" data-difficulty="easy">
-                                    <div class="difficulty-checkbox"></div>
-                                    <div class="difficulty-label">Easy</div>
-                                    <div style="color: var(--difficulty-easy); font-size: 0.85rem; font-weight: 600;">800-1200</div>
-                                </div>
-                                <div class="difficulty-option" data-difficulty="medium">
-                                    <div class="difficulty-checkbox"></div>
-                                    <div class="difficulty-label">Medium</div>
-                                    <div style="color: var(--difficulty-medium); font-size: 0.85rem; font-weight: 600;">1200-1800</div>
-                                </div>
-                                <div class="difficulty-option" data-difficulty="hard">
-                                    <div class="difficulty-checkbox"></div>
-                                    <div class="difficulty-label">Hard</div>
-                                    <div style="color: var(--difficulty-hard); font-size: 0.85rem; font-weight: 600;">1800+</div>
-                                </div>
+                            <div class="theme-pills" id="themePills">
+                                <div class="theme-pill" data-theme="pin">Pin</div>
+                                <div class="theme-pill" data-theme="fork">Fork</div>
+                                <div class="theme-pill" data-theme="skewer">Skewer</div>
+                                <div class="theme-pill" data-theme="discovered-attack">Discovered Attack</div>
+                                <div class="theme-pill" data-theme="endgame">Endgame</div>
+                                <div class="theme-pill" data-theme="opening">Opening</div>
+                                <div class="theme-pill" data-theme="pawn-structure">Pawn Structure</div>
+                                <div class="theme-pill" data-theme="zugzwang">Zugzwang</div>
+                                <div class="theme-pill" data-theme="checkmate">Checkmate Pattern</div>
+                                <div class="theme-pill" data-theme="king-safety">King Safety</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Themes (Full Width) -->
-                    <div class="filter-section" style="margin-top: 1.5rem;">
-                        <div class="filter-section-title">
-                            <span>Themes <span id="themeCount" class="selected-count" style="display: none;">0</span></span>
-                            <button class="clear-btn" onclick="clearThemes()">Clear All</button>
-                        </div>
-                        <div class="theme-pills" id="themePills">
-                            <div class="theme-pill" data-theme="pin">Pin</div>
-                            <div class="theme-pill" data-theme="fork">Fork</div>
-                            <div class="theme-pill" data-theme="skewer">Skewer</div>
-                            <div class="theme-pill" data-theme="discovered-attack">Discovered Attack</div>
-                            <div class="theme-pill" data-theme="endgame">Endgame</div>
-                            <div class="theme-pill" data-theme="opening">Opening</div>
-                            <div class="theme-pill" data-theme="pawn-structure">Pawn Structure</div>
-                            <div class="theme-pill" data-theme="zugzwang">Zugzwang</div>
-                            <div class="theme-pill" data-theme="checkmate">Checkmate Pattern</div>
-                            <div class="theme-pill" data-theme="king-safety">King Safety</div>
-                        </div>
+                    <div class="filter-modal-footer">
+                        <button class="reset-all-btn" onclick="resetAllFilters()">Reset All</button>
+                        <button class="apply-filters-btn" onclick="applyFilters()">Apply Filters</button>
                     </div>
-                </div>
-
-                <div class="filter-modal-footer">
-                    <button class="reset-all-btn" onclick="resetAllFilters()">Reset All</button>
-                    <button class="apply-filters-btn" onclick="applyFilters()">Apply Filters</button>
                 </div>
             </div>
-        </div>
 
-        <!-- Puzzle List -->
-        <div class="puzzle-table">
-            <table>
-                <thead>
-                <tr>
-                    <th>STATUS</th>
-                    <th>TITLE</th>
-                    <th>RATING</th>
-                    <th>ACCEPTANCE</th>
-                    <th>DIFFICULTY</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td class="status-cell">
-                        <div class="status-icon solved">✓</div>
-                    </td>
-                    <td><div class="puzzle-title">1. Smothered Mate in Corner</div></td>
-                    <td><span class="rating hard">1850</span></td>
-                    <td class="acceptance">45.2%</td>
-                    <td><span class="difficulty-badge hard">Hard</span></td>
-                </tr>
-                <tr>
-                    <td class="status-cell">
-                        <div class="status-icon"></div>
-                    </td>
-                    <td><div class="puzzle-title">2. Queen Sacrifice on h7</div></td>
-                    <td><span class="rating hard">2100</span></td>
-                    <td class="acceptance">32.1%</td>
-                    <td><span class="difficulty-badge hard">Hard</span></td>
-                </tr>
-                <tr>
-                    <td class="status-cell">
-                        <div class="status-icon solved">✓</div>
-                    </td>
-                    <td><div class="puzzle-title">3. Back Rank Mate Pattern</div></td>
-                    <td><span class="rating easy">800</span></td>
-                    <td class="acceptance">88.5%</td>
-                    <td><span class="difficulty-badge easy">Easy</span></td>
-                </tr>
-                <tr>
-                    <td class="status-cell">
-                        <div class="status-icon"></div>
-                    </td>
-                    <td><div class="puzzle-title">4. Pin Against King</div></td>
-                    <td><span class="rating medium">1400</span></td>
-                    <td class="acceptance">62.3%</td>
-                    <td><span class="difficulty-badge medium">Medium</span></td>
-                </tr>
-                <tr>
-                    <td class="status-cell">
-                        <div class="status-icon"></div>
-                    </td>
-                    <td><div class="puzzle-title">5. Discovered Attack Tactics</div></td>
-                    <td><span class="rating medium">1550</span></td>
-                    <td class="acceptance">55.8%</td>
-                    <td><span class="difficulty-badge medium">Medium</span></td>
-                </tr>
-                <tr>
-                    <td class="status-cell">
-                        <div class="status-icon"></div>
-                    </td>
-                    <td><div class="puzzle-title">6. Zugzwang in Pawn Endgame</div></td>
-                    <td><span class="rating hard">2300</span></td>
-                    <td class="acceptance">28.4%</td>
-                    <td><span class="difficulty-badge hard">Hard</span></td>
-                </tr>
-                <tr>
-                    <td class="status-cell">
-                        <div class="status-icon solved">✓</div>
-                    </td>
-                    <td><div class="puzzle-title">7. Knight Fork Double Attack</div></td>
-                    <td><span class="rating easy">950</span></td>
-                    <td class="acceptance">76.9%</td>
-                    <td><span class="difficulty-badge easy">Easy</span></td>
-                </tr>
-                <tr>
-                    <td class="status-cell">
-                        <div class="status-icon"></div>
-                    </td>
-                    <td><div class="puzzle-title">8. Removing the Defender</div></td>
-                    <td><span class="rating medium">1250</span></td>
-                    <td class="acceptance">68.1%</td>
-                    <td><span class="difficulty-badge medium">Medium</span></td>
-                </tr>
-                <tr>
-                    <td class="status-cell">
-                        <div class="status-icon"></div>
-                    </td>
-                    <td><div class="puzzle-title">9. Greek Gift Sacrifice</div></td>
-                    <td><span class="rating hard">1950</span></td>
-                    <td class="acceptance">38.7%</td>
-                    <td><span class="difficulty-badge hard">Hard</span></td>
-                </tr>
-                <tr>
-                    <td class="status-cell">
-                        <div class="status-icon solved">✓</div>
-                    </td>
-                    <td><div class="puzzle-title">10. Skewer Tactics</div></td>
-                    <td><span class="rating easy">1100</span></td>
-                    <td class="acceptance">72.4%</td>
-                    <td><span class="difficulty-badge easy">Easy</span></td>
-                </tr>
-                <tr>
-                    <td class="status-cell">
-                        <div class="status-icon"></div>
-                    </td>
-                    <td><div class="puzzle-title">11. Interference Strategy</div></td>
-                    <td><span class="rating hard">2050</span></td>
-                    <td class="acceptance">35.2%</td>
-                    <td><span class="difficulty-badge hard">Hard</span></td>
-                </tr>
-                <tr>
-                    <td class="status-cell">
-                        <div class="status-icon"></div>
-                    </td>
-                    <td><div class="puzzle-title">12. Windmill Tactic</div></td>
-                    <td><span class="rating medium">1750</span></td>
-                    <td class="acceptance">48.9%</td>
-                    <td><span class="difficulty-badge medium">Medium</span></td>
-                </tr>
-                </tbody>
-            </table>
+            <!-- Puzzle List -->
+                <div class="puzzle-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>STATUS</th>
+                                <th>TITLE</th>
+                                <th>RATING</th>
+                                <th>ACCEPTANCE</th>
+                                <th>THEMES</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="status-cell">
+                                    <div class="status-icon solved">✓</div>
+                                </td>
+                                <td><div class="puzzle-title">1. Smothered Mate in Corner</div></td>
+                                <td><span class="rating hard">1850</span></td>
+                                <td class="acceptance">45.2%</td>
+                                <td>
+                                    <div class="theme-tags">
+                                        <span class="theme-tag-small">Checkmate</span>
+                                        <span class="theme-tag-small">Knight</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="status-cell">
+                                    <div class="status-icon"></div>
+                                </td>
+                                <td><div class="puzzle-title">2. Queen Sacrifice on h7</div></td>
+                                <td><span class="rating hard">2100</span></td>
+                                <td class="acceptance">32.1%</td>
+                                <td>
+                                    <div class="theme-tags">
+                                        <span class="theme-tag-small">Sacrifice</span>
+                                        <span class="theme-tag-small">Attack</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="status-cell">
+                                    <div class="status-icon solved">✓</div>
+                                </td>
+                                <td><div class="puzzle-title">3. Back Rank Mate Pattern</div></td>
+                                <td><span class="rating easy">800</span></td>
+                                <td class="acceptance">88.5%</td>
+                                <td>
+                                    <div class="theme-tags">
+                                        <span class="theme-tag-small">Checkmate</span>
+                                        <span class="theme-tag-small">Endgame</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="status-cell">
+                                    <div class="status-icon"></div>
+                                </td>
+                                <td><div class="puzzle-title">4. Pin Against King</div></td>
+                                <td><span class="rating medium">1400</span></td>
+                                <td class="acceptance">62.3%</td>
+                                <td>
+                                    <div class="theme-tags">
+                                        <span class="theme-tag-small">Pin</span>
+                                        <span class="theme-tag-small">Tactics</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="status-cell">
+                                    <div class="status-icon"></div>
+                                </td>
+                                <td><div class="puzzle-title">5. Discovered Attack Tactics</div></td>
+                                <td><span class="rating medium">1550</span></td>
+                                <td class="acceptance">55.8%</td>
+                                <td>
+                                    <div class="theme-tags">
+                                        <span class="theme-tag-small">Discovered Attack</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="status-cell">
+                                    <div class="status-icon"></div>
+                                </td>
+                                <td><div class="puzzle-title">6. Zugzwang in Pawn Endgame</div></td>
+                                <td><span class="rating hard">2300</span></td>
+                                <td class="acceptance">28.4%</td>
+                                <td>
+                                    <div class="theme-tags">
+                                        <span class="theme-tag-small">Zugzwang</span>
+                                        <span class="theme-tag-small">Endgame</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="status-cell">
+                                    <div class="status-icon solved">✓</div>
+                                </td>
+                                <td><div class="puzzle-title">7. Knight Fork Double Attack</div></td>
+                                <td><span class="rating easy">950</span></td>
+                                <td class="acceptance">76.9%</td>
+                                <td>
+                                    <div class="theme-tags">
+                                        <span class="theme-tag-small">Fork</span>
+                                        <span class="theme-tag-small">Knight</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="status-cell">
+                                    <div class="status-icon"></div>
+                                </td>
+                                <td><div class="puzzle-title">8. Removing the Defender</div></td>
+                                <td><span class="rating medium">1250</span></td>
+                                <td class="acceptance">68.1%</td>
+                                <td>
+                                    <div class="theme-tags">
+                                        <span class="theme-tag-small">Tactics</span>
+                                        <span class="theme-tag-small">Sacrifice</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="status-cell">
+                                    <div class="status-icon"></div>
+                                </td>
+                                <td><div class="puzzle-title">9. Greek Gift Sacrifice</div></td>
+                                <td><span class="rating hard">1950</span></td>
+                                <td class="acceptance">38.7%</td>
+                                <td>
+                                    <div class="theme-tags">
+                                        <span class="theme-tag-small">Sacrifice</span>
+                                        <span class="theme-tag-small">Attack</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="status-cell">
+                                    <div class="status-icon solved">✓</div>
+                                </td>
+                                <td><div class="puzzle-title">10. Skewer Tactics</div></td>
+                                <td><span class="rating easy">1100</span></td>
+                                <td class="acceptance">72.4%</td>
+                                <td>
+                                    <div class="theme-tags">
+                                        <span class="theme-tag-small">Skewer</span>
+                                        <span class="theme-tag-small">Tactics</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="status-cell">
+                                    <div class="status-icon"></div>
+                                </td>
+                                <td><div class="puzzle-title">11. Interference Strategy</div></td>
+                                <td><span class="rating hard">2050</span></td>
+                                <td class="acceptance">35.2%</td>
+                                <td>
+                                    <div class="theme-tags">
+                                        <span class="theme-tag-small">Advanced</span>
+                                        <span class="theme-tag-small">Strategy</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="status-cell">
+                                    <div class="status-icon"></div>
+                                </td>
+                                <td><div class="puzzle-title">12. Windmill Tactic</div></td>
+                                <td><span class="rating medium">1750</span></td>
+                                <td class="acceptance">48.9%</td>
+                                <td>
+                                    <div class="theme-tags">
+                                        <span class="theme-tag-small">Tactics</span>
+                                        <span class="theme-tag-small">Pattern</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-            <!-- Pagination -->
-            <div class="pagination">
-                <div class="pagination-info">
-                    Rows per page:
-                    <select class="pagination-select">
-                        <option>20</option>
-                        <option>50</option>
-                        <option>100</option>
-                    </select>
-                </div>
-                <div class="page-numbers">
-                    <button class="page-btn">‹</button>
-                    <button class="page-btn active">1</button>
-                    <button class="page-btn">2</button>
-                    <button class="page-btn">3</button>
-                    <button class="page-btn">...</button>
-                    <button class="page-btn">›</button>
+                    <!-- Pagination -->
+                    <div class="pagination">
+                        <div class="pagination-info">
+                            Rows per page:
+                            <select class="pagination-select">
+                                <option>20</option>
+                                <option>50</option>
+                                <option>100</option>
+                            </select>
+                        </div>
+                        <div class="page-numbers">
+                            <button class="page-btn">‹</button>
+                            <button class="page-btn active">1</button>
+                            <button class="page-btn">2</button>
+                            <button class="page-btn">3</button>
+                            <button class="page-btn">...</button>
+                            <button class="page-btn">›</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-</div>
 
-<script>
-    // Modal Controls
-    const filterModal = document.getElementById('filterModal');
+    <script>
+        // Modal Controls
+        const filterModal = document.getElementById('filterModal');
 
-    function openFilterModal() {
-        filterModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeFilterModal() {
-        filterModal.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-
-    // Close modal when clicking outside
-    filterModal.addEventListener('click', (e) => {
-        if (e.target === filterModal) {
-            closeFilterModal();
-        }
-    });
-
-    // Close modal on Escape key
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && filterModal.classList.contains('active')) {
-            closeFilterModal();
-        }
-    });
-
-    // Update Filter Summary
-    function updateFilterSummary() {
-        const summary = document.getElementById('filterSummary');
-        const tags = [];
-
-        // Rating range
-        if (filterState.minRating !== 800 || filterState.maxRating !== 2400) {
-            tags.push(`${filterState.minRating}-${filterState.maxRating}`);
+        function openFilterModal() {
+            filterModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
 
-        // Difficulties
-        filterState.difficulties.forEach(diff => {
-            tags.push(diff.charAt(0).toUpperCase() + diff.slice(1));
+        function closeFilterModal() {
+            filterModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Close modal when clicking outside
+        filterModal.addEventListener('click', (e) => {
+            if (e.target === filterModal) {
+                closeFilterModal();
+            }
         });
 
-        // Themes
-        if (filterState.themes.length > 0) {
-            if (filterState.themes.length === 1) {
-                tags.push(filterState.themes[0].replace(/-/g, ' '));
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && filterModal.classList.contains('active')) {
+                closeFilterModal();
+            }
+        });
+
+        // Update Filter Summary
+        function updateFilterSummary() {
+            const summary = document.getElementById('filterSummary');
+            const tags = [];
+
+            // Rating range
+            if (filterState.minRating !== 800 || filterState.maxRating !== 2400) {
+                tags.push(`${filterState.minRating}-${filterState.maxRating}`);
+            }
+
+            // Difficulties
+            filterState.difficulties.forEach(diff => {
+                tags.push(diff.charAt(0).toUpperCase() + diff.slice(1));
+            });
+
+            // Themes
+            if (filterState.themes.length > 0) {
+                if (filterState.themes.length === 1) {
+                    tags.push(filterState.themes[0].replace(/-/g, ' '));
+                } else {
+                    tags.push(`${filterState.themes.length} Themes`);
+                }
+            }
+
+            // Render tags
+            if (tags.length === 0) {
+                summary.innerHTML = '<span class="filter-tag">All Puzzles</span>';
             } else {
-                tags.push(`${filterState.themes.length} Themes`);
+                summary.innerHTML = tags.map(tag => 
+                    `<span class="filter-tag active">${tag}</span>`
+                ).join('');
             }
         }
 
-        // Render tags
-        if (tags.length === 0) {
-            summary.innerHTML = '<span class="filter-tag">All Puzzles</span>';
-        } else {
-            summary.innerHTML = tags.map(tag =>
-                `<span class="filter-tag active">${tag}</span>`
-            ).join('');
-        }
-    }
+        // Filter State
+        const filterState = {
+            minRating: 800,
+            maxRating: 2400,
+            difficulties: [],
+            themes: [],
+            searchQuery: ''
+        };
 
-    // Filter State
-    const filterState = {
-        minRating: 800,
-        maxRating: 2400,
-        difficulties: [],
-        themes: [],
-        searchQuery: ''
-    };
+        // Rating Range Slider
+        const sliderContainer = document.getElementById('sliderContainer');
+        const sliderTrack = document.getElementById('sliderTrack');
+        const minThumb = document.getElementById('minThumb');
+        const maxThumb = document.getElementById('maxThumb');
+        const minInput = document.getElementById('minInput');
+        const maxInput = document.getElementById('maxInput');
 
-    // Rating Range Slider
-    const sliderContainer = document.getElementById('sliderContainer');
-    const sliderTrack = document.getElementById('sliderTrack');
-    const minThumb = document.getElementById('minThumb');
-    const maxThumb = document.getElementById('maxThumb');
-    const minInput = document.getElementById('minInput');
-    const maxInput = document.getElementById('maxInput');
+        const MIN_RATING = 400;
+        const MAX_RATING = 2800;
 
-    const MIN_RATING = 400;
-    const MAX_RATING = 2800;
+        let isDragging = null;
 
-    let isDragging = null;
-
-    function ratingToPercent(rating) {
-        return ((rating - MIN_RATING) / (MAX_RATING - MIN_RATING)) * 100;
-    }
-
-    function percentToRating(percent) {
-        return Math.round(MIN_RATING + (percent / 100) * (MAX_RATING - MIN_RATING));
-    }
-
-    function updateSlider() {
-        const minPercent = ratingToPercent(filterState.minRating);
-        const maxPercent = ratingToPercent(filterState.maxRating);
-
-        minThumb.style.left = minPercent + '%';
-        maxThumb.style.left = maxPercent + '%';
-        sliderTrack.style.left = minPercent + '%';
-        sliderTrack.style.width = (maxPercent - minPercent) + '%';
-
-        minInput.value = filterState.minRating;
-        maxInput.value = filterState.maxRating;
-    }
-
-    function handleMouseDown(e, thumb) {
-        isDragging = thumb;
-        e.preventDefault();
-    }
-
-    function handleMouseMove(e) {
-        if (!isDragging) return;
-
-        const rect = sliderContainer.getBoundingClientRect();
-        let percent = ((e.clientX - rect.left) / rect.width) * 100;
-        percent = Math.max(0, Math.min(100, percent));
-
-        const rating = Math.round(percentToRating(percent) / 50) * 50;
-
-        if (isDragging === 'min') {
-            filterState.minRating = Math.min(rating, filterState.maxRating - 100);
-        } else {
-            filterState.maxRating = Math.max(rating, filterState.minRating + 100);
+        function ratingToPercent(rating) {
+            return ((rating - MIN_RATING) / (MAX_RATING - MIN_RATING)) * 100;
         }
 
-        updateSlider();
-    }
+        function percentToRating(percent) {
+            return Math.round(MIN_RATING + (percent / 100) * (MAX_RATING - MIN_RATING));
+        }
 
-    function handleMouseUp() {
-        isDragging = null;
-    }
+        function updateSlider() {
+            const minPercent = ratingToPercent(filterState.minRating);
+            const maxPercent = ratingToPercent(filterState.maxRating);
 
-    minThumb.addEventListener('mousedown', (e) => handleMouseDown(e, 'min'));
-    maxThumb.addEventListener('mousedown', (e) => handleMouseDown(e, 'max'));
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+            minThumb.style.left = minPercent + '%';
+            maxThumb.style.left = maxPercent + '%';
+            sliderTrack.style.left = minPercent + '%';
+            sliderTrack.style.width = (maxPercent - minPercent) + '%';
 
-    minInput.addEventListener('change', (e) => {
-        filterState.minRating = Math.max(MIN_RATING, Math.min(parseInt(e.target.value), filterState.maxRating - 100));
-        updateSlider();
-    });
+            minInput.value = filterState.minRating;
+            maxInput.value = filterState.maxRating;
+        }
 
-    maxInput.addEventListener('change', (e) => {
-        filterState.maxRating = Math.min(MAX_RATING, Math.max(parseInt(e.target.value), filterState.minRating + 100));
-        updateSlider();
-    });
+        function handleMouseDown(e, thumb) {
+            isDragging = thumb;
+            e.preventDefault();
+        }
 
-    function resetRatingRange() {
-        filterState.minRating = 800;
-        filterState.maxRating = 2400;
-        updateSlider();
-        updateFilterSummary();
-    }
+        function handleMouseMove(e) {
+            if (!isDragging) return;
 
-    // Difficulty Filters
-    document.querySelectorAll('.difficulty-option').forEach(option => {
-        option.addEventListener('click', () => {
-            const difficulty = option.dataset.difficulty;
-            const isSelected = option.classList.contains('selected');
+            const rect = sliderContainer.getBoundingClientRect();
+            let percent = ((e.clientX - rect.left) / rect.width) * 100;
+            percent = Math.max(0, Math.min(100, percent));
 
-            if (isSelected) {
-                option.classList.remove('selected');
-                filterState.difficulties = filterState.difficulties.filter(d => d !== difficulty);
+            const rating = Math.round(percentToRating(percent) / 50) * 50;
+
+            if (isDragging === 'min') {
+                filterState.minRating = Math.min(rating, filterState.maxRating - 100);
             } else {
-                option.classList.add('selected');
-                filterState.difficulties.push(difficulty);
+                filterState.maxRating = Math.max(rating, filterState.minRating + 100);
+            }
+
+            updateSlider();
+        }
+
+        function handleMouseUp() {
+            isDragging = null;
+        }
+
+        minThumb.addEventListener('mousedown', (e) => handleMouseDown(e, 'min'));
+        maxThumb.addEventListener('mousedown', (e) => handleMouseDown(e, 'max'));
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+
+        minInput.addEventListener('change', (e) => {
+            filterState.minRating = Math.max(MIN_RATING, Math.min(parseInt(e.target.value), filterState.maxRating - 100));
+            updateSlider();
+        });
+
+        maxInput.addEventListener('change', (e) => {
+            filterState.maxRating = Math.min(MAX_RATING, Math.max(parseInt(e.target.value), filterState.minRating + 100));
+            updateSlider();
+        });
+
+        function resetRatingRange() {
+            filterState.minRating = 800;
+            filterState.maxRating = 2400;
+            updateSlider();
+            updateFilterSummary();
+        }
+
+        // Difficulty Filters
+        document.querySelectorAll('.difficulty-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const difficulty = option.dataset.difficulty;
+                const isSelected = option.classList.contains('selected');
+
+                if (isSelected) {
+                    option.classList.remove('selected');
+                    filterState.difficulties = filterState.difficulties.filter(d => d !== difficulty);
+                } else {
+                    option.classList.add('selected');
+                    filterState.difficulties.push(difficulty);
+                }
+                updateFilterSummary();
+            });
+        });
+
+        function clearDifficulty() {
+            document.querySelectorAll('.difficulty-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            filterState.difficulties = [];
+            updateFilterSummary();
+        }
+
+        // Theme Filters
+        const themePills = document.querySelectorAll('.theme-pill');
+        const themeCount = document.getElementById('themeCount');
+
+        themePills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                const theme = pill.dataset.theme;
+                const isSelected = pill.classList.contains('selected');
+
+                if (isSelected) {
+                    pill.classList.remove('selected');
+                    filterState.themes = filterState.themes.filter(t => t !== theme);
+                } else {
+                    pill.classList.add('selected');
+                    filterState.themes.push(theme);
+                }
+
+                updateThemeCount();
+            });
+        });
+
+        function updateThemeCount() {
+            const count = filterState.themes.length;
+            if (count > 0) {
+                themeCount.textContent = count;
+                themeCount.style.display = 'inline-flex';
+            } else {
+                themeCount.style.display = 'none';
             }
             updateFilterSummary();
-        });
-    });
-
-    function clearDifficulty() {
-        document.querySelectorAll('.difficulty-option').forEach(option => {
-            option.classList.remove('selected');
-        });
-        filterState.difficulties = [];
-        updateFilterSummary();
-    }
-
-    // Theme Filters
-    const themePills = document.querySelectorAll('.theme-pill');
-    const themeCount = document.getElementById('themeCount');
-
-    themePills.forEach(pill => {
-        pill.addEventListener('click', () => {
-            const theme = pill.dataset.theme;
-            const isSelected = pill.classList.contains('selected');
-
-            if (isSelected) {
-                pill.classList.remove('selected');
-                filterState.themes = filterState.themes.filter(t => t !== theme);
-            } else {
-                pill.classList.add('selected');
-                filterState.themes.push(theme);
-            }
-
-            updateThemeCount();
-        });
-    });
-
-    function updateThemeCount() {
-        const count = filterState.themes.length;
-        if (count > 0) {
-            themeCount.textContent = count;
-            themeCount.style.display = 'inline-flex';
-        } else {
-            themeCount.style.display = 'none';
         }
-        updateFilterSummary();
-    }
 
-    function clearThemes() {
-        themePills.forEach(pill => pill.classList.remove('selected'));
-        filterState.themes = [];
-        updateThemeCount();
-    }
+        function clearThemes() {
+            themePills.forEach(pill => pill.classList.remove('selected'));
+            filterState.themes = [];
+            updateThemeCount();
+        }
 
-    function resetAllFilters() {
-        resetRatingRange();
-        clearDifficulty();
-        clearThemes();
-        document.getElementById('searchInput').value = '';
-        filterState.searchQuery = '';
-        updateFilterSummary();
-    }
+        function resetAllFilters() {
+            resetRatingRange();
+            clearDifficulty();
+            clearThemes();
+            document.getElementById('searchInput').value = '';
+            filterState.searchQuery = '';
+            updateFilterSummary();
+        }
 
-    // Apply Filters
-    function applyFilters() {
-        filterState.searchQuery = document.getElementById('searchInput').value;
-        console.log('Applying filters:', filterState);
-        // Here you would make your backend API call with filterState
-        // Example:
-        // fetch('/api/puzzles', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify(filterState)
-        // }).then(response => response.json())
-        //   .then(data => updatePuzzleList(data));
+        // Apply Filters
+        function applyFilters() {
+            filterState.searchQuery = document.getElementById('searchInput').value;
+            console.log('Applying filters:', filterState);
+            // Here you would make your backend API call with filterState
+            // Example:
+            // fetch('/api/puzzles', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify(filterState)
+            // }).then(response => response.json())
+            //   .then(data => updatePuzzleList(data));
+            
+            updateFilterSummary();
+            closeFilterModal();
+        }
 
-        updateFilterSummary();
-        closeFilterModal();
-    }
-
-    // Initialize slider
-    updateSlider();
-    // Add row click handlers
-    document.querySelectorAll('tbody tr').forEach(row => {
-        row.addEventListener('click', () => {
-            window.location.href = 'puzzle-solver.html';
+        // Initialize slider
+        updateSlider();
+        // Add row click handlers
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('click', (e) => {
+                // Don't navigate if clicking a theme tag
+                if (e.target.classList.contains('theme-tag-small')) {
+                    return;
+                }
+                window.location.href = 'puzzle-solver.html';
+            });
         });
-    });
-</script>
+
+        // Theme tag click handlers
+        document.querySelectorAll('.theme-tag-small').forEach(tag => {
+            tag.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent row click
+                const themeName = tag.textContent.toLowerCase().replace(/\s+/g, '-');
+                
+                // Open filter modal and select this theme
+                openFilterModal();
+                
+                // Find and select the corresponding theme pill
+                setTimeout(() => {
+                    const themePill = document.querySelector(`[data-theme="${themeName}"]`);
+                    if (themePill && !themePill.classList.contains('selected')) {
+                        themePill.click();
+                    }
+                }, 100);
+            });
+        });
+    </script>
 </body>
 </html>

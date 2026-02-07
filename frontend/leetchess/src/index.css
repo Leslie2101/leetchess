@@ -1,68 +1,271 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+/* Import Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap');
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+/* ========================================
+   COLOR PALETTE
+   ======================================== */
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
+* {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+
+
+:root {
+  /* Primary Colors */
+  --primary-peach: #F2A7A0;
+  --primary-peach-hover: #E89088;
+  --secondary-sage: #A8CBB7;
+  --secondary-sage-hover: #96B9A5;
+
+  /* Backgrounds */
+  --bg-cream: #FFF7F0;
+  --bg-warm: #FDF3EA;
+  --bg-card: #FEFBF8;
+  --bg-hover: #F9F0E8;
+
+  /* Text Colors */
+  --text-primary: #4A3F3A;
+  --text-secondary: #8B7D77;
+  --text-tertiary: #B5A9A3;
+
+  /* UI Elements */
+  --border-color: #E8DDD5;
+  --shadow-soft: 0 2px 8px rgba(74, 63, 58, 0.08);
+  --shadow-card: 0 4px 16px rgba(74, 63, 58, 0.1);
+  --shadow-hover: 0 6px 24px rgba(74, 63, 58, 0.12);
+
+  /* Semantic Colors */
+  --difficulty-easy: #A8CBB7;
+  --difficulty-medium: #F2C078;
+  --difficulty-hard: #E89088;
+  --success-green: #A8CBB7;
+  --error-red: #E89088;
+
+  /* Accents */
+  --premium-gold: #E8B65F;
+  --accent-lavender: #C9B8D8;
+  --accent-sky: #B8D8E8;
+  --accent-warm: #F5D4B8;
+
+  /* Chess Board */
+  --board-light: #F6EDE4;
+  --board-dark: #D9C2AD;
+  --highlight-yellow: #FFE9CC;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+
+
+
+/* ========================================
+   BASE STYLES
+   ======================================== */
+body {
+    font-family: 'Quicksand', 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    background: var(--bg-cream) !important;
+    color: var(--text-primary) !important;
+    line-height: 1.7 !important;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* ========================================
+   TYPOGRAPHY
+   ======================================== */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Nunito', 'Quicksand', sans-serif;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+button, .btn, .btn-primary, .btn-secondary {
+    border-radius: 20px !important;
+    font-weight: 700 !important;
+    transition: all 0.3s ease !important;
+    letter-spacing: 0.02em;
+    box-shadow: var(--shadow-soft) !important;
+}
+
+.btn-primary, button[class*="primary"], .solve-now-btn, .apply-filters-btn, .submit-btn {
+    background: linear-gradient(135deg, var(--primary-peach) 0%, #F5B5AE 100%) !important;
+    color: white !important;
+    border: none !important;
+}
+
+.btn-primary:hover, button[class*="primary"]:hover, .solve-now-btn:hover, .apply-filters-btn:hover, .submit-btn:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 6px 24px rgba(242, 167, 160, 0.4) !important;
+}
+
+.btn-secondary, .hint-btn, .reset-all-btn {
+    background: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+    border: 1.5px solid var(--border-color) !important;
+}
+
+.btn-secondary:hover, .hint-btn:hover, .reset-all-btn:hover {
+    background: var(--bg-hover) !important;
+    border-color: var(--primary-peach) !important;
+    color: var(--primary-peach) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* ========================================
+   CARDS & PANELS
+   ======================================== */
+.card, .filter-card, .sidebar-card, .puzzle-table, .sidebar-section,
+.puzzle-info, .ai-consultant, .competition-card, .leaderboard,
+.board-wrapper, .board-header, .board-footer {
+    background: var(--bg-card) !important;
+    border-radius: 16px !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: var(--shadow-card) !important;
+}
+
+.card:hover, .competition-card:hover {
+    box-shadow: var(--shadow-hover) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* ========================================
+   INPUTS & FORMS
+   ======================================== */
+input, textarea, select, .search-input, .range-input, .chat-input input {
+    background: var(--bg-warm) !important;
+    /* border: 1.5px solid var(--border-color) !important; */
+    border-radius: 12px !important;
+    color: var(--text-primary) !important;
+    transition: all 0.2s ease !important;
+}
+
+input:focus, textarea:focus, select:focus, .search-input:focus, .chat-input input:focus {
+    border-color: var(--primary-peach) !important;
+    box-shadow: 0 0 0 3px rgba(242, 167, 160, 0.15) !important;
+    background: var(--bg-card) !important;
+}
+
+input::placeholder, textarea::placeholder {
+    color: var(--text-tertiary) !important;
+}
+
+/* ========================================
+   BADGES & PILLS
+   ======================================== */
+.difficulty-badge, .filter-tag, .theme-pill, .live-badge, .attempt-status {
+    border-radius: 16px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+
+.difficulty-badge.easy, .stat-value, .rating.easy {
+    color: var(--difficulty-easy) !important;
+    background: rgba(168, 203, 183, 0.15) !important;
+}
+
+.difficulty-badge.medium, .rating.medium {
+    color: var(--difficulty-medium) !important;
+    background: rgba(242, 192, 120, 0.15) !important;
+}
+
+.difficulty-badge.hard, .rating.hard {
+    color: var(--difficulty-hard) !important;
+    background: rgba(232, 144, 136, 0.15) !important;
+}
+
+.theme-pill {
+    background: var(--bg-hover) !important;
+    border: 1.5px solid var(--border-color) !important;
+}
+
+.theme-pill:hover {
+    background: var(--bg-card) !important;
+    border-color: var(--primary-peach) !important;
+    color: var(--primary-peach) !important;
+    transform: translateY(-1px) scale(1.02) !important;
+}
+
+.theme-pill.selected {
+    background: linear-gradient(135deg, var(--primary-peach) 0%, #F5B5AE 100%) !important;
+    color: white !important;
+    border-color: var(--primary-peach) !important;
+}
+
+.filter-tag.active {
+    background: var(--primary-peach) !important;
+    color: white !important;
+}
+
+
+/* ========================================
+   ANIMATIONS & MICRO-INTERACTIONS
+   ======================================== */
+* {
+    transition-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1) !important;
+}
+
+/* Gentle hover lift */
+.card, .competition-card, .attempt-item, .puzzle-table tbody tr {
+    transition: all 0.3s ease !important;
+}
+
+/* Soft glow on focus */
+*:focus-visible {
+    outline: 2px solid var(--primary-peach) !important;
+    outline-offset: 2px;
+}
+
+/* ========================================
+   SPACING ADJUSTMENTS
+   ======================================== */
+.container {
+    padding: 2.5rem !important;
+}
+
+/* Increase line height for readability */
+p, li, td, .message-bubble {
+    line-height: 1.7 !important;
+}
+
+/* More generous padding on interactive elements */
+button, .btn, select, textarea {
+    padding: 0.75rem 1.25rem !important;
+}
+
+/* ========================================
+   ACCESSIBILITY
+   ======================================== */
+
+/* Ensure sufficient contrast */
+.text-primary {
+    color: var(--text-primary) !important;
+}
+
+.text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+/* Clear focus indicators */
+button:focus-visible, input:focus-visible, a:focus-visible {
+    outline: 2px solid var(--primary-peach) !important;
+    outline-offset: 2px;
+}
+
+/* ========================================
+   RESPONSIVE ADJUSTMENTS
+   ======================================== */
+@media (max-width: 768px) {
+    .container {
+        padding: 1.5rem !important;
+    }
+
+    h1 {
+        font-size: 1.75rem !important;
+    }
+
+    h2 {
+        font-size: 1.5rem !important;
+    }
 }
