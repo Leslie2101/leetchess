@@ -22,11 +22,12 @@ function DailyChallenge(){
 interface PaginationFooterProps {
   pageSize: string;
   pageNumber: number;
+  totalPage: number;
   onChangePageSize: (value: string) => void;
   onChangePageNumber: (value: number) => void;
 }
 
-function PaginationFooter({pageSize, pageNumber, onChangePageSize, onChangePageNumber}: PaginationFooterProps){
+function PaginationFooter({pageSize, pageNumber, totalPage, onChangePageSize, onChangePageNumber}: PaginationFooterProps){
     return (
         <div className="pagination">
             <div className="pagination-info">
@@ -38,10 +39,21 @@ function PaginationFooter({pageSize, pageNumber, onChangePageSize, onChangePageN
                 </select>
             </div>
             <div className="page-numbers">
-                {pageNumber > 0 && (
-                    <button className="page-btn" onClick={() => onChangePageNumber(pageNumber - 1)}>‹</button>
-                )}
-                <button className="page-btn" onClick={() => onChangePageNumber(pageNumber + 1)}>›</button>
+                <button
+                    className="page-btn"
+                    onClick={() => onChangePageNumber(pageNumber - 1)}
+                    disabled={pageNumber === 0} // disable on first page
+                >
+                    ‹
+                </button>
+
+                <button
+                    className="page-btn"
+                    onClick={() => onChangePageNumber(pageNumber + 1)}
+                    disabled={pageNumber + 1 >= totalPage} // disable on last page
+                >
+                    ›
+                </button>
             </div>
         </div>
     )
@@ -73,6 +85,7 @@ export default function PuzzleListPage(){
     });
     const [searchTerm, setSearchTerm] = useState("");
     const [pageSize, setPageSize] = useState<string>("20");
+    const [totalPage, setTotalPage] = useState<number>(0);
     const [pageNumber, setPageNumber] = useState<number>(0);
 
     async function loadPuzzles() {
@@ -92,7 +105,10 @@ export default function PuzzleListPage(){
             if (!res.ok) {
                 throw new Error(`HTTP error! status: ${res.status}`);
             }
-            const data = (await res.json()).content;
+            const json = await res.json();
+            const data = json.content;
+            console.log("Fetched puzzles", data);
+            setTotalPage(json.page.totalPages);
             setPuzzles(data);
         } catch (err) {
             console.error("Failed to load puzzles", err);
@@ -183,7 +199,7 @@ export default function PuzzleListPage(){
                     onChange={(value) => setSearchTerm(value)}
                  />
                 <PuzzleList />
-                <PaginationFooter pageSize={pageSize} pageNumber={pageNumber} onChangePageSize={(value) => setPageSize(value)} onChangePageNumber={(value) => setPageNumber(value)} />
+                <PaginationFooter pageSize={pageSize} pageNumber={pageNumber} totalPage={totalPage} onChangePageSize={(value) => setPageSize(value)} onChangePageNumber={(value) => setPageNumber(value)} />
             </div>
             
         </div>

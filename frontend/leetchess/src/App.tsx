@@ -11,9 +11,10 @@ function App() {
 
   return (
     <>
+    
     <Router>
-      <Navbar/>
-      
+      <Navbar/>  
+
       <Routes>
         <Route exact path= "/" element={<PuzzleListPage/>} />
       </Routes>

@@ -1,7 +1,7 @@
 
 /* Main Container */
 .container {
-    max-width: 100%;
+    max-width: 1400px;
     width: 100%;
     margin: 0 auto;
     padding: 2rem;
@@ -280,6 +280,13 @@
             color: white;
             border-color: var(--primary-blue);
         }
+
+        .page-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none; /* prevent hover lift */
+        }
+
 
         /* Sidebar */
         .sidebar {

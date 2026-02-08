@@ -13,6 +13,7 @@
 
 
 
+
 :root {
   /* Primary Colors */
   --primary-peach: #F2A7A0;
@@ -65,6 +66,7 @@
 body {
     font-family: 'Quicksand', 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif !important;
     background: var(--bg-cream) !important;
+    /* background: red; */
     color: var(--text-primary) !important;
     line-height: 1.7 !important;
 }
@@ -221,6 +223,7 @@ input::placeholder, textarea::placeholder {
    SPACING ADJUSTMENTS
    ======================================== */
 .container {
+    background: var(--bg-cream) !important;
     padding: 2.5rem !important;
 }
 
