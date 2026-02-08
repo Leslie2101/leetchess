@@ -12,7 +12,7 @@ export default function Navbar() {
             ChessCode
         </a>
         <nav className="nav">
-            <Link className='nav-link active' to='/'>Puzzles</Link>
+            <Link className='nav-link active' to='/puzzles'>Puzzles</Link>
         </nav>
         <div className="header-actions">
             <div className="avatar"></div>

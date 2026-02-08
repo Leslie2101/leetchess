@@ -5,6 +5,7 @@ import {FilterWidget} from './FilterWidget/FilterWidget';
 import type { FilterState } from './FilterWidget/FilterWidget';
 import { useCallback, useEffect, useState } from 'react';
 import { SearchBar } from './FilterWidget/SearchBar';
+import { useNavigate } from 'react-router-dom';
 
 function DailyChallenge(){
     return (
@@ -171,25 +172,30 @@ export default function PuzzleListPage(){
         setPageNumber(0);
     }, []);
 
+    const navigate = useNavigate();
+    const handleSolveClick = (puzzleId: string) => {
+        navigate(`/puzzles/${puzzleId}/solve`);
+    } 
+
 
 
     function PuzzleList() {
         const listPuzzles = puzzles.map(puzzle =>
-        <tr  key={puzzle.id}>
-            <td className="status-cell">
-                <div className='status-icon'></div>
-            </td>
-            <td><div className="puzzle-title">Puzzle {puzzle.id}</div></td>
-            <td><span className="rating easy">{puzzle.rating}</span></td>
-            <td><span className='acceptance'>{puzzle.acceptance}%</span></td>
-            <td>
-                <div className="theme-tags">
-                    {puzzle.themes.map(theme => (
-                            <span className="theme-tag-small">{theme}</span>
-                    ))}
-                </div>
-            </td>
-        </tr>);
+            <tr  key={puzzle.id} onClick={()=>handleSolveClick(puzzle.id)}>
+                <td className="status-cell">
+                    <div className='status-icon'></div>
+                </td>
+                <td><div className="puzzle-title">Puzzle {puzzle.id}</div></td>
+                <td><span className="rating easy">{puzzle.rating}</span></td>
+                <td><span className='acceptance'>{puzzle.acceptance}%</span></td>
+                <td>
+                    <div className="theme-tags">
+                        {puzzle.themes.map(theme => (
+                                <span className="theme-tag-small">{theme}</span>
+                        ))}
+                    </div>
+                </td>
+            </tr>);
 
 
         return (
