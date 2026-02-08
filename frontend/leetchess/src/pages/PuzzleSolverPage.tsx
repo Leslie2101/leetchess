@@ -33,7 +33,8 @@ interface BoardProps {
     initialFen: string;
     botMove: string;
     moveHistory: string[];
-    onMoveDetected: (params: onDropParams) => void;
+    playerAlliance: string;
+    onMoveDetected: (params: onDropParams) => boolean;
 }
 
 interface RightPanelProps {
@@ -74,14 +75,14 @@ function Sidebar({ attempts, currentAttempt, setCurrentAttempt }: SidebarProps) 
 }
 
 // --- Board Component ---
-function Board({ moveHistory, botMove, initialFen, onMoveDetected }: BoardProps) {
+function Board({ moveHistory, botMove, initialFen, playerAlliance, onMoveDetected }: BoardProps) {
 
 
   return (
     <div className="board-container">
       <div className="board-wrapper">
         <div className="chessboard" id="board1">
-            <ChessBoard fen={initialFen} botMove={botMove} onPlayerMove={onMoveDetected}/>
+            <ChessBoard fen={initialFen} botMove={botMove} playerAlliance={playerAlliance} onPlayerMove={onMoveDetected}/>
         </div>
       </div>
 
@@ -219,7 +220,7 @@ export default function PuzzleSolverPage() {
         console.log("Player move detected:", params.source, params.target);
         // sent mmove to backend for validation and response
 
-        return false;
+        return true;
     }
 
     return (
@@ -227,7 +228,8 @@ export default function PuzzleSolverPage() {
             <Sidebar attempts={attempts} currentAttempt={currentAttempt} setCurrentAttempt={setCurrentAttempt} />
             {puzzle && (
                 <>
-                    <Board 
+                    <Board
+                        playerAlliance={puzzle.playerAlliance} 
                         moveHistory={moveHistory} 
                         initialFen={puzzle.fen} 
                         botMove={puzzle.botMove} 

@@ -10,11 +10,12 @@ export interface onDropParams {
 interface ChessBoardProps {
   fen: string;
   botMove: string;
+  playerAlliance: string;
   onPlayerMove: (params: onDropParams) => boolean;
 }
 
 
-const ChessBoard = ({ fen, botMove, onPlayerMove}: ChessBoardProps) => {
+const ChessBoard = ({ fen, botMove, playerAlliance, onPlayerMove}: ChessBoardProps) => {
 
   const [bot, setBot] = useState(botMove);
 
@@ -24,6 +25,17 @@ const ChessBoard = ({ fen, botMove, onPlayerMove}: ChessBoardProps) => {
     console.log('Piece: ' + piece)
     console.log('Orientation: ' + orientation)
     console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+
+    // check if the move alliance is correct
+    if (playerAlliance.toLowerCase() === "black" && piece.search(/w/) !== -1) {
+      
+      return 'snapback'
+    }
+
+    if (playerAlliance.toLowerCase() === "white" && piece.search(/b/) !== -1) {
+      return 'snapback'
+    }
+
     if (!onPlayerMove({ source, target, piece })) {
       return 'snapback';
     };
