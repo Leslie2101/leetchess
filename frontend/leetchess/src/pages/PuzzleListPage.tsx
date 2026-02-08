@@ -105,6 +105,16 @@ export default function PuzzleListPage(){
         setPageNumber(0); 
     }, []);
 
+    const handleResetFilters = useCallback(() => {
+        setFilters({
+            ratingMin: 400,
+            ratingMax: 3000,
+            themes: [],
+        });
+        setPageNumber(0);
+    }, []);
+
+
 
     function PuzzleList() {
         const listPuzzles = puzzles.map(puzzle =>
@@ -112,7 +122,7 @@ export default function PuzzleListPage(){
             <td className="status-cell">
                 <div className='status-icon'></div>
             </td>
-            <td><div className="puzzle-title">{puzzle.id}</div></td>
+            <td><div className="puzzle-title">Puzzle {puzzle.id}</div></td>
             <td><span className="rating easy">{puzzle.rating}</span></td>
             <td><span className='acceptance'>{puzzle.acceptance}%</span></td>
             <td>
@@ -155,6 +165,7 @@ export default function PuzzleListPage(){
                 <FilterWidget
                     filters={filters}
                     onApply={handleApplyFilters}
+                    onReset={handleResetFilters}
                 />
                 <SearchBar
                     value={searchTerm}

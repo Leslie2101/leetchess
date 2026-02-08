@@ -9,16 +9,16 @@ interface Theme {
 
 interface ThemeFilterProps {
   themes: Theme[];
-  selected: Theme[];
-  onChange: (themes: Theme[]) => void;
+  selected: string[];
+  onChange: (themes: string[]) => void;
 }
 
 export function ThemeFilter({ themes, selected, onChange }: ThemeFilterProps) {
   function toggleTheme(theme: Theme) {
-    if (selected.includes(theme)) {
-      onChange(selected.filter(t => t !== theme));
+    if (selected.includes(theme.name)) {
+      onChange(selected.filter(t => t !== theme.name));
     } else {
-      onChange([...selected, theme]);
+      onChange([...selected, theme.name]);
     }
   }
 
@@ -48,7 +48,7 @@ export function ThemeFilter({ themes, selected, onChange }: ThemeFilterProps) {
           <div
             key={theme.id}
             className={`theme-pill ${
-              selected.includes(theme) ? "selected" : ""
+              selected.includes(theme.name) ? "selected" : ""
             }`}
             onClick={() => toggleTheme(theme)}
           >

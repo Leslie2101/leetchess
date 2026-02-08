@@ -73,6 +73,7 @@ export function RatingRangeSlider({
             const value = Math.min(Number(e.target.value), maxVal - 1);
             setMinVal(value);
             minValRef.current = value;
+            onChange(value, maxVal);
           }}
           className="thumb thumb--left"
           style={{ zIndex: minVal > maxLimit - 100 ? 5 : 3 }}
@@ -88,6 +89,7 @@ export function RatingRangeSlider({
             const value = Math.max(Number(e.target.value), minVal + 1);
             setMaxVal(value);
             maxValRef.current = value;
+            onChange(minVal, value);
           }}
           className="thumb thumb--right"
         />

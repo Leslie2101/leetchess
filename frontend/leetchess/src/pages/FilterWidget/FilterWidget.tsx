@@ -4,6 +4,7 @@ import { ThemeFilter } from "./ThemeFilter";
 import './FilterWidget.css';
 
 interface FilterModalProps {
+  filters: FilterState;
   onClose: () => void;
   onApply: (filters: FilterState) => void;
 }
@@ -11,7 +12,7 @@ interface FilterModalProps {
 export interface FilterState {
   ratingMin: number;
   ratingMax: number;
-  themes: Theme[];
+  themes: string[];
 }
 
 interface FilterModalHeaderProps {
@@ -53,7 +54,7 @@ function FilterModalBody({ filters, onChange, themes, loadingThemes}: FilterModa
             <button
               className="clear-btn"
               onClick={() =>
-                onChange({ ...filters, ratingMin: 400, ratingMax: 3000 })
+                onChange({ ...filters, ratingMin: 0, ratingMax: 3000 })
               }
             >
               Reset
@@ -64,7 +65,7 @@ function FilterModalBody({ filters, onChange, themes, loadingThemes}: FilterModa
             min={filters.ratingMin}
             max={filters.ratingMax}
             onChange={(min, max) =>
-              onChange({ ...filters, ratingMin: min, ratingMax: max })
+              onChange({ ...filters, ratingMin: min, ratingMax: max})
             }
           />
         </div>
@@ -85,28 +86,10 @@ function FilterModalBody({ filters, onChange, themes, loadingThemes}: FilterModa
   );
 }
 
-
-interface FilterModalFooterProps {
-  onReset: () => void;
-  onApply: () => void;
-}
-
-function FilterModalFooter({ onReset, onApply }: FilterModalFooterProps) {
-    return (
-        <div className="filter-modal-footer">
-        <button className="reset-all-btn" onClick={onReset}>
-            Reset All
-        </button>
-        <button className="apply-filters-btn" onClick={onApply}>
-            Apply Filters
-        </button>
-        </div>
-    );
-}
-
 interface FilterWidgetProps {
   filters: FilterState;
   onApply: (filters: FilterState) => void;
+  onReset: () => void;
 }
 
 function getFilterTags(filterState: FilterState) {
@@ -119,7 +102,7 @@ function getFilterTags(filterState: FilterState) {
   // Themes
   if (filterState.themes.length > 0) {
     filterState.themes.map((theme) => {
-      tags.push(theme.name);
+      tags.push(theme);
     });
   }
 
@@ -128,7 +111,7 @@ function getFilterTags(filterState: FilterState) {
 
 
 
-export function FilterWidget({filters, onApply}: FilterWidgetProps){
+export function FilterWidget({filters, onApply, onReset}: FilterWidgetProps){
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -157,10 +140,15 @@ export function FilterWidget({filters, onApply}: FilterWidgetProps){
                         <path d="M6 9l6 6 6-6"/>
                     </svg>
                 </div>
+                <button className="reset-all-btn" onClick={onReset}>
+                      Clear Filter
+                </button>
             </div>
+
 
             {isOpen && (
                 <FilterModal 
+                    filters={filters}
                     onClose={() => setIsOpen(false)}
                     onApply={onApply}
                 />
@@ -170,16 +158,10 @@ export function FilterWidget({filters, onApply}: FilterWidgetProps){
 }
 
 
-export function FilterModal({ onClose, onApply }: FilterModalProps) {
-    const [filters, setFilters] = useState<FilterState>({
-        ratingMin: 400,
-        ratingMax: 3000,
-        themes: [],
-    });
-
+export function FilterModal({ filters, onClose, onApply }: FilterModalProps) {
     const [themes, setThemes] = useState<Theme[]>([]);
     const [loadingThemes, setLoadingThemes] = useState(true);
-
+    const [localFilters, setLocalFilters] = useState(filters);
     
 
     useEffect(() => {
@@ -199,21 +181,21 @@ export function FilterModal({ onClose, onApply }: FilterModalProps) {
     }, []);
 
 
-    function resetAll() {
-        setFilters({
-        ratingMin: 400,
-        ratingMax: 3000,
-        themes: [],
-        });
-    }
-
     function applyFilters() {
-        onApply(filters);
+        onApply(localFilters);
         onClose();
     }
 
+    function clearFilters() {
+        setLocalFilters({
+            ratingMin: 10,
+            ratingMax: 3000,
+            themes: []
+        });
+    }
+
     const handleFilterChange = (newFilters: FilterState) => {
-      setFilters(newFilters);
+      setLocalFilters(localFilters => ({ ...localFilters, ...newFilters }));
     };
 
     return (
@@ -222,16 +204,20 @@ export function FilterModal({ onClose, onApply }: FilterModalProps) {
             <FilterModalHeader onClose={onClose} />
 
             <FilterModalBody
-                filters={filters}
+                filters={localFilters}
                 onChange={handleFilterChange}
                 themes={themes}
                 loadingThemes={loadingThemes}
             />
 
-            <FilterModalFooter
-            onReset={resetAll}
-            onApply={applyFilters}
-            />
+            <div className="filter-modal-footer">
+              <button className="reset-all-btn" onClick={clearFilters}>
+                  Clear All
+              </button>
+              <button className="apply-filters-btn" onClick={applyFilters}>
+                  Apply Filters
+              </button>
+            </div>
         </div>
         </div>
     );
