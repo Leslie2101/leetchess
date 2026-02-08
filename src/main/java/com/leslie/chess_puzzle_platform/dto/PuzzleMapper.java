@@ -14,11 +14,14 @@ public class PuzzleMapper {
 
         List<String> themes = puzzle.getThemes().stream()
                 .map(Theme::getName)
+                .sorted()
                 .toList();
+        String playerAlliance = puzzle.getFen().split(" ")[1].charAt(0) == 'w' ? "Black" : "White";
         return PuzzleViewDTO.builder()
                 .id(puzzle.getId())
                 .fen(puzzle.getFen())
                 .botMove(puzzle.getMoves().split(" ")[0])
+                .playerAlliance(playerAlliance)
                 .rating(puzzle.getRating())
                 .themes(themes)
                 .build();

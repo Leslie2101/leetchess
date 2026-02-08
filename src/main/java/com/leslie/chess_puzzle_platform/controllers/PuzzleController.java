@@ -15,6 +15,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/puzzles")
+@CrossOrigin(origins = "http://localhost:5173")
 @AllArgsConstructor
 public class PuzzleController {
 
@@ -46,8 +47,8 @@ public class PuzzleController {
     }
 
     @GetMapping("/{id}")
-    Optional<PuzzleViewDTO> getPuzzle(@PathVariable("id") long puzzleId){
-        return puzzleService.findById(puzzleId).map(mapper::toDTO);
+    ResponseEntity<Optional<PuzzleViewDTO>> getPuzzle(@PathVariable("id") long puzzleId){
+        return ResponseEntity.ok(puzzleService.findById(puzzleId).map(mapper::toDTO));
     }
 
     @PostMapping("/{puzzleId}")

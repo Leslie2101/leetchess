@@ -17,5 +17,6 @@ public class PuzzleViewDTO {
     private String fen;
     private int rating;
     private String botMove;
+    private String playerAlliance;
     private List<String> themes;
 }
