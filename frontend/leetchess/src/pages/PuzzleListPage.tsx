@@ -77,7 +77,18 @@ export default function PuzzleListPage(){
 
     async function loadPuzzles() {
         try {
-            const res = await fetch(`http://localhost:8082/puzzles?page=${pageNumber}&size=${pageSize}&ratingMin=${filters.ratingMin}&ratingMax=${filters.ratingMax}&ascending=true&sortBy=id`);
+
+            const params = new URLSearchParams();
+            
+            params.append("page", pageNumber.toString());
+            params.append("size", pageSize.toString());
+            params.append("ratingMin", filters.ratingMin.toString());
+            params.append("ratingMax", filters.ratingMax.toString());
+            filters.themes.forEach(theme => {
+                params.append("themes", theme);
+            });
+
+            const res = await fetch(`http://localhost:8082/puzzles?${params.toString()}`);
             if (!res.ok) {
                 throw new Error(`HTTP error! status: ${res.status}`);
             }

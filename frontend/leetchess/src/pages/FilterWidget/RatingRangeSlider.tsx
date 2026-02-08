@@ -52,91 +52,102 @@ export function RatingRangeSlider({
     }
   }, [maxVal, getPercent]);
 
-  // Sync to parent
-  // useEffect(() => {
-  //   onChange(minVal, maxVal);
-  // }, [minVal, maxVal, onChange]);
+
+
+  const handleReset = () => {
+    setMinVal(minLimit);
+    setMaxVal(maxLimit);
+    onChange(minLimit, maxLimit);
+  }
 
   return (
-    <div className="rating-range">
-      <div className="slider-container">
-        
-        {/* <div ref={range} className="slider-track" /> */}
-
-        {/* Min thumb */}
-        <input
-          type="range"
-          min={minLimit}
-          max={maxLimit}
-          value={minVal}
-          onChange={e => {
-            const value = Math.min(Number(e.target.value), maxVal - 1);
-            setMinVal(value);
-            minValRef.current = value;
-            onChange(value, maxVal);
-          }}
-          className="thumb thumb--left"
-          style={{ zIndex: minVal > maxLimit - 100 ? 5 : 3 }}
-        />
-
-        {/* Max thumb */}
-        <input
-          type="range"
-          min={minLimit}
-          max={maxLimit}
-          value={maxVal}
-          onChange={e => {
-            const value = Math.max(Number(e.target.value), minVal + 1);
-            setMaxVal(value);
-            maxValRef.current = value;
-            onChange(minVal, value);
-          }}
-          className="thumb thumb--right"
-        />
-        <div className="slider">
-          <div className="slider__track"></div>
-          <div ref={range} className="slider__range"></div>
-      </div>
-      </div>
-
-      
-
-      {/* Numeric inputs */}
-      <div className="range-inputs">
-        <div>
-          <div className="range-label">Min</div>
-          <input
-            type="number"
-            value={minVal}
-            min={minLimit}
-            max={maxVal - 1}
-            onChange={e => {
-              const value = Math.min(Number(e.target.value), maxVal - 1);
-              setMinVal(value);
-              minValRef.current = value;
-            }}
-            className="range-input"
-          />
+    <div className="filter-grid">
+      <div className="filter-section">
+        <div className="filter-section-title">
+          Rating Range
+          <button className="clear-btn" onClick={handleReset}> Reset </button>
         </div>
 
-        <span>—</span>
+        <div className="rating-range">
+          <div className="slider-container">
+          
+            {/* Min thumb */}
+            <input
+              type="range"
+              min={minLimit}
+              max={maxLimit}
+              value={minVal}
+              onChange={e => {
+                const value = Math.min(Number(e.target.value), maxVal - 1);
+                setMinVal(value);
+                minValRef.current = value;
+                onChange(value, maxVal);
+              }}
+              className="thumb thumb--left"
+              style={{ zIndex: minVal > maxLimit - 100 ? 5 : 3 }}
+            />
 
-        <div>
-          <div className="range-label">Max</div>
-          <input
-            type="number"
-            value={maxVal}
-            min={minVal + 1}
-            max={maxLimit}
-            onChange={e => {
-              const value = Math.max(Number(e.target.value), minVal + 1);
-              setMaxVal(value);
-              maxValRef.current = value;
-            }}
-            className="range-input"
-          />
+            {/* Max thumb */}
+            <input
+              type="range"
+              min={minLimit}
+              max={maxLimit}
+              value={maxVal}
+              onChange={e => {
+                const value = Math.max(Number(e.target.value), minVal + 1);
+                setMaxVal(value);
+                maxValRef.current = value;
+                onChange(minVal, value);
+              }}
+              className="thumb thumb--right"
+            />
+            <div className="slider">
+              <div className="slider__track"></div>
+              <div ref={range} className="slider__range"></div>
+            </div>
+          </div>
+
+        
+
+          {/* Numeric inputs */}
+          <div className="range-inputs">
+            <div>
+              <div className="range-label">Min</div>
+              <input
+                type="number"
+                value={minVal}
+                min={minLimit}
+                max={maxVal - 1}
+                onChange={e => {
+                  const value = Math.min(Number(e.target.value), maxVal - 1);
+                  setMinVal(value);
+                  minValRef.current = value;
+                }}
+                className="range-input"
+              />
+            </div>
+
+            <span>—</span>
+
+            <div>
+              <div className="range-label">Max</div>
+              <input
+                type="number"
+                value={maxVal}
+                min={minVal + 1}
+                max={maxLimit}
+                onChange={e => {
+                  const value = Math.max(Number(e.target.value), minVal + 1);
+                  setMaxVal(value);
+                  maxValRef.current = value;
+                }}
+                className="range-input"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>
+  
   );
 }

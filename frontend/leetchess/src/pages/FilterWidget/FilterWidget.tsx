@@ -47,29 +47,13 @@ interface FilterModalBodyProps {
 function FilterModalBody({ filters, onChange, themes, loadingThemes}: FilterModalBodyProps) {
   return (
     <div className="filter-modal-body">
-      <div className="filter-grid">
-        <div className="filter-section">
-          <div className="filter-section-title">
-            Rating Range
-            <button
-              className="clear-btn"
-              onClick={() =>
-                onChange({ ...filters, ratingMin: 0, ratingMax: 3000 })
-              }
-            >
-              Reset
-            </button>
-          </div>
-
-          <RatingRangeSlider
-            min={filters.ratingMin}
-            max={filters.ratingMax}
-            onChange={(min, max) =>
-              onChange({ ...filters, ratingMin: min, ratingMax: max})
-            }
-          />
-        </div>
-      </div>
+      <RatingRangeSlider
+        min={filters.ratingMin}
+        max={filters.ratingMax}
+        onChange={(min, max) =>
+          onChange({ ...filters, ratingMin: min, ratingMax: max})
+        }
+      />
 
       {loadingThemes 
         ? (<div className="loading">Loading themes…</div>) 
@@ -211,9 +195,9 @@ export function FilterModal({ filters, onClose, onApply }: FilterModalProps) {
             />
 
             <div className="filter-modal-footer">
-              <button className="reset-all-btn" onClick={clearFilters}>
+              {/* <button className="reset-all-btn" onClick={clearFilters}>
                   Clear All
-              </button>
+              </button> */}
               <button className="apply-filters-btn" onClick={applyFilters}>
                   Apply Filters
               </button>

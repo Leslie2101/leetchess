@@ -199,14 +199,6 @@
             border: 1px solid var(--border-color);
         }
 
-        .theme-tag-small:hover {
-            background: var(--primary-peach);
-            color: white;
-            border-color: var(--primary-peach);
-            transform: translateY(-1px);
-            cursor: pointer;
-        }
-
         .acceptance {
             color: var(--text-secondary);
         }
