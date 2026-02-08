@@ -28,6 +28,36 @@ interface PaginationFooterProps {
 }
 
 function PaginationFooter({pageSize, pageNumber, totalPage, onChangePageSize, onChangePageNumber}: PaginationFooterProps){
+    
+    const numberPagesDisplayed = 5;
+    let minPageLeft = Math.max(0, pageNumber - 2);
+    let maxPageRight = Math.min(totalPage - 1, pageNumber + 2);
+
+    // ensure we always show 5 pages if possible
+    if (maxPageRight - minPageLeft + 1 < numberPagesDisplayed) {
+        if (minPageLeft === 0) {
+            maxPageRight = Math.min(totalPage - 1, minPageLeft + numberPagesDisplayed - 1);
+        } else if (maxPageRight === totalPage - 1) {
+            minPageLeft = Math.max(0, maxPageRight - numberPagesDisplayed + 1);
+        }
+    }   
+
+    function renderPageNumbers() {
+        const pageButtons = [];
+        for (let i = minPageLeft; i <= maxPageRight; i++) {
+            pageButtons.push(
+                <button
+                    key={i}
+                    className={`page-btn ${i === pageNumber ? "active" : ""}`}
+                    onClick={() => onChangePageNumber(i)}
+                >
+                    {i + 1}
+                </button>
+            );
+        }
+        return pageButtons;
+    }
+    
     return (
         <div className="pagination">
             <div className="pagination-info">
@@ -46,7 +76,7 @@ function PaginationFooter({pageSize, pageNumber, totalPage, onChangePageSize, on
                 >
                     ‹
                 </button>
-
+                {renderPageNumbers()}
                 <button
                     className="page-btn"
                     onClick={() => onChangePageNumber(pageNumber + 1)}
@@ -163,7 +193,7 @@ export default function PuzzleListPage(){
 
 
         return (
-            <div className="puzzle-table">
+            <div id="puzzleTable" className="puzzle-table">
                 <table>
                     <thead>
                     <tr>
@@ -183,6 +213,24 @@ export default function PuzzleListPage(){
         )
     }
 
+    function onChangePageSize(value: string) {
+        setPageSize(value);
+        setPageNumber(0); // reset to first page when page size changes
+        scrollBack();
+        
+    }
+
+    function goToPage(pageNumber: number) {
+        setPageNumber(pageNumber);
+        scrollBack();
+    }
+
+    function scrollBack(){
+        // scroll the puzzle table into view
+        window.scrollTo(0, 0);
+
+    }
+
 
 
     return (
@@ -199,7 +247,7 @@ export default function PuzzleListPage(){
                     onChange={(value) => setSearchTerm(value)}
                  />
                 <PuzzleList />
-                <PaginationFooter pageSize={pageSize} pageNumber={pageNumber} totalPage={totalPage} onChangePageSize={(value) => setPageSize(value)} onChangePageNumber={(value) => setPageNumber(value)} />
+                <PaginationFooter pageSize={pageSize} pageNumber={pageNumber} totalPage={totalPage} onChangePageSize={(value) => onChangePageSize(value)} onChangePageNumber={(value) => goToPage(value)} />
             </div>
             
         </div>

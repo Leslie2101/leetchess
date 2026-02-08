@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback, use } from "react";
 import {RatingRangeSlider} from "./RatingRangeSlider";
 import { ThemeFilter } from "./ThemeFilter";
 import './FilterWidget.css';
+import { createPortal } from "react-dom";
+import ThreeSixtyIcon from '@mui/icons-material/ThreeSixty';
 
 interface FilterModalProps {
   filters: FilterState;
@@ -101,12 +103,16 @@ export function FilterWidget({filters, onApply, onReset}: FilterWidgetProps){
     return (
         <>
             <div className="filter-widget-container">
-                <div className="filter-trigger" onClick={(e) => {e.preventDefault();setIsOpen(true);}}>
+                <div className="filter-trigger">
                     <div className="filter-trigger-left">
-                        <div className="filter-icon">🎯</div>
+                        <div className="filter-icon"  onClick={(e) => {e.preventDefault();setIsOpen(true);}}>
+                          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path d="M3 4h18l-7 8v5l-4 4v-9L3 4z" />
+                          </svg>
+                        </div>
 
                         <div className="filter-summary">
-                            <div className="filter-title">Filters</div>
+                            {/* <div className="filter-title">Filters</div> */}
                             <div className="filter-tags" id="filterSummary">
                                 {(() => {
                                 const tags = getFilterTags(filters);
@@ -120,13 +126,13 @@ export function FilterWidget({filters, onApply, onReset}: FilterWidgetProps){
                             </div>
                         </div>
                     </div>
-                    <svg className="expand-icon" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
+                    {/* <svg className="expand-icon" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M6 9l6 6 6-6"/>
-                    </svg>
+                    </svg> */}
                 </div>
-                <button className="reset-all-btn" onClick={onReset}>
+                {/* <button className="reset-all-btn" onClick={onReset}>
                       Clear Filter
-                </button>
+                </button> */}
             </div>
 
 
@@ -182,7 +188,7 @@ export function FilterModal({ filters, onClose, onApply }: FilterModalProps) {
       setLocalFilters(localFilters => ({ ...localFilters, ...newFilters }));
     };
 
-    return (
+    return createPortal(
         <div className="filter-modal" onClick={onClose}>
         <div className="filter-modal-content" onClick={e => e.stopPropagation()}>
             <FilterModalHeader onClose={onClose} />
@@ -203,6 +209,7 @@ export function FilterModal({ filters, onClose, onApply }: FilterModalProps) {
               </button>
             </div>
         </div>
-        </div>
+        </div>,
+        document.body
     );
 }

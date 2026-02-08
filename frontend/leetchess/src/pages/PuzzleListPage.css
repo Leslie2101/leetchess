@@ -259,6 +259,7 @@
         .page-btn {
             width: 36px;
             height: 36px;
+            color: var(--text-secondary);
             border: 1px solid var(--border-color);
             background: var(--bg-card);
             border-radius: 6px;
@@ -277,8 +278,9 @@
 
         .page-btn.active {
             background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
+            color: var(--text-tertiary);
+            /* color: white; */
+            /* border-color: var(--primary-blue); */
         }
 
         .page-btn:disabled {
