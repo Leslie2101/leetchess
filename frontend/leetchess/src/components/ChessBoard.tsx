@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import './ChessBoard.css';
+import { Chess } from 'chess.js'
 
+
+import './ChessBoard.css';
 export interface onDropParams {
   source: string;
   target: string;
@@ -27,7 +29,7 @@ export interface PlayerMoveFeedback {
 const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayerMove}: ChessBoardProps) => {
 
   const boardRef = useRef<any>(null);
-  const previousFENRef = useRef<string>(fen);
+  const gameRef = useRef<Chess>(new Chess());
 
   function highlightSquare(square: string, color: "white" | "black" | 'red'= "white") {
     const boardEl = document.getElementById("board1"); // get by ID
@@ -63,17 +65,18 @@ const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayer
     if (source === target) {
       return 'snapback';
     };
-    previousFENRef.current = boardRef.current.fen();
     
-    
-    onPlayerMove({ source, target, piece });
+    try {
+      gameRef.current.move(source + target);
+      boardRef.current.position(gameRef.current.fen(), false);
+      onPlayerMove({ source, target, piece });
+      console.log("move: " + source + target);
+    } catch (e){
+      return 'snapback';
+    }
     
     
   }
-
-  const formattedMove = botMove.length === 4
-    ? botMove.slice(0, 2) + "-" + botMove.slice(2)
-    : botMove;
 
 
   useEffect(() => {
@@ -86,12 +89,17 @@ const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayer
         moveSpeed: 'slow',
         pieceTheme: "/img/chesspieces/{piece}.png",
       });
+
+      gameRef.current = new Chess(fen);
+
       boardRef.current = board;
-      board.move(formattedMove);
-      
+
+      // initial bot move
+      gameRef.current.move(botMove);
+      board.position(gameRef.current.fen());
 
       highlightSquare(botMove.slice(0, 2), "black");
-      
+      highlightSquare(botMove.slice(2), "black")
       
 
       return () => board?.destroy?.();
@@ -105,17 +113,17 @@ const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayer
     console.log("Received player move feedback in ChessBoard component:", playerMoveFeedback);
     if (playerMoveFeedback.isCorrect) {
       if (!playerMoveFeedback.isFinalMove) {
-        console.log("test");
-        const formattedBotMove = playerMoveFeedback.botResponseMove.length === 4
-          ? playerMoveFeedback.botResponseMove.slice(0, 2) + "-" + playerMoveFeedback.botResponseMove.slice(2)
-          : playerMoveFeedback.botResponseMove;
+        
+        // play bot response move
+        console.log(gameRef.current.fen());
+        gameRef.current.move(playerMoveFeedback.botResponseMove);
+        boardRef.current.position(gameRef.current.fen());
 
-        boardRef.current.move(formattedBotMove);    
+
+        // highlight bot previous move
         clearHighlights();
         highlightSquare(playerMoveFeedback.botResponseMove.slice(0,2), "black");
-
-
-        console.log("Bot move: " + formattedBotMove);
+        highlightSquare(playerMoveFeedback.botResponseMove.slice(2), "black");
       
       
       } else {
@@ -129,11 +137,21 @@ const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayer
         });
 
         boardRef.current = board;
+
+
+        if (gameRef.current.isCheckmate()){
+          const opponentColor = playerAlliance === 'b' ? 'w' : 'b';
+          const kingPosition = gameRef.current.findPiece({ type: 'k', color: opponentColor })[0];
+          highlightSquare(kingPosition, 'red');
+
+        }
+
+        
       }
     } else {
       
-      boardRef.current.position(previousFENRef.current);
-
+      gameRef.current.undo();
+      boardRef.current.position(gameRef.current.fen());
     }
   }, [playerMoveFeedback]);
 
