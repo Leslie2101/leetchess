@@ -2,6 +2,7 @@ package com.leslie.chess_puzzle_platform.services;
 
 
 import com.leslie.chess_puzzle_platform.dto.AttemptResponseDTO;
+import com.leslie.chess_puzzle_platform.exceptions.InvalidMoveException;
 import com.leslie.chess_puzzle_platform.models.AttemptStatus;
 import com.leslie.chess_puzzle_platform.models.Puzzle;
 import com.leslie.chess_puzzle_platform.models.PuzzleAttempt;
@@ -13,7 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -29,6 +30,12 @@ public class PuzzleAttemptService {
     public AttemptResponseDTO makeMove(Long puzzleId, Long attemptId, String move){
 
         Puzzle puzzle = puzzleRepository.findById(puzzleId).orElseThrow();
+
+        // reject invalid move of staying the same square
+        if (move.length()!=4 || move.substring(0,2).equals(move.substring(2,4))){
+            throw new InvalidMoveException("Source and destination cannot be the same");
+        }
+
         final String[] moves = puzzle.getMoves().split(" ");
         int nextMoveIndex = 1;
         String botMove = null;
@@ -39,7 +46,7 @@ public class PuzzleAttemptService {
 
             if (attempt.getStatus() == AttemptStatus.SOLVED){
                 return AttemptResponseDTO.builder()
-                        .id(attemptId)
+                        .attemptId(attemptId)
                         .botMove(null)
                         .isSolved(true)
                         .isCorrect(null)
@@ -79,7 +86,7 @@ public class PuzzleAttemptService {
             // return new object with updated FEN and previous bot move here
 
             return AttemptResponseDTO.builder()
-                    .id(puzzleAttempt.getId())
+                    .attemptId(puzzleAttempt.getId())
                     .botMove(botMove)
                     .isCorrect(true)
                     .isSolved(nextMoveIndex == moves.length)
@@ -101,7 +108,7 @@ public class PuzzleAttemptService {
 
             // solve incorrectly
             return AttemptResponseDTO.builder()
-                    .id(puzzleAttempt.getId())
+                    .attemptId(puzzleAttempt.getId())
                     .botMove(null)
                     .isSolved(false)
                     .isCorrect(false)

@@ -51,18 +51,18 @@ public class PuzzleController {
         return ResponseEntity.ok(puzzleService.findById(puzzleId).map(mapper::toDTO));
     }
 
-    @PostMapping("/{puzzleId}")
+    @PostMapping("/{puzzleId}/attempts")
     ResponseEntity<AttemptResponseDTO> startAttemptForPuzzle(@PathVariable long puzzleId,
-                                                             @RequestBody String move){
-        return ResponseEntity.ok(puzzleAttemptService.makeMove(puzzleId, null, move));
+                                                             @RequestBody MoveRequest moveRequest){
+        return ResponseEntity.ok(puzzleAttemptService.makeMove(puzzleId, null, moveRequest.move()));
     }
 
     @PostMapping("/{puzzleId}/attempts/{attemptId}/moves")
     ResponseEntity<AttemptResponseDTO> submitMoveForPuzzle(@PathVariable long puzzleId,
                                                            @PathVariable long attemptId,
-                                                           @RequestBody String move){
+                                                           @RequestBody MoveRequest moveRequest){
 
-        return ResponseEntity.ok(puzzleAttemptService.makeMove(puzzleId, attemptId, move));
+        return ResponseEntity.ok(puzzleAttemptService.makeMove(puzzleId, attemptId, moveRequest.move()));
     }
 
     @GetMapping("/{puzzleId}/attempts")

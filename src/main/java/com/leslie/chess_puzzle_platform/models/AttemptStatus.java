@@ -4,6 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum AttemptStatus {
+    FAILED("failed"),
+    IN_PROGRESS_FAIL("in_progress_failed"),
     IN_PROGRESS("attempted"),
     SOLVED("solved");
 
