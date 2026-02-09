@@ -58,14 +58,7 @@ const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayer
   }
 
 
-  function onDrop (source, target, piece, newPos, oldPos, orientation) {
-    console.log('Source: ' + source)
-    console.log('Target: ' + target)
-    console.log('Piece: ' + piece)
-    console.log('Orientation: ' + orientation)
-    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-
-    
+  function onDrop (source, target, piece, newPos, oldPos, orientation) {    
     // snapback if the move is incorrect or not valid
     if (source === target) {
       return 'snapback';
@@ -93,9 +86,13 @@ const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayer
         moveSpeed: 'slow',
         pieceTheme: "/img/chesspieces/{piece}.png",
       });
-
-      board.move(formattedMove);
       boardRef.current = board;
+      board.move(formattedMove);
+      
+
+      highlightSquare(botMove.slice(0, 2), "black");
+      
+      
 
       return () => board?.destroy?.();
     }, 200);
@@ -115,8 +112,7 @@ const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayer
 
         boardRef.current.move(formattedBotMove);    
         clearHighlights();
-        highlightSquare(playerMoveFeedback.botResponseMove.slice(0, 2), "black");
-        highlightSquare(playerMoveFeedback.botResponseMove.slice(2), "black");
+        highlightSquare(playerMoveFeedback.botResponseMove.slice(0,2), "black");
 
 
         console.log("Bot move: " + formattedBotMove);
