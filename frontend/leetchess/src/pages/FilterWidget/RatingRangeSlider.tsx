@@ -111,7 +111,7 @@ export function RatingRangeSlider({
 
           {/* Numeric inputs */}
           <div className="range-inputs">
-            <div>
+            <div className='range-input-container'>
               <div className="range-label">Min</div>
               <input
                 type="number"
@@ -129,7 +129,7 @@ export function RatingRangeSlider({
 
             <span>—</span>
 
-            <div>
+            <div className='range-input-container'>
               <div className="range-label">Max</div>
               <input
                 type="number"

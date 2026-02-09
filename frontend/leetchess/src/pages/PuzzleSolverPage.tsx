@@ -1,15 +1,20 @@
 // PuzzleSolverPage.tsx
 import { useEffect, useRef, useState } from "react";
 import ChessBoard from "../components/ChessBoard";
-import type { onDropParams } from "../components/ChessBoard";
+import type { onDropParams, PlayerMoveFeedback } from "../components/ChessBoard";
 import './PuzzleSolverPage.css';
 import { useParams } from "react-router-dom";
+
+// errors, time completion, 
+
 
 // --- Types ---
 interface Attempt {
   id: number;
-  time: string;
-  solved: boolean;
+  status: "solved" | "attempted";
+  movesMade: string[];
+  finishedTime: string;
+  submittedTime: string;
 }
 
 interface Puzzle {
@@ -34,7 +39,8 @@ interface BoardProps {
     botMove: string;
     moveHistory: string[];
     playerAlliance: string;
-    onMoveDetected: (params: onDropParams) => boolean;
+    playerMoveFeedback: PlayerMoveFeedback;
+    onMoveDetected: (params: onDropParams) => void;
 }
 
 interface RightPanelProps {
@@ -56,15 +62,15 @@ function Sidebar({ attempts, currentAttempt, setCurrentAttempt }: SidebarProps) 
               className={`attempt-item ${currentAttempt === attempt.id ? "active" : ""}`}
               onClick={() => setCurrentAttempt(attempt.id)}
               data-id={attempt.id}
-              data-solved={attempt.solved}
+              data-solved={attempt.status === "solved"}
             >
               <div className="attempt-thumb"></div>
               <div className="attempt-info">
                 <div className="attempt-id">#{attempt.id}</div>
-                <div className="attempt-time">{attempt.time}</div>
+                <div className="attempt-time">{attempt.finishedTime}</div>
               </div>
-              <div className={`attempt-status ${attempt.solved ? "solved" : "unsolved"}`}>
-                {currentAttempt === attempt.id ? "Current" : attempt.solved ? "Solved" : "Unsolved"}
+              <div className={`attempt-status ${attempt.status.toLowerCase()}`}>
+                {currentAttempt === attempt.id ? "Current" : attempt.status}
               </div>
             </div>
           ))}
@@ -75,14 +81,14 @@ function Sidebar({ attempts, currentAttempt, setCurrentAttempt }: SidebarProps) 
 }
 
 // --- Board Component ---
-function Board({ moveHistory, botMove, initialFen, playerAlliance, onMoveDetected }: BoardProps) {
+function Board({ moveHistory, botMove, initialFen, playerAlliance, playerMoveFeedback, onMoveDetected }: BoardProps) {
 
 
   return (
     <div className="board-container">
       <div className="board-wrapper">
         <div className="chessboard" id="board1">
-            <ChessBoard fen={initialFen} botMove={botMove} playerAlliance={playerAlliance} onPlayerMove={onMoveDetected}/>
+            <ChessBoard fen={initialFen} botMove={botMove} playerAlliance={playerAlliance} playerMoveFeedback={playerMoveFeedback} onPlayerMove={onMoveDetected}/>
         </div>
       </div>
 
@@ -120,123 +126,214 @@ function Board({ moveHistory, botMove, initialFen, playerAlliance, onMoveDetecte
 
 // --- Right Panel Component ---
 function RightPanel({ puzzle }: RightPanelProps) {
-    return (
-        <div className="right-panel">
-            <div className="puzzle-info">
-                <div className="puzzle-header">
-                    <div>
-                        <div className="puzzle-number">Puzzle #{puzzle.id}</div>
-                        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginTop: "0.5rem" }}>
-                        <svg width="16" height="16" fill="none">
-                            <circle cx="8" cy="8" r={8} fill="currentColor" opacity={0.2} />
-                            <circle cx="8" cy="8" r={3} fill="currentColor" />
-                        </svg>
-                        {/* <span className="difficulty-badge">{puzzle.difficulty}</span> */}
-                        </div>
-                    </div>
-                </div>
 
-                <div className="puzzle-stats">
-                    <div className="stat">
-                        <div className="stat-label">Rating</div>
-                        <div className="stat-value">{puzzle.rating}</div>
-                    </div>
-                    <div className="stat">
-                        <div className="stat-label">Played</div>
-                        <div className="stat-value">{puzzle.played}</div>
-                    </div>
-                    <div className="stat">
-                        <div className="stat-label">Success</div>
-                        <div className="stat-value">{puzzle.success}%</div>
-                    </div>
-                </div>
+  const category = (rating: number) => {
+      return rating < 900 ? "easy" : rating <= 1500 ? "medium" : "hard";
+  }
+  return (
+      <div className="right-panel">
+          <div className="puzzle-info">
+              <div className="puzzle-header">
+                  <div>
+                      <div className="puzzle-number">Puzzle #{puzzle.id}</div>
+                      <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginTop: "0.5rem" }}>
+                      <svg width="16" height="16" fill="none">
+                          <circle cx="8" cy="8" r={8} fill="currentColor" opacity={0.2} />
+                          <circle cx="8" cy="8" r={3} fill="currentColor" />
+                      </svg>
+                      {/* <span className="difficulty-badge">{puzzle.difficulty}</span> */}
+                      </div>
+                  </div>
+              </div>
 
-                <div className="turn-indicator">
-                    <div className="turn-dot"></div>
-                    <div className="turn-text">{puzzle.playerAlliance} to Move</div>
-                </div>
-            </div>
+              <div className="puzzle-stats">
+                  <div className="stat">
+                      <div className="stat-label">Rating</div>
+                      <div className={`stat-value rating ${category(puzzle.rating)}`}>{puzzle.rating}</div>
+                  </div>
+                  <div className="stat">
+                      <div className="stat-label">Played</div>
+                      <div className="stat-value">{puzzle.played}</div>
+                  </div>
+                  <div className="stat">
+                      <div className="stat-label">Success</div>
+                      <div className="stat-value">{puzzle.success}%</div>
+                  </div>
+              </div>
 
-            <div className="ai-consultant">
-                <div className="consultant-header">AI Consultant</div>
-                    <div className="chat-messages" id="chatMessages">
-                    <div className="chat-placeholder">
-                        <div className="chat-placeholder-icon">💬</div>
-                        <div>Ask for hints or tactical advice</div>
-                    </div>
-                </div>
-                <div className="chat-input">
-                    <input type="text" id="chatInput" placeholder="Ask for a hint..." />
-                    <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth={2}>
-                        <path d="M5 12h14m0 0l-6-6m6 6l-6 6" />
-                    </svg>
-                </div>
-            </div>
+              <div className="turn-indicator">
+                  <div className="turn-dot"></div>
+                  <div className="turn-text">{puzzle.playerAlliance} to Move</div>
+              </div>
+          </div>
 
-            <div className="action-buttons">
-                <button className="hint-btn">
-                    <span>💡</span> Get Hint
-                </button>
-                <button className="submit-btn">Submit Move</button>
-            </div>
-        </div>
-    );
+          <div className="ai-consultant">
+              <div className="consultant-header">AI Consultant</div>
+                  <div className="chat-messages" id="chatMessages">
+                  <div className="chat-placeholder">
+                      <div className="chat-placeholder-icon">💬</div>
+                      <div>Ask for hints or tactical advice</div>
+                  </div>
+              </div>
+              <div className="chat-input">
+                  <input type="text" id="chatInput" placeholder="Ask for a hint..." />
+                  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth={2}>
+                      <path d="M5 12h14m0 0l-6-6m6 6l-6 6" />
+                  </svg>
+              </div>
+          </div>
+
+          <div className="action-buttons">
+              <button className="hint-btn">
+                  <span>💡</span> Get Hint
+              </button>
+              <button className="submit-btn">Submit Move</button>
+          </div>
+      </div>
+  );
 }
+
+const attempts: Attempt[] = [
+  { id: 89231, finishedTime: "In Progress", status: "attempted"},
+  { id: 89201, finishedTime: "2m 30s", status: "solved"}
+];
+
+interface AttemptResponse {
+  id: string;
+  attemptId: number;
+  botMove: string,
+  isCorrect: boolean;
+  isSolved: boolean;
+  msg: string;
+}
+
+
+
 
 // --- Main Page ---
 export default function PuzzleSolverPage() {
-    const [currentAttempt, setCurrentAttempt] = useState<number>(89231);
-    const [puzzle, setPuzzle] = useState<Puzzle>();
+  const [currentAttempt, setCurrentAttempt] = useState<number>(-1);
+  const [puzzle, setPuzzle] = useState<Puzzle>();
+  const [playerMoveFeedback, setPlayerMoveFeedback] = useState<PlayerMoveFeedback>();
+  const [isSolved, setIsSolved] = useState<boolean>(false);
+  const [playerMove, setPlayerMove] = useState<string>();
+
+  const moveHistory: string[] = ["Nf3 - Nf6"];
+  const params = useParams<{ puzzleId: string }>(); // get URL params
+  const puzzleId = params.puzzleId; // string value of "1" from /puzzles/1/solve
+
+  useEffect(() => {
+      if (!puzzleId) return;
+
+      async function loadPuzzle() {
+          try {
+              const res = await fetch(`http://localhost:8082/puzzles/${puzzleId}`);
+              const json = await res.json();
+              setPuzzle(json);
+          } catch (err) {
+              console.error(err);
+          }
+      }
+
+      loadPuzzle();
+  }, []);
+
+  // send move to backend when playerMove state updates, which happens when a move is detected on the chessboard
+  useEffect(() => {
+    if (!playerMove) return;
+    if (isSolved) return;
     
-    const attempts: Attempt[] = [
-        { id: 89231, time: "In Progress", solved: false },
-        { id: 89201, time: "2m 30s", solved: true },
-    ];
 
-    const moveHistory: string[] = ["Nf3 - Nf6"];
+    sendMoveToApi(playerMove);
+    setPlayerMove(undefined); // reset playerMove state after sending to API
+  }, [playerMove, isSolved]);
 
 
-    const params = useParams<{ puzzleId: string }>(); // get URL params
-    const puzzleId = params.puzzleId; // string value of "1" from /puzzles/1/solve
 
-    useEffect(() => {
-        console.log("PuzzleSolverPage mounted with puzzleId:", puzzleId);
-        if (!puzzleId) return;
-
-        async function loadPuzzle() {
-            try {
-                const res = await fetch(`http://localhost:8082/puzzles/${puzzleId}`);
-                const json = await res.json();
-                setPuzzle(json);
-            } catch (err) {
-                console.error(err);
-            }
+  async function sendMoveToApi(move: string) {
+    // first move being made 
+    if (currentAttempt === -1) {
+      console.log("Submitting first move for attempt:", JSON.stringify({ move }));
+      const res = await fetch(`http://localhost:8082/puzzles/${puzzleId}/attempts`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ move })
         }
+      );
 
-        loadPuzzle();
-    }, []);
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      const json: AttemptResponse = await res.json();
+      console.log("Received response for first move:", json);
+      setCurrentAttempt(json.attemptId);
+      setIsSolved(json.isSolved);
+      setPlayerMoveFeedback({
+        feedbackId: json.id,
+        playerMove: move,
+        isCorrect: json.isCorrect,
+        isFinalMove: json.isSolved,
+        botResponseMove: json.botMove
+      });
 
-    function onMoveDetected(params: onDropParams) {
-        console.log("Player move detected:", params.source, params.target);
-        // sent mmove to backend for validation and response
-
-        return true;
+      console.log("Set player move feedback to:", json);
+    
+    // subsequent moves
+    } else {
+      const res = await fetch(`http://localhost:8082/puzzles/${puzzleId}/attempts/${currentAttempt}/moves`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ move })
+        }
+      );
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      const json : AttemptResponse = await res.json();
+      console.log("Received response for subsequent move:", json);
+      setIsSolved(json.isSolved);
+      setPlayerMoveFeedback({
+        feedbackId: json.id,
+        playerMove: move,
+        isCorrect: json.isCorrect,
+        isFinalMove: json.isSolved,
+        botResponseMove: json.botMove
+      });
     }
 
-    return (
-        <div className="solver-container">
-            <Sidebar attempts={attempts} currentAttempt={currentAttempt} setCurrentAttempt={setCurrentAttempt} />
-            {puzzle && (
-                <>
-                    <Board
-                        playerAlliance={puzzle.playerAlliance} 
-                        moveHistory={moveHistory} 
-                        initialFen={puzzle.fen} 
-                        botMove={puzzle.botMove} 
-                        onMoveDetected={onMoveDetected} />
-                    <RightPanel puzzle={puzzle} />
-                </>
-            )}
-        </div>
-    );
+  }
+
+
+  
+
+  function onMoveDetected(params: onDropParams) {
+    console.log("Player move detected:", params.source, params.target);
+    // sent move to backend for validation and response
+    const move = params.source.toLowerCase() + params.target.toLowerCase();
+    setPlayerMove(move);
+  }
+
+  return (
+      <div className="solver-container">
+          <Sidebar attempts={attempts} currentAttempt={currentAttempt} setCurrentAttempt={setCurrentAttempt} />
+          {puzzle && (
+              <>
+                  <Board
+                      playerMoveFeedback={playerMoveFeedback}
+                      playerAlliance={puzzle.playerAlliance} 
+                      moveHistory={moveHistory} 
+                      initialFen={puzzle.fen} 
+                      botMove={puzzle.botMove} 
+                      onMoveDetected={onMoveDetected} />
+                  <RightPanel puzzle={puzzle} />
+              </>
+          )}
+      </div>
+  );
 }

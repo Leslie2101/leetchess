@@ -180,13 +180,18 @@ export default function PuzzleListPage(){
 
 
     function PuzzleList() {
+
+        const category = (rating: number) => {
+            return rating < 900 ? "easy" : rating <= 1500 ? "medium" : "hard";
+        } 
+
         const listPuzzles = puzzles.map(puzzle =>
             <tr  key={puzzle.id} onClick={()=>handleSolveClick(puzzle.id)}>
                 <td className="status-cell">
                     <div className='status-icon'></div>
                 </td>
                 <td><div className="puzzle-title">Puzzle {puzzle.id}</div></td>
-                <td><span className="rating easy">{puzzle.rating}</span></td>
+                <td><span className={`rating ${category(puzzle.rating)}`}>{puzzle.rating}</span></td>
                 <td><span className='acceptance'>{puzzle.acceptance}%</span></td>
                 <td>
                     <div className="theme-tags">

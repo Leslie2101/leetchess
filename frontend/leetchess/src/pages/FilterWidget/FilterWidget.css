@@ -454,6 +454,10 @@
 
 
 /* Rating Range Slider */
+.range-input-container {
+    text-align: center ;
+}
+
 .range-inputs {
     display: grid;
     grid-template-columns: 1fr auto 1fr;

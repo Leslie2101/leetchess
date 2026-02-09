@@ -135,7 +135,7 @@
     background: rgba(34, 197, 94, 0.1);
 }
 
-.attempt-status.unsolved {
+.attempt-status.attempted {
     color: var(--text-secondary);
     background: var(--bg-hover);
 }

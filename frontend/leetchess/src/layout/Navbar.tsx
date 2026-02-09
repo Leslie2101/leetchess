@@ -9,7 +9,7 @@ export default function Navbar() {
     <div className="header-content">
         <a href="/" className="logo">
             <div className="logo-icon">♔</div>
-            ChessCode
+            Leetchess
         </a>
         <nav className="nav">
             <Link className='nav-link active' to='/puzzles'>Puzzles</Link>
