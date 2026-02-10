@@ -31,21 +31,31 @@ const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayer
   const boardRef = useRef<any>(null);
   const gameRef = useRef<Chess>(new Chess());
 
-  function highlightSquare(square: string, color: "white" | "black" | 'red'= "white") {
+  function highlightSquare(square: string) {
     const boardEl = document.getElementById("board1"); // get by ID
     const el = boardEl?.querySelector(`[data-square='${square}']`);
     if (!el) {
       console.log("Square element not found:", square);
       return;
     }
-    el.classList.add(`highlight-${color}`);
+    el.classList.add(`highlight-select`);
+  }
+
+  function highlightCheckmate(square: string) {
+    const boardEl = document.getElementById("board1"); // get by ID
+    const el = boardEl?.querySelector(`[data-square='${square}']`);
+    if (!el) {
+      console.log("Square element not found:", square);
+      return;
+    }
+    el.classList.add(`highlight-checkmate-deliver`);
   }
 
   function clearHighlights() {
     const boardEl = document.getElementById("board1"); // get by ID
 
-    boardEl?.querySelectorAll(".highlight-white, .highlight-black")
-      .forEach(el => el.classList.remove("highlight-white", "highlight-black"));
+    boardEl?.querySelectorAll(".highlight-select")
+      .forEach(el => el.classList.remove("highlight-select"));
   }
 
 
@@ -98,8 +108,8 @@ const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayer
       gameRef.current.move(botMove);
       board.position(gameRef.current.fen());
 
-      highlightSquare(botMove.slice(0, 2), "black");
-      highlightSquare(botMove.slice(2), "black")
+      highlightSquare(botMove.slice(0, 2));
+      highlightSquare(botMove.slice(2))
       
 
       return () => board?.destroy?.();
@@ -122,8 +132,8 @@ const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayer
 
         // highlight bot previous move
         clearHighlights();
-        highlightSquare(playerMoveFeedback.botResponseMove.slice(0,2), "black");
-        highlightSquare(playerMoveFeedback.botResponseMove.slice(2), "black");
+        highlightSquare(playerMoveFeedback.botResponseMove.slice(0,2));
+        highlightSquare(playerMoveFeedback.botResponseMove.slice(2));
       
       
       } else {
@@ -137,12 +147,17 @@ const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayer
         });
 
         boardRef.current = board;
+        
+        // highlight last user move
+        clearHighlights();
+        highlightSquare(playerMoveFeedback.playerMove.slice(0,2));
+        highlightSquare(playerMoveFeedback.playerMove.slice(2));
 
 
         if (gameRef.current.isCheckmate()){
-          const opponentColor = playerAlliance === 'b' ? 'w' : 'b';
+          const opponentColor = playerAlliance.toLowerCase() === 'black' ? 'w' : 'b';
           const kingPosition = gameRef.current.findPiece({ type: 'k', color: opponentColor })[0];
-          highlightSquare(kingPosition, 'red');
+          highlightCheckmate(kingPosition);
 
         }
 
