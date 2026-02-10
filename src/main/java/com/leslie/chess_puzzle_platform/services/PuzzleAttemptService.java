@@ -32,7 +32,8 @@ public class PuzzleAttemptService {
         Puzzle puzzle = puzzleRepository.findById(puzzleId).orElseThrow();
 
         // reject invalid move of staying the same square
-        if (move.length()!=4 || move.substring(0,2).equals(move.substring(2,4))){
+        // todo: Properly extract san
+        if (move.length() < 4 || move.substring(0,2).equals(move.substring(2,4))){
             throw new InvalidMoveException("Source and destination cannot be the same");
         }
 

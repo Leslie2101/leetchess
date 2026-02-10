@@ -137,10 +137,10 @@ function RightPanel({ puzzle }: RightPanelProps) {
                   <div>
                       <div className="puzzle-number">Puzzle #{puzzle.id}</div>
                       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginTop: "0.5rem" }}>
-                      <svg width="16" height="16" fill="none">
+                      {/* <svg width="16" height="16" fill="none">
                           <circle cx="8" cy="8" r={8} fill="currentColor" opacity={0.2} />
                           <circle cx="8" cy="8" r={3} fill="currentColor" />
-                      </svg>
+                      </svg> */}
                       {/* <span className="difficulty-badge">{puzzle.difficulty}</span> */}
                       </div>
                   </div>
@@ -208,6 +208,49 @@ interface AttemptResponse {
 }
 
 
+interface PromotionModalProp {
+  isOpen: boolean;
+  selectPromotion: (piece: string) => void;  
+}
+
+function PromotionModal({isOpen, selectPromotion}: PromotionModalProp){
+  console.log(isOpen, selectPromotion);
+  return (
+    <>
+      { isOpen && 
+        <div className="promotion-overlay active" id="promotionOverlay">
+            <div className="promotion-modal" onClick={(e) => {e.preventDefault();}}>
+                <h2 className="promotion-title">Promote Your Pawn! 👑</h2>
+                <p className="promotion-subtitle">Choose which piece to promote to</p>
+                
+                <div className="promotion-pieces">
+                    <div className="promotion-piece" onClick={() => selectPromotion('q')} data-piece="queen">
+                        <div className="piece-icon" id="queenIcon">♕</div>
+                        <div className="piece-name">Queen</div>
+                    </div>
+                    
+                    <div className="promotion-piece" onClick={() => selectPromotion('r')} data-piece="rook">
+                        <div className="piece-icon" id="rookIcon">♖</div>
+                        <div className="piece-name">Rook</div>
+                    </div>
+                    
+                    <div className="promotion-piece" onClick={() => selectPromotion('b')} data-piece="bishop">
+                        <div className="piece-icon" id="bishopIcon">♗</div>
+                        <div className="piece-name">Bishop</div>
+                    </div>
+                    
+                    <div className="promotion-piece" onClick={() => selectPromotion('n')} data-piece="knight">
+                        <div className="piece-icon" id="knightIcon">♘</div>
+                        <div className="piece-name">Knight</div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+      }
+    </>
+  )
+}
 
 
 // --- Main Page ---
@@ -216,7 +259,14 @@ export default function PuzzleSolverPage() {
   const [puzzle, setPuzzle] = useState<Puzzle>();
   const [playerMoveFeedback, setPlayerMoveFeedback] = useState<PlayerMoveFeedback>();
   const [isSolved, setIsSolved] = useState<boolean>(false);
-  const [playerMove, setPlayerMove] = useState<string>();
+  const [playerMove, setPlayerMove] = useState<onDropParams>();
+  const [pendingPromotion, setPendingPromotion] = useState<{
+    from: string;
+    to: string;
+  } | null>(null);
+
+const [promotionPiece, setPromotionPiece] = useState<string | null>(null);
+
 
   const moveHistory: string[] = ["Nf3 - Nf6"];
   const params = useParams<{ puzzleId: string }>(); // get URL params
@@ -238,15 +288,47 @@ export default function PuzzleSolverPage() {
       loadPuzzle();
   }, []);
 
+  const onPromotionSelect = (piece: string) => {
+    if (!pendingPromotion) return;
+
+    console.log(piece);
+
+    sendMoveToApi(pendingPromotion.from + pendingPromotion.to + piece);
+
+  
+    setPendingPromotion(null);
+    setPlayerMove(undefined);
+};
+
   // send move to backend when playerMove state updates, which happens when a move is detected on the chessboard
   useEffect(() => {
     if (!playerMove) return;
     if (isSolved) return;
+
+    // Pawn reached last rank → promotion needed
+    if (playerMove.piece === "wP" && playerMove.target[1] === "8") {
+      console.log("trigger promotion");
+      setPendingPromotion({ from: playerMove.source, to: playerMove.target });
+      return; 
+    }
+
+    if (playerMove.piece === "bP" && playerMove.target[1] === "1") {
+      console.log("trigger promotion");
+      setPendingPromotion({ from: playerMove.source, to: playerMove.target });
+      return;
+    }
+
+
+    // setTimeout(() => {
+    //   console.log("Freeze");
+    // }, 500);
     
 
-    sendMoveToApi(playerMove);
+    sendMoveToApi(playerMove.source + playerMove.target);
     setPlayerMove(undefined); // reset playerMove state after sending to API
   }, [playerMove, isSolved]);
+
+  
 
 
 
@@ -315,8 +397,7 @@ export default function PuzzleSolverPage() {
   function onMoveDetected(params: onDropParams) {
     console.log("Player move detected:", params.source, params.target);
     // sent move to backend for validation and response
-    const move = params.source.toLowerCase() + params.target.toLowerCase();
-    setPlayerMove(move);
+    setPlayerMove(params);
   }
 
   return (
@@ -324,6 +405,11 @@ export default function PuzzleSolverPage() {
           <Sidebar attempts={attempts} currentAttempt={currentAttempt} setCurrentAttempt={setCurrentAttempt} />
           {puzzle && (
               <>
+                  <PromotionModal
+                    isOpen={!!pendingPromotion}
+                    selectPromotion={onPromotionSelect}
+                  />
+                  
                   <Board
                       playerMoveFeedback={playerMoveFeedback}
                       playerAlliance={puzzle.playerAlliance} 

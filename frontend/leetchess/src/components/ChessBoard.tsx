@@ -26,19 +26,39 @@ export interface PlayerMoveFeedback {
   botResponseMove: string;
 }
 
+function extractSquaresFromSAN(san: string): {
+  from?: string;
+  to?: string;
+} {
+  // match all board squares like e4, g1, h8
+  const squares = san.match(/[a-h][1-8]/g) || [];
+
+  if (squares.length === 0) {
+    return {};
+  }
+
+  if (squares.length === 1) {
+    return { to: squares[0] };
+  }
+
+  return {
+    from: squares[0],
+    to: squares[squares.length - 1],
+  };
+}
+
 const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayerMove}: ChessBoardProps) => {
 
   const boardRef = useRef<any>(null);
   const gameRef = useRef<Chess>(new Chess());
 
-  function highlightSquare(square: string) {
-    const boardEl = document.getElementById("board1"); // get by ID
-    const el = boardEl?.querySelector(`[data-square='${square}']`);
-    if (!el) {
-      console.log("Square element not found:", square);
-      return;
-    }
-    el.classList.add(`highlight-select`);
+  function highlightLastMove(from: string, to: string) {
+      [from, to].forEach(coord => {
+          const squareEl = document.querySelector(`[data-square="${coord}"]`);
+          if (squareEl) {
+              squareEl.classList.add('highlight-last-move');
+          }
+      });
   }
 
   function highlightCheckmate(square: string) {
@@ -54,8 +74,8 @@ const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayer
   function clearHighlights() {
     const boardEl = document.getElementById("board1"); // get by ID
 
-    boardEl?.querySelectorAll(".highlight-select")
-      .forEach(el => el.classList.remove("highlight-select"));
+    boardEl?.querySelectorAll(".square-55d63")
+      .forEach(el => el.classList.remove("highlight-legal-move", "highlight-last-move"));
   }
 
 
@@ -67,6 +87,8 @@ const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayer
         (playerAlliance.toLowerCase() === 'black' && piece.search(/^b/) === -1)) {
       return false
     }
+
+    console.log(gameRef.current.moves({ square: source }));
   }
 
 
@@ -75,16 +97,10 @@ const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayer
     if (source === target) {
       return 'snapback';
     };
-    
-    try {
-      gameRef.current.move(source + target);
-      boardRef.current.position(gameRef.current.fen(), false);
-      onPlayerMove({ source, target, piece });
-      console.log("move: " + source + target);
-    } catch (e){
-      return 'snapback';
-    }
-    
+
+    console.log(piece);
+
+    onPlayerMove({ source, target, piece });
     
   }
 
@@ -108,8 +124,10 @@ const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayer
       gameRef.current.move(botMove);
       board.position(gameRef.current.fen());
 
-      highlightSquare(botMove.slice(0, 2));
-      highlightSquare(botMove.slice(2))
+      highlightLastMove(botMove.slice(0, 2), botMove.slice(2));
+
+      // highlightSquare(botMove.slice(0, 2));
+      // highlightSquare(botMove.slice(2))
       
 
       return () => board?.destroy?.();
@@ -122,6 +140,14 @@ const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayer
 
     console.log("Received player move feedback in ChessBoard component:", playerMoveFeedback);
     if (playerMoveFeedback.isCorrect) {
+
+      // player make move
+      gameRef.current.move(playerMoveFeedback.playerMove);
+      boardRef.current.position(gameRef.current.fen(), false);
+      // clearHighlights();
+      // console.log(playerMoveFeedback.playerMove);
+      // highlightLastMove(playerMoveFeedback.playerMove.slice(0,2), playerMoveFeedback.playerMove.slice(2));
+        
       if (!playerMoveFeedback.isFinalMove) {
         
         // play bot response move
@@ -132,10 +158,9 @@ const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayer
 
         // highlight bot previous move
         clearHighlights();
-        highlightSquare(playerMoveFeedback.botResponseMove.slice(0,2));
-        highlightSquare(playerMoveFeedback.botResponseMove.slice(2));
-      
-      
+        highlightLastMove(playerMoveFeedback.botResponseMove.slice(0,2), playerMoveFeedback.botResponseMove.slice(2));
+
+          
       } else {
         console.log("Puzzle solved! Disabling board.");
         const currentFEN = boardRef.current.fen();
@@ -150,8 +175,7 @@ const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayer
         
         // highlight last user move
         clearHighlights();
-        highlightSquare(playerMoveFeedback.playerMove.slice(0,2));
-        highlightSquare(playerMoveFeedback.playerMove.slice(2));
+        highlightLastMove(playerMoveFeedback.playerMove.slice(0,2), playerMoveFeedback.playerMove.slice(2));
 
 
         if (gameRef.current.isCheckmate()){
@@ -165,7 +189,7 @@ const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayer
       }
     } else {
       
-      gameRef.current.undo();
+      // gameRef.current.undo();
       boardRef.current.position(gameRef.current.fen());
     }
   }, [playerMoveFeedback]);
