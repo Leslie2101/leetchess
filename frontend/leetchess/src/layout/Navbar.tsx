@@ -2,10 +2,13 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import './Navbar.css'
 import ProfileModal from './ProfileModal'
+import { useAuth } from '../AuthContext';
+import axios from 'axios';
 
 export default function Navbar() {
     const [profileModalOpen, setProfileModalOpen] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const auth = useAuth();
+
 
     function toggleProfileModal() {
         setProfileModalOpen(prev => !prev);
@@ -14,8 +17,6 @@ export default function Navbar() {
     function handleLogin(provider: string){
         console.log(`Login with ${provider}`);
         window.location.href = `http://localhost:8082/oauth2/authorization/${provider}`;
-        setIsLoggedIn(true);
-
     }
 
 
@@ -23,7 +24,6 @@ export default function Navbar() {
         console.log("Logout");
         // fetch('/auth/logout', { method: 'POST' })
         //     .then(() => window.location.reload());
-        setIsLoggedIn(false);
     }
     
     return (
@@ -49,7 +49,6 @@ export default function Navbar() {
             <ProfileModal 
                 open={profileModalOpen}
                 onClose={() => setProfileModalOpen(false)}
-                isLoggedIn={isLoggedIn}
                 handleLogin={(provider)=>handleLogin(provider)}
                 handleLogout={() => handleLogout()}
             />
