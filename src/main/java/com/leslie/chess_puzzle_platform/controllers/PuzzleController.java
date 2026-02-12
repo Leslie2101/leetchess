@@ -15,7 +15,6 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/puzzles")
-@CrossOrigin(origins = "http://localhost:5173")
 @AllArgsConstructor
 public class PuzzleController {
 
