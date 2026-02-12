@@ -214,7 +214,6 @@ interface PromotionModalProp {
 }
 
 function PromotionModal({isOpen, selectPromotion}: PromotionModalProp){
-  console.log(isOpen, selectPromotion);
   return (
     <>
       { isOpen && 
@@ -290,12 +289,7 @@ const [promotionPiece, setPromotionPiece] = useState<string | null>(null);
 
   const onPromotionSelect = (piece: string) => {
     if (!pendingPromotion) return;
-
-    console.log(piece);
-
     sendMoveToApi(pendingPromotion.from + pendingPromotion.to + piece);
-
-  
     setPendingPromotion(null);
     setPlayerMove(undefined);
 };
@@ -305,25 +299,17 @@ const [promotionPiece, setPromotionPiece] = useState<string | null>(null);
     if (!playerMove) return;
     if (isSolved) return;
 
-    // Pawn reached last rank → promotion needed
+    // Pawn reached last rank -> promotion needed
     if (playerMove.piece === "wP" && playerMove.target[1] === "8") {
-      console.log("trigger promotion");
       setPendingPromotion({ from: playerMove.source, to: playerMove.target });
       return; 
     }
 
     if (playerMove.piece === "bP" && playerMove.target[1] === "1") {
-      console.log("trigger promotion");
       setPendingPromotion({ from: playerMove.source, to: playerMove.target });
       return;
     }
-
-
-    // setTimeout(() => {
-    //   console.log("Freeze");
-    // }, 500);
     
-
     sendMoveToApi(playerMove.source + playerMove.target);
     setPlayerMove(undefined); // reset playerMove state after sending to API
   }, [playerMove, isSolved]);

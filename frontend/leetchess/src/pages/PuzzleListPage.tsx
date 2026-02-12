@@ -138,7 +138,6 @@ export default function PuzzleListPage(){
             }
             const json = await res.json();
             const data = json.content;
-            console.log("Fetched puzzles", data);
             setTotalPage(json.page.totalPages);
             setPuzzles(data);
         } catch (err) {
@@ -155,9 +154,6 @@ export default function PuzzleListPage(){
     }, [pageNumber, pageSize, filters, searchTerm]);
 
     
-
-    console.log("Puzzles", puzzles);
-
     const handleApplyFilters = useCallback((newFilters: FilterState) => {
         setFilters(newFilters);
         setPageNumber(0); 

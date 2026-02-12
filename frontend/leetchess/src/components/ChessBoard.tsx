@@ -87,8 +87,6 @@ const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayer
         (playerAlliance.toLowerCase() === 'black' && piece.search(/^b/) === -1)) {
       return false
     }
-
-    console.log(gameRef.current.moves({ square: source }));
   }
 
 
