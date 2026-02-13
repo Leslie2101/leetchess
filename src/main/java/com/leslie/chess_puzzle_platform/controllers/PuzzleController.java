@@ -67,6 +67,7 @@ public class PuzzleController {
         if (principal != null){
             System.out.println("USER make move: " + principal.getAttribute("email"));
         }
+
         return ResponseEntity.ok(puzzleAttemptService.makeMove(puzzleId, attemptId, moveRequest.move()));
     }
 

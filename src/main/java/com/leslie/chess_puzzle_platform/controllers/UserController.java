@@ -21,6 +21,8 @@ public class UserController {
             return ResponseEntity.ok(null);
         }
 
+        System.out.println("PRINCIPAL " + principal);
+
         UserInfoDTO dto = UserInfoDTO.builder()
                             .name(principal.getAttribute("name"))
                             .email(principal.getAttribute("email"))

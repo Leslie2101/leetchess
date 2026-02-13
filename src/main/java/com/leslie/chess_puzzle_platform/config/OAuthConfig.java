@@ -1,6 +1,9 @@
 package com.leslie.chess_puzzle_platform.config;
 
+import com.leslie.chess_puzzle_platform.services.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,12 +15,17 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Configuration
+@Slf4j
 @EnableWebSecurity
 public class OAuthConfig {
 
+    private final CustomOAuth2UserService oAuth2Service;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        log.info("SECURITY CONFIG LOADED");
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -27,6 +35,8 @@ public class OAuthConfig {
                         .anyRequest().authenticated() // any request need authentication
                 )
                 .oauth2Login(oauth -> oauth
+                        .userInfoEndpoint(userInfo ->
+                                userInfo.userService(oAuth2Service))
                         .defaultSuccessUrl("http://localhost:5173/", true))
                 .logout(logout -> logout
                         .logoutUrl("/logout")

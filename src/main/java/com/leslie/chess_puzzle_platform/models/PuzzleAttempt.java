@@ -17,8 +17,9 @@ public class PuzzleAttempt {
     @Id @GeneratedValue
     Long id;
 
-    @Nullable
-    Long userId;
+    @ManyToOne @Nullable
+    @JoinColumn(name = "user_id")
+    User user;
 
 
     @ManyToOne

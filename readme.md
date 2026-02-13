@@ -7,7 +7,9 @@ Progress so far
 - fetch all attempts (default sort by recent change time)
 - integrate: send move to backend for validation
 - handle promotion UI (11/2)
-
+- add login/logout with OAuth2 Google (13/2)
+- AI consultant (?)
+- scheduled removal of anonymous attempts (?)
 
 ## Consideration
 
@@ -19,7 +21,7 @@ Progress so far
 - Deep page access is rare, so implementing cursor-based pagination isn’t justified at this stage.
 
 
-### Move Validation
+### Move Validation (to be reviewed)
 
 The puzzle solver uses a hybrid frontend-backend approach for efficient and secure move handling:
 
