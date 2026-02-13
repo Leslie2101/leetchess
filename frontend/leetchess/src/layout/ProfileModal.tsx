@@ -15,7 +15,6 @@ export default function ProfileModal({open, handleLogin, handleLogout,  onClose}
     const auth = useAuth();
 
 
-    console.log("profile modal:", open);
     return (
         <div className="profile-modal-overlay" id="profileModal" onClick={() => onClose()}>
         <div className="profile-modal" onClick={(e) => {e.stopPropagation();}}>

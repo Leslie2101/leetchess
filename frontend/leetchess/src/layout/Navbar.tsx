@@ -22,8 +22,10 @@ export default function Navbar() {
 
     function handleLogout(){
         console.log("Logout");
-        // fetch('/auth/logout', { method: 'POST' })
-        //     .then(() => window.location.reload());
+        axios.post("http://localhost:8082/logout", {}, {withCredentials: true})
+        .then(() => {
+            auth?.setUser(null);
+        });
     }
     
     return (

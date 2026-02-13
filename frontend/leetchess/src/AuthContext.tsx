@@ -23,7 +23,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         axios.get('http://localhost:8082/user-info', {withCredentials: true})
         .then(response => {
             setUser(response.data);
-            
         })
         .catch(() => {
             setUser(null);
