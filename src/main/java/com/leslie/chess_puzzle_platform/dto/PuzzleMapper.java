@@ -1,7 +1,9 @@
 package com.leslie.chess_puzzle_platform.dto;
 
+import com.leslie.chess_puzzle_platform.models.AttemptStatus;
 import com.leslie.chess_puzzle_platform.models.Puzzle;
 import com.leslie.chess_puzzle_platform.models.Theme;
+import com.leslie.chess_puzzle_platform.repository.PuzzleWithStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -24,6 +26,26 @@ public class PuzzleMapper {
                 .playerAlliance(playerAlliance)
                 .rating(puzzle.getRating())
                 .themes(themes)
+                .solved(false)
+                .build();
+    }
+
+    public PuzzleViewDTO toDTO(PuzzleWithStatus puzzleStatus){
+        Puzzle puzzle = puzzleStatus.getPuzzle();
+        System.out.println(puzzle + " " + puzzleStatus.getStatus());
+        List<String> themes = puzzle.getThemes().stream()
+                .map(Theme::getName)
+                .sorted()
+                .toList();
+        String playerAlliance = puzzle.getFen().split(" ")[1].charAt(0) == 'w' ? "Black" : "White";
+        return PuzzleViewDTO.builder()
+                .id(puzzle.getId())
+                .fen(puzzle.getFen())
+                .botMove(puzzle.getMoves().split(" ")[0])
+                .playerAlliance(playerAlliance)
+                .rating(puzzle.getRating())
+                .themes(themes)
+                .solved(puzzleStatus.getStatus() == AttemptStatus.SOLVED)
                 .build();
     }
 

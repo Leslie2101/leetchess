@@ -29,5 +29,7 @@ public class PuzzleAttempt {
 
     int movesPlayed;
     LocalDateTime dateTime;
+
+    @Enumerated(EnumType.STRING)
     AttemptStatus status;
 }

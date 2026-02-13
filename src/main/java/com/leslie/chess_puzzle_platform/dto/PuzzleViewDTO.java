@@ -19,4 +19,5 @@ public class PuzzleViewDTO {
     private String botMove;
     private String playerAlliance;
     private List<String> themes;
+    private boolean solved;
 }

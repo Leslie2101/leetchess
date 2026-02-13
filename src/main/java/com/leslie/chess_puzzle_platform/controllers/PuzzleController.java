@@ -1,6 +1,8 @@
 package com.leslie.chess_puzzle_platform.controllers;
 
 import com.leslie.chess_puzzle_platform.dto.*;
+import com.leslie.chess_puzzle_platform.models.User;
+import com.leslie.chess_puzzle_platform.repository.UserRepository;
 import com.leslie.chess_puzzle_platform.services.PuzzleAttemptService;
 import com.leslie.chess_puzzle_platform.services.PuzzleService;
 import lombok.AllArgsConstructor;
@@ -9,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class PuzzleController {
     final PuzzleService puzzleService;
     final PuzzleMapper mapper;
     final AttemptMapper attemptMapper;
+    final UserRepository userRepository;
     final PuzzleAttemptService puzzleAttemptService;
 
     @GetMapping()
@@ -35,7 +37,8 @@ public class PuzzleController {
             @RequestParam(defaultValue = "3000") int ratingMax,
             @RequestParam(required = false) List<String> themes,
             @RequestParam(defaultValue = "true") boolean ascending,
-            @RequestParam(defaultValue = "id") String sortBy) {
+            @RequestParam(defaultValue = "id") String sortBy,
+            @AuthenticationPrincipal OAuth2User principal) {
 
         // set fallback sort by aspect
         Set<String> allowedSortByAspects = Set.of("id", "rating");
@@ -44,8 +47,15 @@ public class PuzzleController {
         Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        return new PagedModel<>(puzzleService.searchAndFilter(ratingMin, ratingMax, themes, pageable)
-                .map(mapper::toDTO));
+        if (principal == null){
+            return new PagedModel<>(puzzleService.getFilteredPuzzles(ratingMin, ratingMax, themes, pageable));
+        }
+
+
+        Optional<User> optionalUser = userRepository.findByUsername(principal.getAttribute("email"));
+        return optionalUser.map(user -> new PagedModel<>(puzzleService.getFilteredPuzzlesForUser(user, ratingMin, ratingMax, themes, pageable)))
+                .orElseGet(() -> new PagedModel<>(puzzleService.getFilteredPuzzles(ratingMin, ratingMax, themes, pageable)));
+
     }
 
     @GetMapping("/{id}")

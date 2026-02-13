@@ -1,8 +1,11 @@
 package com.leslie.chess_puzzle_platform.services;
 
 
+import com.leslie.chess_puzzle_platform.dto.PuzzleMapper;
+import com.leslie.chess_puzzle_platform.dto.PuzzleViewDTO;
 import com.leslie.chess_puzzle_platform.models.Puzzle;
 import com.leslie.chess_puzzle_platform.models.Theme;
+import com.leslie.chess_puzzle_platform.models.User;
 import com.leslie.chess_puzzle_platform.repository.PuzzleRepository;
 import com.leslie.chess_puzzle_platform.repository.ThemeRepository;
 import com.opencsv.bean.CsvToBean;
@@ -28,6 +31,7 @@ public class PuzzleService {
     private final PuzzleRepository puzzleRepository;
     private final ThemeRepository themeRepository;
     private final FileStorageService fileStorageService;
+    private final PuzzleMapper puzzleMapper;
 
     public Integer uploadPuzzles(MultipartFile file) throws IOException {
         Set<Puzzle> puzzles = parseCSV(file);
@@ -39,13 +43,25 @@ public class PuzzleService {
         return puzzleRepository.findAll(pageable);
     }
 
+    public Page<PuzzleViewDTO> getAllPuzzlesForUser(User user, Pageable pageable){
+        return puzzleRepository.findAllWithStatus(user.getId(), pageable).map(puzzleMapper::toDTO);
+    }
 
-    public Page<Puzzle> searchAndFilter(int ratingMin, int ratingMax, List<String> themes, Pageable pageable){
+    public Page<PuzzleViewDTO> getFilteredPuzzlesForUser(User user, int ratingMin, int ratingMax, List<String> themes, Pageable pageable){
         if (themes == null || themes.isEmpty()){
-            return puzzleRepository.findByRatingBetween(ratingMin, ratingMax, pageable);
+            return puzzleRepository.findByRatingWithStatus(user.getId(), ratingMin, ratingMax, pageable).map(puzzleMapper::toDTO);
         }
 
-        return puzzleRepository.findByAnyThemeAndRating(ratingMin, ratingMax, themes, pageable);
+        return puzzleRepository.findByRatingAndThemesWithStatus(user.getId(), ratingMin, ratingMax, themes, pageable).map(puzzleMapper::toDTO);
+
+    }
+
+    public Page<PuzzleViewDTO> getFilteredPuzzles(int ratingMin, int ratingMax, List<String> themes, Pageable pageable){
+        if (themes == null || themes.isEmpty()){
+            return puzzleRepository.findByRatingBetween(ratingMin, ratingMax, pageable).map(puzzleMapper::toDTO);
+        }
+
+        return puzzleRepository.findByAnyThemeAndRating(ratingMin, ratingMax, themes, pageable).map(puzzleMapper::toDTO);
     }
 
     public void populatePuzzles() throws IOException {
