@@ -9,6 +9,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -59,8 +62,11 @@ public class PuzzleController {
     @PostMapping("/{puzzleId}/attempts/{attemptId}/moves")
     ResponseEntity<AttemptResponseDTO> submitMoveForPuzzle(@PathVariable long puzzleId,
                                                            @PathVariable long attemptId,
-                                                           @RequestBody MoveRequest moveRequest){
-
+                                                           @RequestBody MoveRequest moveRequest,
+                                                           @AuthenticationPrincipal OAuth2User principal){
+        if (principal != null){
+            System.out.println("USER make move: " + principal.getAttribute("email"));
+        }
         return ResponseEntity.ok(puzzleAttemptService.makeMove(puzzleId, attemptId, moveRequest.move()));
     }
 
