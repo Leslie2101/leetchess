@@ -34,4 +34,11 @@ The puzzle solver uses a hybrid frontend-backend approach for efficient and secu
 
 ## Extra libraries:
 - chessboard.js for chessboard interface
-- chess.js for frontend side chess engine 
+- chess.js for frontend side chess engine
+  Data Source & Disclaimer
+
+
+# Data source & Disclaimer
+This project utilises chess puzzle data from the publicly available [Lichess database](https://database.lichess.org/#puzzles)
+
+This application is a personal, non-commercial project and is not affiliated with Lichess in any way. Lichess retains full credit for the original puzzle dataset.
