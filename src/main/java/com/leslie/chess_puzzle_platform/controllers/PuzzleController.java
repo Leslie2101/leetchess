@@ -53,7 +53,7 @@ public class PuzzleController {
 
 
         Optional<User> optionalUser = userRepository.findByUsername(principal.getAttribute("email"));
-        return optionalUser.map(user -> new PagedModel<>(puzzleService.getFilteredPuzzlesForUser(user, ratingMin, ratingMax, themes, pageable)))
+        return optionalUser.map(user -> new PagedModel<>(puzzleService.getAllPuzzlesForUser(user, ratingMin, ratingMax, themes, pageable)))
                 .orElseGet(() -> new PagedModel<>(puzzleService.getFilteredPuzzles(ratingMin, ratingMax, themes, pageable)));
 
     }
@@ -65,8 +65,14 @@ public class PuzzleController {
 
     @PostMapping("/{puzzleId}/attempts")
     ResponseEntity<AttemptResponseDTO> startAttemptForPuzzle(@PathVariable long puzzleId,
-                                                             @RequestBody MoveRequest moveRequest){
-        return ResponseEntity.ok(puzzleAttemptService.makeMove(puzzleId, null, moveRequest.move()));
+                                                             @RequestBody MoveRequest moveRequest,
+                                                             @AuthenticationPrincipal OAuth2User principal){
+
+        Optional<User> optionalUser = userRepository.findByUsername(principal.getAttribute("email"));
+
+
+        return ResponseEntity.ok(optionalUser.map(user -> puzzleAttemptService.makeMove(user, puzzleId, null, moveRequest.move()))
+                .orElseGet(() -> puzzleAttemptService.makeMove(null, puzzleId, null, moveRequest.move())));
     }
 
     @PostMapping("/{puzzleId}/attempts/{attemptId}/moves")
@@ -74,11 +80,13 @@ public class PuzzleController {
                                                            @PathVariable long attemptId,
                                                            @RequestBody MoveRequest moveRequest,
                                                            @AuthenticationPrincipal OAuth2User principal){
-        if (principal != null){
-            System.out.println("USER make move: " + principal.getAttribute("email"));
-        }
 
-        return ResponseEntity.ok(puzzleAttemptService.makeMove(puzzleId, attemptId, moveRequest.move()));
+        Optional<User> optionalUser = userRepository.findByUsername(principal.getAttribute("email"));
+
+        return ResponseEntity.ok(optionalUser
+                        .map(user -> puzzleAttemptService.makeMove(user, puzzleId, attemptId, moveRequest.move()))
+                        .orElseGet(() -> puzzleAttemptService.makeMove(null, puzzleId, attemptId, moveRequest.move()))
+        );
     }
 
     @GetMapping("/{puzzleId}/attempts")

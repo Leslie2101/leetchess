@@ -2,8 +2,8 @@ package com.leslie.chess_puzzle_platform.dto;
 
 import com.leslie.chess_puzzle_platform.models.AttemptStatus;
 import com.leslie.chess_puzzle_platform.models.Puzzle;
+import com.leslie.chess_puzzle_platform.models.PuzzleStatus;
 import com.leslie.chess_puzzle_platform.models.Theme;
-import com.leslie.chess_puzzle_platform.repository.PuzzleWithStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -13,26 +13,10 @@ import java.util.stream.Collectors;
 public class PuzzleMapper {
 
     public PuzzleViewDTO toDTO(Puzzle puzzle){
-
-        List<String> themes = puzzle.getThemes().stream()
-                .map(Theme::getName)
-                .sorted()
-                .toList();
-        String playerAlliance = puzzle.getFen().split(" ")[1].charAt(0) == 'w' ? "Black" : "White";
-        return PuzzleViewDTO.builder()
-                .id(puzzle.getId())
-                .fen(puzzle.getFen())
-                .botMove(puzzle.getMoves().split(" ")[0])
-                .playerAlliance(playerAlliance)
-                .rating(puzzle.getRating())
-                .themes(themes)
-                .solved(false)
-                .build();
+        return toDTO(puzzle, PuzzleStatus.UNATTEMPTED);
     }
 
-    public PuzzleViewDTO toDTO(PuzzleWithStatus puzzleStatus){
-        Puzzle puzzle = puzzleStatus.getPuzzle();
-        System.out.println(puzzle + " " + puzzleStatus.getStatus());
+    public PuzzleViewDTO toDTO(Puzzle puzzle, PuzzleStatus status){
         List<String> themes = puzzle.getThemes().stream()
                 .map(Theme::getName)
                 .sorted()
@@ -45,7 +29,7 @@ public class PuzzleMapper {
                 .playerAlliance(playerAlliance)
                 .rating(puzzle.getRating())
                 .themes(themes)
-                .solved(puzzleStatus.getStatus() == AttemptStatus.SOLVED)
+                .status(status.toString())
                 .build();
     }
 

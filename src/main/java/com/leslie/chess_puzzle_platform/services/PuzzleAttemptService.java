@@ -6,6 +6,7 @@ import com.leslie.chess_puzzle_platform.exceptions.InvalidMoveException;
 import com.leslie.chess_puzzle_platform.models.AttemptStatus;
 import com.leslie.chess_puzzle_platform.models.Puzzle;
 import com.leslie.chess_puzzle_platform.models.PuzzleAttempt;
+import com.leslie.chess_puzzle_platform.models.User;
 import com.leslie.chess_puzzle_platform.repository.PuzzleAttemptRepository;
 import com.leslie.chess_puzzle_platform.repository.PuzzleRepository;
 import lombok.AllArgsConstructor;
@@ -27,7 +28,7 @@ public class PuzzleAttemptService {
         return attemptRepository.findByPuzzleId(puzzleId, pageable);
     }
 
-    public AttemptResponseDTO makeMove(Long puzzleId, Long attemptId, String move){
+    public AttemptResponseDTO makeMove(User user, Long puzzleId, Long attemptId, String move){
 
         Puzzle puzzle = puzzleRepository.findById(puzzleId).orElseThrow();
 
@@ -76,6 +77,7 @@ public class PuzzleAttemptService {
             // update repo - status is finished if all moves have been made
             PuzzleAttempt puzzleAttempt = PuzzleAttempt.builder()
                     .puzzle(puzzle)
+                    .user(user)
                     .movesPlayed(nextMoveIndex)
                     .dateTime(LocalDateTime.now())
                     .status(nextMoveIndex == moves.length ? AttemptStatus.SOLVED : AttemptStatus.IN_PROGRESS)
@@ -98,6 +100,7 @@ public class PuzzleAttemptService {
             // update repo - status is finished if all moves have been made
             PuzzleAttempt puzzleAttempt = PuzzleAttempt.builder()
                     .puzzle(puzzle)
+                    .user(user)
                     .movesPlayed(nextMoveIndex)
                     .dateTime(LocalDateTime.now())
                     .status(AttemptStatus.IN_PROGRESS)

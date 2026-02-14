@@ -3,9 +3,8 @@ package com.leslie.chess_puzzle_platform.services;
 
 import com.leslie.chess_puzzle_platform.dto.PuzzleMapper;
 import com.leslie.chess_puzzle_platform.dto.PuzzleViewDTO;
-import com.leslie.chess_puzzle_platform.models.Puzzle;
-import com.leslie.chess_puzzle_platform.models.Theme;
-import com.leslie.chess_puzzle_platform.models.User;
+import com.leslie.chess_puzzle_platform.models.*;
+import com.leslie.chess_puzzle_platform.repository.PuzzleAttemptRepository;
 import com.leslie.chess_puzzle_platform.repository.PuzzleRepository;
 import com.leslie.chess_puzzle_platform.repository.ThemeRepository;
 import com.opencsv.bean.CsvToBean;
@@ -19,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +28,7 @@ public class PuzzleService {
     private final ThemeRepository themeRepository;
     private final FileStorageService fileStorageService;
     private final PuzzleMapper puzzleMapper;
+    private final PuzzleAttemptRepository attemptRepository;
 
     public Integer uploadPuzzles(MultipartFile file) throws IOException {
         Set<Puzzle> puzzles = parseCSV(file);
@@ -43,17 +40,40 @@ public class PuzzleService {
         return puzzleRepository.findAll(pageable);
     }
 
-    public Page<PuzzleViewDTO> getAllPuzzlesForUser(User user, Pageable pageable){
-        return puzzleRepository.findAllWithStatus(user.getId(), pageable).map(puzzleMapper::toDTO);
+    public Page<PuzzleViewDTO> getAllPuzzlesForUser(User user, int ratingMin, int ratingMax, List<String> themes, Pageable pageable){
+
+        Page<Puzzle> puzzlePage = (themes == null || themes.isEmpty())
+                ? puzzleRepository.findByRatingBetween(ratingMin, ratingMax, pageable)
+                : puzzleRepository.findByAnyThemeAndRating(ratingMin, ratingMax, themes, pageable);
+
+
+        List<Long> puzzleIds = puzzlePage.getContent().stream().map(Puzzle::getId).toList();
+        List<PuzzleAttempt> attempts = attemptRepository.findByUserAndPuzzleIds(user.getId(), puzzleIds);
+
+        // group attempts by puzzle id
+        Map<Long, List<PuzzleAttempt>> attemptsByPuzzle = attempts.stream()
+                .collect(Collectors.groupingBy(pa -> pa.getPuzzle().getId()));
+
+        return puzzlePage.map(puzzle -> {
+            List<PuzzleAttempt> puzzleAttempts = attemptsByPuzzle.getOrDefault(puzzle.getId(), List.of());
+
+            PuzzleStatus status = resolveStatus(puzzleAttempts);
+            return puzzleMapper.toDTO(puzzle, status);
+        });
+
     }
 
-    public Page<PuzzleViewDTO> getFilteredPuzzlesForUser(User user, int ratingMin, int ratingMax, List<String> themes, Pageable pageable){
-        if (themes == null || themes.isEmpty()){
-            return puzzleRepository.findByRatingWithStatus(user.getId(), ratingMin, ratingMax, pageable).map(puzzleMapper::toDTO);
+    private PuzzleStatus resolveStatus(List<PuzzleAttempt> puzzleAttempts) {
+        if (puzzleAttempts.isEmpty()) return PuzzleStatus.UNATTEMPTED;
+
+        boolean solved = puzzleAttempts.stream()
+                .anyMatch(a -> a.getStatus() == AttemptStatus.SOLVED);
+
+        if (solved) {
+            return PuzzleStatus.SOLVED;
         }
 
-        return puzzleRepository.findByRatingAndThemesWithStatus(user.getId(), ratingMin, ratingMax, themes, pageable).map(puzzleMapper::toDTO);
-
+        return PuzzleStatus.ATTEMPTED;
     }
 
     public Page<PuzzleViewDTO> getFilteredPuzzles(int ratingMin, int ratingMax, List<String> themes, Pageable pageable){
