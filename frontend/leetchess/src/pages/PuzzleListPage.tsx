@@ -100,6 +100,7 @@ const puzzles = [
 interface Puzzle {
   id: string;
   rating: number;
+  status: string;
   acceptance: number;
   themes: string[];
 }
@@ -132,12 +133,18 @@ export default function PuzzleListPage(){
                 params.append("themes", theme);
             });
 
-            const res = await fetch(`http://localhost:8082/puzzles?${params.toString()}`);
+            const res = await fetch(`http://localhost:8082/puzzles?${params.toString()}`, {
+                method: 'GET',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' }
+                
+            });
             if (!res.ok) {
                 throw new Error(`HTTP error! status: ${res.status}`);
             }
             const json = await res.json();
             const data = json.content;
+            console.log(data);
             setTotalPage(json.page.totalPages);
             setPuzzles(data);
         } catch (err) {
@@ -184,7 +191,7 @@ export default function PuzzleListPage(){
         const listPuzzles = puzzles.map(puzzle =>
             <tr  key={puzzle.id} onClick={()=>handleSolveClick(puzzle.id)}>
                 <td className="status-cell">
-                    <div className='status-icon'></div>
+                    <div className={`status-icon ${puzzle.status.toLowerCase()}`}></div>
                 </td>
                 <td><div className="puzzle-title">Puzzle {puzzle.id}</div></td>
                 <td><span className={`rating ${category(puzzle.rating)}`}>{puzzle.rating}</span></td>

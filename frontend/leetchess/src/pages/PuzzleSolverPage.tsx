@@ -325,6 +325,7 @@ const [promotionPiece, setPromotionPiece] = useState<string | null>(null);
       const res = await fetch(`http://localhost:8082/puzzles/${puzzleId}/attempts`,
         {
           method: "POST",
+          credentials: 'include',
           headers: {
             "Content-Type": "application/json"
           },
@@ -354,6 +355,7 @@ const [promotionPiece, setPromotionPiece] = useState<string | null>(null);
       const res = await fetch(`http://localhost:8082/puzzles/${puzzleId}/attempts/${currentAttempt}/moves`,
         {
           method: "POST",
+          credentials: 'include',
           headers: {
             "Content-Type": "application/json"
           },
