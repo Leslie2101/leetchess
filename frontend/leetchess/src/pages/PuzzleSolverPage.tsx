@@ -368,6 +368,10 @@ const [promotionPiece, setPromotionPiece] = useState<string | null>(null);
       const json : AttemptResponse = await res.json();
       console.log("Received response for subsequent move:", json);
       setIsSolved(json.isSolved);
+
+      if (json.isSolved){
+        alert("Puzzle Solved!");
+      }
       setPlayerMoveFeedback({
         feedbackId: json.id,
         playerMove: move,
