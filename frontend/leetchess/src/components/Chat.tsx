@@ -21,10 +21,10 @@ export default function Chat({sendUserMessage, aiReply}: ChatProps) {
     const [isTyping, setIsTyping] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-    // Auto-scroll when messages change
-    useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages, isTyping]);
+    // // Auto-scroll when messages change
+    // useEffect(() => {
+    //     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // }, [messages, isTyping]);
     
     const sendMessage = () => {
         const trimmed = input.trim();
@@ -118,7 +118,7 @@ export default function Chat({sendUserMessage, aiReply}: ChatProps) {
           onKeyDown={handleKeyPress}
           placeholder="Ask a question..."
         />
-        <button onClick={sendMessage} className="chat-send-btn">
+        <button onClick={sendMessage} className="send-btn">
           Send
         </button>
         

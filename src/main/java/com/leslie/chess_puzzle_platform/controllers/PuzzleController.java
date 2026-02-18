@@ -33,7 +33,7 @@ public class PuzzleController {
     public PagedModel<PuzzleViewDTO> getPuzzles(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String theme,
+            @RequestParam(defaultValue = "") String search,
             @RequestParam(defaultValue = "0") int ratingMin,
             @RequestParam(defaultValue = "3000") int ratingMax,
             @RequestParam(required = false) List<String> themes,
@@ -49,13 +49,13 @@ public class PuzzleController {
         Pageable pageable = PageRequest.of(page, size, sort);
 
         if (principal == null){
-            return new PagedModel<>(puzzleService.getFilteredPuzzles(ratingMin, ratingMax, themes, pageable));
+            return new PagedModel<>(puzzleService.getFilteredPuzzles(ratingMin, ratingMax, search, themes, pageable));
         }
 
 
         Optional<User> optionalUser = userRepository.findByUsername(principal.getAttribute("email"));
-        return optionalUser.map(user -> new PagedModel<>(puzzleService.getAllPuzzlesForUser(user, ratingMin, ratingMax, themes, pageable)))
-                .orElseGet(() -> new PagedModel<>(puzzleService.getFilteredPuzzles(ratingMin, ratingMax, themes, pageable)));
+        return optionalUser.map(user -> new PagedModel<>(puzzleService.getAllPuzzlesForUser(user, ratingMin, ratingMax, search, themes, pageable)))
+                .orElseGet(() -> new PagedModel<>(puzzleService.getFilteredPuzzles(ratingMin, ratingMax, search, themes, pageable)));
 
     }
 
@@ -102,5 +102,14 @@ public class PuzzleController {
         return new PagedModel<>(puzzleAttemptService.getAllAttemptsByPuzzleId(puzzleId, pageable)
                 .map(attemptMapper::toViewDTO));
     }
+
+    @GetMapping("/daily-puzzle-id")
+    public ResponseEntity<DailyPuzzleIdResponse> getRandomDaily(){
+        long id = puzzleService.getRandomPuzzleIdByDay();
+        return ResponseEntity.ok(new DailyPuzzleIdResponse(id));
+    }
+
+
+    public record DailyPuzzleIdResponse(long id){};
 
 }

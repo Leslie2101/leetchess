@@ -30,6 +30,10 @@ The puzzle solver uses a hybrid frontend-backend approach for efficient and secu
 - Users submit only moves; the backend validates correctness.
 - This ensures fast UI, minimal backend load, and puzzle integrity.
 
+### Search Puzzle 
+
+Consider between LIKE and FullTextSearch
+
 
 
 ## Extra libraries:

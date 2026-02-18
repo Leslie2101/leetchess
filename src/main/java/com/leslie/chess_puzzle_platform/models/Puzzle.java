@@ -19,6 +19,7 @@ public class Puzzle {
     private String fen;
     private int rating;
     private String moves;
+    private String title;
 
     @ManyToMany
     @JoinTable(

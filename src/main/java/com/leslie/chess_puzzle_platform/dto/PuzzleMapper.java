@@ -25,6 +25,7 @@ public class PuzzleMapper {
         return PuzzleViewDTO.builder()
                 .id(puzzle.getId())
                 .fen(puzzle.getFen())
+                .title(puzzle.getTitle())
                 .botMove(puzzle.getMoves().split(" ")[0])
                 .playerAlliance(playerAlliance)
                 .rating(puzzle.getRating())

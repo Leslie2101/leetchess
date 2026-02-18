@@ -15,6 +15,7 @@ import java.util.Set;
 public class PuzzleViewDTO {
     private long id;
     private String fen;
+    private String title;
     private int rating;
     private String botMove;
     private String playerAlliance;

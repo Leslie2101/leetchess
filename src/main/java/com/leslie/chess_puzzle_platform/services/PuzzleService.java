@@ -18,7 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,8 +32,15 @@ public class PuzzleService {
     private final PuzzleMapper puzzleMapper;
     private final PuzzleAttemptRepository attemptRepository;
 
+
+    public Long getRandomPuzzleIdByDay(){
+        long seed = LocalDate.now().toEpochDay();
+        Random randomGenerator = new Random(seed);
+        return randomGenerator.nextLong(1, puzzleRepository.count()+1);
+    }
+
     public Integer uploadPuzzles(MultipartFile file) throws IOException {
-        Set<Puzzle> puzzles = parseCSV(file);
+        List<Puzzle> puzzles = parseCSV(file);
         puzzleRepository.saveAll(puzzles);
         return puzzles.size();
     }
@@ -40,11 +49,17 @@ public class PuzzleService {
         return puzzleRepository.findAll(pageable);
     }
 
-    public Page<PuzzleViewDTO> getAllPuzzlesForUser(User user, int ratingMin, int ratingMax, List<String> themes, Pageable pageable){
+    public Page<PuzzleViewDTO> getAllPuzzlesForUser(User user,
+                                                    int ratingMin, int ratingMax,
+                                                    String search,
+                                                    List<String> themes,
+                                                    Pageable pageable){
 
         Page<Puzzle> puzzlePage = (themes == null || themes.isEmpty())
-                ? puzzleRepository.findByRatingBetween(ratingMin, ratingMax, pageable)
-                : puzzleRepository.findByAnyThemeAndRating(ratingMin, ratingMax, themes, pageable);
+                ? (search == null || search.isEmpty())
+                    ? puzzleRepository.findByRatingBetween(ratingMin, ratingMax, pageable)
+                    : puzzleRepository.findByRatingAndSearch(ratingMin, ratingMax, search, pageable)
+                : puzzleRepository.findByAnyThemeAndRating(ratingMin, ratingMax, search, themes, pageable);
 
 
         List<Long> puzzleIds = puzzlePage.getContent().stream().map(Puzzle::getId).toList();
@@ -76,18 +91,21 @@ public class PuzzleService {
         return PuzzleStatus.ATTEMPTED;
     }
 
-    public Page<PuzzleViewDTO> getFilteredPuzzles(int ratingMin, int ratingMax, List<String> themes, Pageable pageable){
-        if (themes == null || themes.isEmpty()){
-            return puzzleRepository.findByRatingBetween(ratingMin, ratingMax, pageable).map(puzzleMapper::toDTO);
-        }
+    public Page<PuzzleViewDTO> getFilteredPuzzles(int ratingMin, int ratingMax, String search, List<String> themes, Pageable pageable){
 
-        return puzzleRepository.findByAnyThemeAndRating(ratingMin, ratingMax, themes, pageable).map(puzzleMapper::toDTO);
+        Page<Puzzle> puzzlePage = (themes == null || themes.isEmpty())
+                ? (search == null || search.isEmpty())
+                    ? puzzleRepository.findByRatingBetween(ratingMin, ratingMax, pageable)
+                    : puzzleRepository.findByRatingAndSearch(ratingMin, ratingMax, search, pageable)
+                : puzzleRepository.findByAnyThemeAndRating(ratingMin, ratingMax, search, themes, pageable);
+
+        return puzzlePage.map(puzzleMapper::toDTO);
     }
 
     public void populatePuzzles() throws IOException {
         Resource resource = fileStorageService.loadAsResource("puzzleSetaa.csv");
         try (InputStream inputStream = resource.getInputStream()){
-            Set<Puzzle> puzzles = parseFromInputStream(inputStream);
+            List<Puzzle> puzzles = parseFromInputStream(inputStream);
             puzzleRepository.saveAll(puzzles);
 
         }
@@ -98,8 +116,9 @@ public class PuzzleService {
     }
 
 
-    private Set<Puzzle> parseFromInputStream(InputStream inputStream){
+    private List<Puzzle> parseFromInputStream(InputStream inputStream){
         try (Reader reader = new BufferedReader(new InputStreamReader(inputStream))){
+            AtomicInteger counter= new AtomicInteger(1);
             HeaderColumnNameMappingStrategy<PuzzleCsvRepresentation> strategy = new HeaderColumnNameMappingStrategy<>();
             strategy.setType(PuzzleCsvRepresentation.class);
             CsvToBean<PuzzleCsvRepresentation> csvToBean =
@@ -115,18 +134,19 @@ public class PuzzleService {
                             .fen(csvLine.getFen())
                             .moves(csvLine.getMoves())
                             .rating(csvLine.getRating())
+                            .title("Puzzle " + counter.getAndIncrement())
                             .themes(Arrays.stream(csvLine.getThemes().split(" "))
                                     .map(name -> themeRepository.findByName(name)
                                             .orElseGet(() -> themeRepository.save(Theme.builder().name(name).build())))
                                     .collect(Collectors.toSet()))
                             .build())
-                    .collect(Collectors.toSet());
+                    .collect(Collectors.toList());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private Set<Puzzle> parseCSV(MultipartFile file) throws IOException {
+    private List<Puzzle> parseCSV(MultipartFile file) throws IOException {
         return parseFromInputStream(file.getInputStream());
     }
 

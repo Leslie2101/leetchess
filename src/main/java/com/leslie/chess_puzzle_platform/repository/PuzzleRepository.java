@@ -13,17 +13,29 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PuzzleRepository extends JpaRepository<Puzzle, Long> {
+
     Page<Puzzle> findByRatingBetween(int min, int max, Pageable pageable);
+
+    @Query("""
+    SELECT DISTINCT p
+    FROM Puzzle p
+    WHERE p.rating BETWEEN :ratingMin AND :ratingMax
+      AND LOWER(p.title) LIKE LOWER(CONCAT('%', :search, '%'))
+""")
+    Page<Puzzle> findByRatingAndSearch(int ratingMin, int ratingMax, String search, Pageable pageable);
+
     @Query("""
     SELECT DISTINCT p
     FROM Puzzle p
     JOIN p.themes t
     WHERE p.rating BETWEEN :ratingMin AND :ratingMax
       AND t.name IN :themes
+      AND LOWER(p.title) LIKE LOWER(CONCAT('%', :search, '%'))
 """)
     Page<Puzzle> findByAnyThemeAndRating(
             int ratingMin,
             int ratingMax,
+            String search,
             List<String> themes,
             Pageable pageable
     );

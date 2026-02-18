@@ -89,6 +89,17 @@ function Sidebar({ attempts, currentAttempt, setCurrentAttempt }: SidebarProps) 
 function Board({ moveHistory, botMove, initialFen, playerAlliance, playerMoveFeedback, onMoveDetected }: BoardProps) {
 
 
+  function ProgressDots(){
+    return (
+      <div className="progress-dots">
+      {moveHistory.map((move, index) => (
+          <div key={index} className="progress-dot completed" title={`Move ${move} - Correct`}></div>
+      ))}
+      
+      </div>
+    )
+  }
+
   return (
     <div className="board-container">
       <div className="board-wrapper">
@@ -98,32 +109,10 @@ function Board({ moveHistory, botMove, initialFen, playerAlliance, playerMoveFee
       </div>
 
       <div className="board-footer">
-        <div className="move-history">
-          {moveHistory.map((move, index) => (
-            <div key={index}>
-              <span className="move-number">Move {index + 1}:</span>
-              <span>{move}</span>
-            </div>
-          ))}
+        <div className="move-progress">
+          <ProgressDots />
         </div>
-
-        <div className="controls">
-          <button className="control-btn" title="Expand">
-            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth={2}>
-              <path d="M4 4l6 6m0-6l-6 6" />
-            </svg>
-          </button>
-          <button className="control-btn" title="Download">
-            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth={2}>
-              <path d="M9 2v10m0 0l3-3m-3 3l-3-3m8 5v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2" />
-            </svg>
-          </button>
-          <button className="control-btn" title="Previous Move">
-            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth={2}>
-              <path d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-        </div>
+        
       </div>
     </div>
   );
@@ -257,10 +246,10 @@ export default function PuzzleSolverPage() {
     to: string;
   } | null>(null);
 
-const [promotionPiece, setPromotionPiece] = useState<string | null>(null);
+  const [promotionPiece, setPromotionPiece] = useState<string | null>(null);
 
 
-  const moveHistory: string[] = ["Nf3 - Nf6"];
+  const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const params = useParams<{ puzzleId: string }>(); // get URL params
   const puzzleId = params.puzzleId; // string value of "1" from /puzzles/1/solve
 
@@ -336,66 +325,47 @@ const [promotionPiece, setPromotionPiece] = useState<string | null>(null);
 
   async function sendMoveToApi(move: string) {
     // first move being made 
-    if (currentAttempt === -1) {
-      console.log("Submitting first move for attempt:", JSON.stringify({ move }));
-      const res = await fetch(`http://localhost:8082/puzzles/${puzzleId}/attempts`,
-        {
-          method: "POST",
-          credentials: 'include',
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ move })
-        }
-      );
 
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-      const json: AttemptResponse = await res.json();
-      console.log("Received response for first move:", json);
-      setCurrentAttempt(json.attemptId);
-      setIsSolved(json.isSolved);
-      setPlayerMoveFeedback({
-        feedbackId: json.id,
-        playerMove: move,
-        isCorrect: json.isCorrect,
-        isFinalMove: json.isSolved,
-        botResponseMove: json.botMove
-      });
+    let url = `http://localhost:8082/puzzles/${puzzleId}/attempts`;
 
-      console.log("Set player move feedback to:", json);
-    
-    // subsequent moves
-    } else {
-      const res = await fetch(`http://localhost:8082/puzzles/${puzzleId}/attempts/${currentAttempt}/moves`,
-        {
-          method: "POST",
-          credentials: 'include',
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ move })
-        }
-      );
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-      const json : AttemptResponse = await res.json();
-      console.log("Received response for subsequent move:", json);
-      setIsSolved(json.isSolved);
-
-      if (json.isSolved){
-        alert("Puzzle Solved!");
-      }
-      setPlayerMoveFeedback({
-        feedbackId: json.id,
-        playerMove: move,
-        isCorrect: json.isCorrect,
-        isFinalMove: json.isSolved,
-        botResponseMove: json.botMove
-      });
+    if (currentAttempt != -1){
+      url = `http://localhost:8082/puzzles/${puzzleId}/attempts/${currentAttempt}/moves`;
     }
+
+    const res = await fetch(url,
+      {
+        method: "POST",
+        credentials: 'include',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ move })
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    const json: AttemptResponse = await res.json();
+    console.log("Received response for the move:", json);
+    setCurrentAttempt(json.attemptId);
+    setIsSolved(json.isSolved);
+    setPlayerMoveFeedback({
+      feedbackId: json.id,
+      playerMove: move,
+      isCorrect: json.isCorrect,
+      isFinalMove: json.isSolved,
+      botResponseMove: json.botMove
+    });
+
+    if (json.isSolved){
+      alert("Puzzle Solved!");
+    }
+
+    if (json.isCorrect){
+      setMoveHistory([...moveHistory, move]);
+    }
+
 
   }
 

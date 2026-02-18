@@ -92,7 +92,7 @@ button, .btn, .btn-primary, .btn-secondary {
     box-shadow: var(--shadow-soft) !important;
 }
 
-.btn-primary, button[class*="primary"], .solve-now-btn, .apply-filters-btn, .submit-btn {
+.btn-primary, button[class*="primary"], .solve-now-btn, .apply-filters-btn, .submit-btn, .send-btn {
     background: linear-gradient(135deg, var(--primary-peach) 0%, #F5B5AE 100%) !important;
     color: white !important;
     border: none !important;

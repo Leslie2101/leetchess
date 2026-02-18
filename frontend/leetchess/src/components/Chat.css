@@ -183,9 +183,8 @@
 }
 
 .send-btn {
-    width: 40px;
-    height: 40px;
-    background: var(--primary-blue);
+    width: 50px;
+    background: var(--);
     border: none;
     border-radius: 8px;
     color: white;
@@ -194,6 +193,7 @@
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
+    
 }
 
 .send-btn:hover {

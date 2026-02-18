@@ -7,7 +7,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { SearchBar } from './FilterWidget/SearchBar';
 import { useNavigate } from 'react-router-dom';
 
-function DailyChallenge(){
+interface DailyChallengeProps {
+    onClick: () => void;
+}
+
+function DailyChallenge({onClick}: DailyChallengeProps){
     return (
         <div className="daily-challenge">
             <div className="challenge-pattern"></div>
@@ -15,7 +19,7 @@ function DailyChallenge(){
                 <h2>Daily Puzzle Challenge</h2>
                 <p>Master the "Greek Gift" sacrifice today!</p>
             </div>
-            <button className="solve-now-btn">Solve Now</button>
+            <button className="solve-now-btn" onClick={onClick}>Solve Now</button>
         </div>
     );
 }
@@ -91,21 +95,15 @@ function PaginationFooter({pageSize, pageNumber, totalPage, onChangePageSize, on
 }
 
 
-const puzzles = [
-  { title: 'Smothered Mate in Cornere', rating: 1850, acceptance: 43.2, category: "Hard" },
-  { title: 'Queen Sacrifice on h7', rating: 2100, acceptance: 30, category: "Hard" },
-];
-
 
 interface Puzzle {
   id: string;
+  title:string;
   rating: number;
   status: string;
   acceptance: number;
   themes: string[];
 }
-
-
 
 
 export default function PuzzleListPage(){
@@ -119,6 +117,7 @@ export default function PuzzleListPage(){
     const [pageSize, setPageSize] = useState<string>("20");
     const [totalPage, setTotalPage] = useState<number>(0);
     const [pageNumber, setPageNumber] = useState<number>(0);
+    const [dailyId, setDailyId] = useState<number>(0);
 
     async function loadPuzzles() {
         try {
@@ -129,9 +128,17 @@ export default function PuzzleListPage(){
             params.append("size", pageSize.toString());
             params.append("ratingMin", filters.ratingMin.toString());
             params.append("ratingMax", filters.ratingMax.toString());
+
+            if (searchTerm != ""){
+                params.append("search", searchTerm);
+            }
+            
             filters.themes.forEach(theme => {
                 params.append("themes", theme);
             });
+
+            console.log(`http://localhost:8082/puzzles?${params.toString()}`);
+
 
             const res = await fetch(`http://localhost:8082/puzzles?${params.toString()}`, {
                 method: 'GET',
@@ -151,6 +158,33 @@ export default function PuzzleListPage(){
             console.error("Failed to load puzzles", err);
         }
     }
+
+    async function loadDailyChallenge(){
+        try {
+            const res = await fetch(`http://localhost:8082/puzzles/daily-puzzle-id`, {
+                method: 'GET',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' }
+                
+            });
+            if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+
+            const json = await res.json();
+            setDailyId(json.id);
+        } catch (err) {
+            console.error("Failed to load daily puzzle id", err);
+        }
+    }
+
+
+    useEffect(() => {
+        loadPuzzles();
+        loadDailyChallenge();
+    }, [])
+
+
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -180,6 +214,11 @@ export default function PuzzleListPage(){
         navigate(`/puzzles/${puzzleId}/solve`);
     } 
 
+    const handleDailyClick = () => {
+        navigate(`/puzzles/${dailyId}/solve`);
+        
+    }
+
 
 
     function PuzzleList() {
@@ -193,7 +232,7 @@ export default function PuzzleListPage(){
                 <td className="status-cell">
                     <div className={`status-icon ${puzzle.status.toLowerCase()}`}></div>
                 </td>
-                <td><div className="puzzle-title">Puzzle {puzzle.id}</div></td>
+                <td><div className="puzzle-title">{puzzle.title}</div></td>
                 <td><span className={`rating ${category(puzzle.rating)}`}>{puzzle.rating}</span></td>
                 <td><span className='acceptance'>{puzzle.acceptance}%</span></td>
                 <td>
@@ -249,7 +288,7 @@ export default function PuzzleListPage(){
 
     return (
         <div className="container">
-            <DailyChallenge />
+            <DailyChallenge onClick={handleDailyClick}/>
             <div className="main-content">
                 <FilterWidget
                     filters={filters}
