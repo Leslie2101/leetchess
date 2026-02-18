@@ -4,6 +4,9 @@ import ChessBoard from "../components/ChessBoard";
 import type { onDropParams, PlayerMoveFeedback } from "../components/ChessBoard";
 import './PuzzleSolverPage.css';
 import { useParams } from "react-router-dom";
+import Chat from "../components/Chat";
+import type { ChatProps } from "../components/Chat";
+import axios from "axios";
 
 // errors, time completion, 
 
@@ -45,6 +48,8 @@ interface BoardProps {
 
 interface RightPanelProps {
   puzzle: Puzzle;
+  sendUserMessage: (message: string) => void;
+  aiReply: string;
 }
 
 // --- Sidebar Component ---
@@ -125,7 +130,7 @@ function Board({ moveHistory, botMove, initialFen, playerAlliance, playerMoveFee
 }
 
 // --- Right Panel Component ---
-function RightPanel({ puzzle }: RightPanelProps) {
+function RightPanel({ puzzle, sendUserMessage, aiReply }: RightPanelProps) {
 
   const category = (rating: number) => {
       return rating < 900 ? "easy" : rating <= 1500 ? "medium" : "hard";
@@ -167,28 +172,11 @@ function RightPanel({ puzzle }: RightPanelProps) {
               </div>
           </div>
 
-          <div className="ai-consultant">
-              <div className="consultant-header">AI Consultant</div>
-                  <div className="chat-messages" id="chatMessages">
-                  <div className="chat-placeholder">
-                      <div className="chat-placeholder-icon">💬</div>
-                      <div>Ask for hints or tactical advice</div>
-                  </div>
-              </div>
-              <div className="chat-input">
-                  <input type="text" id="chatInput" placeholder="Ask for a hint..." />
-                  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth={2}>
-                      <path d="M5 12h14m0 0l-6-6m6 6l-6 6" />
-                  </svg>
-              </div>
-          </div>
+          <Chat 
+            sendUserMessage={sendUserMessage}
+            aiReply={aiReply}
+          />
 
-          <div className="action-buttons">
-              <button className="hint-btn">
-                  <span>💡</span> Get Hint
-              </button>
-              <button className="submit-btn">Submit Move</button>
-          </div>
       </div>
   );
 }
@@ -205,6 +193,10 @@ interface AttemptResponse {
   isCorrect: boolean;
   isSolved: boolean;
   msg: string;
+}
+
+interface AIResponse {
+  answer: string;
 }
 
 
@@ -258,6 +250,7 @@ export default function PuzzleSolverPage() {
   const [puzzle, setPuzzle] = useState<Puzzle>();
   const [playerMoveFeedback, setPlayerMoveFeedback] = useState<PlayerMoveFeedback>();
   const [isSolved, setIsSolved] = useState<boolean>(false);
+  const [aiReply, setAIReply] = useState<string>("");
   const [playerMove, setPlayerMove] = useState<onDropParams>();
   const [pendingPromotion, setPendingPromotion] = useState<{
     from: string;
@@ -292,7 +285,7 @@ const [promotionPiece, setPromotionPiece] = useState<string | null>(null);
     sendMoveToApi(pendingPromotion.from + pendingPromotion.to + piece);
     setPendingPromotion(null);
     setPlayerMove(undefined);
-};
+  };
 
   // send move to backend when playerMove state updates, which happens when a move is detected on the chessboard
   useEffect(() => {
@@ -315,6 +308,29 @@ const [promotionPiece, setPromotionPiece] = useState<string | null>(null);
   }, [playerMove, isSolved]);
 
   
+  async function sendAIQuestion(question: string){
+
+    const res = await fetch(`http://localhost:8082/puzzles/${puzzleId}/attempts/${currentAttempt}/ai-questions`,
+        {
+          method: "POST",
+          credentials: 'include',
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ question })
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
+      const json: AIResponse = await res.json();
+
+      setAIReply(json.answer);
+
+
+  }
 
 
 
@@ -387,7 +403,7 @@ const [promotionPiece, setPromotionPiece] = useState<string | null>(null);
   
 
   function onMoveDetected(params: onDropParams) {
-    console.log("Player move detected:", params.source, params.target);
+    console.log("Player move detected:", params.source, params.target);    
     // sent move to backend for validation and response
     setPlayerMove(params);
   }
@@ -409,7 +425,11 @@ const [promotionPiece, setPromotionPiece] = useState<string | null>(null);
                       initialFen={puzzle.fen} 
                       botMove={puzzle.botMove} 
                       onMoveDetected={onMoveDetected} />
-                  <RightPanel puzzle={puzzle} />
+                  <RightPanel 
+                    puzzle={puzzle}
+                    sendUserMessage={sendAIQuestion} 
+                    aiReply={aiReply}
+                  />
               </>
           )}
       </div>
