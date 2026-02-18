@@ -15,7 +15,7 @@ public class AttemptMapper {
         return AttemptViewDto.builder()
                 .id(attempt.getId())
                 .submittedTime(attempt.getDateTime())
-                .status(attempt.getStatus().toString())
+                .status(attempt.getStatus().getName())
                 .initalFen(attempt.getPuzzle().getFen())
                 .movesMade(moves.subList(0, attempt.getMovesPlayed()))
                 .build();

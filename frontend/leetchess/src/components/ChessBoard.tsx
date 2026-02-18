@@ -11,7 +11,7 @@ export interface onDropParams {
 
 interface ChessBoardProps {
   fen: string;
-  botMove: string;
+  moveHistory: string[];
   playerAlliance: string;
   playerMoveFeedback?: PlayerMoveFeedback;
   onPlayerMove: (params: onDropParams) => void;
@@ -47,7 +47,7 @@ function extractSquaresFromSAN(san: string): {
   };
 }
 
-const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayerMove}: ChessBoardProps) => {
+const ChessBoard = ({ fen, moveHistory, playerAlliance, playerMoveFeedback, onPlayerMove}: ChessBoardProps) => {
 
   const boardRef = useRef<any>(null);
   const gameRef = useRef<Chess>(new Chess());
@@ -118,11 +118,17 @@ const ChessBoard = ({ fen, botMove, playerAlliance, playerMoveFeedback, onPlayer
 
       boardRef.current = board;
 
-      // initial bot move
-      gameRef.current.move(botMove);
-      board.position(gameRef.current.fen());
+      // initial moves
 
-      highlightLastMove(botMove.slice(0, 2), botMove.slice(2));
+      moveHistory.forEach(move => {
+        gameRef.current.move(move);
+        board.position(gameRef.current.fen());
+
+        clearHighlights();
+        highlightLastMove(move.slice(0, 2), move.slice(2));
+        
+      });
+      
 
       // highlightSquare(botMove.slice(0, 2));
       // highlightSquare(botMove.slice(2))

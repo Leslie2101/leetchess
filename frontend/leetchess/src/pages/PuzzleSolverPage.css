@@ -71,16 +71,15 @@
     gap: 0.75rem;
     padding: 0.75rem;
     border-radius: 8px;
-    cursor: pointer;
     transition: all 0.2s;
     margin-bottom: 0.5rem;
     border: 1px solid transparent;
 }
 
-.attempt-item:hover {
+/* .attempt-item:hover {
     background: var(--bg-hover);
     border-color: var(--border-color);
-}
+} */
 
 .attempt-item.active {
     background: var(--bg-hover);

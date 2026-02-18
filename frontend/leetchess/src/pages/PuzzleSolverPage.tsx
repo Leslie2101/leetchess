@@ -14,7 +14,7 @@ import axios from "axios";
 // --- Types ---
 interface Attempt {
   id: number;
-  status: "solved" | "attempted";
+  status: "solved" | "attempted" | "in_progress";
   movesMade: string[];
   finishedTime: string;
   submittedTime: string;
@@ -39,8 +39,8 @@ interface SidebarProps {
 
 interface BoardProps {
     initialFen: string;
-    botMove: string;
     moveHistory: string[];
+    correctMoves: string[];
     playerAlliance: string;
     playerMoveFeedback: PlayerMoveFeedback;
     onMoveDetected: (params: onDropParams) => void;
@@ -52,47 +52,65 @@ interface RightPanelProps {
   aiReply: string;
 }
 
+function formatDateTime(isoString: string) {
+  return new Date(isoString).toLocaleString(undefined, {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+
+
 // --- Sidebar Component ---
 function Sidebar({ attempts, currentAttempt, setCurrentAttempt }: SidebarProps) {
+
+  console.log(attempts);
+  function Attempts(){
+    return (
+      <div id="attemptsList">
+        {attempts.map((attempt) => (
+          <div
+            key={attempt.id}
+            className={`attempt-item ${currentAttempt === attempt.id ? "active" : ""}`}
+            data-id={attempt.id}
+            data-solved={attempt.status === "solved"}
+          >
+            <div className="attempt-thumb"></div>
+            <div className="attempt-info">
+              {/* <div className="attempt-id">#{attempt.id}</div> */}
+              <div className="attempt-time">{formatDateTime(attempt.submittedTime)}</div>
+            </div>
+            <div className={`attempt-status ${attempt.status.toLowerCase()}`}>
+              {currentAttempt === attempt.id ? "Current" : attempt.status}
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div className="sidebar">
       <div className="sidebar-section">
         <div className="section-title">Previous Attempts</div>
-        <div className="section-subtitle">TODAY'S SESSION</div>
-
-        <div id="attemptsList">
-          {attempts.map((attempt) => (
-            <div
-              key={attempt.id}
-              className={`attempt-item ${currentAttempt === attempt.id ? "active" : ""}`}
-              onClick={() => setCurrentAttempt(attempt.id)}
-              data-id={attempt.id}
-              data-solved={attempt.status === "solved"}
-            >
-              <div className="attempt-thumb"></div>
-              <div className="attempt-info">
-                <div className="attempt-id">#{attempt.id}</div>
-                <div className="attempt-time">{attempt.finishedTime}</div>
-              </div>
-              <div className={`attempt-status ${attempt.status.toLowerCase()}`}>
-                {currentAttempt === attempt.id ? "Current" : attempt.status}
-              </div>
-            </div>
-          ))}
-        </div>
+        <Attempts />
+      
       </div>
     </div>
   );
 }
 
 // --- Board Component ---
-function Board({ moveHistory, botMove, initialFen, playerAlliance, playerMoveFeedback, onMoveDetected }: BoardProps) {
+function Board({ correctMoves, moveHistory, initialFen, playerAlliance, playerMoveFeedback, onMoveDetected }: BoardProps) {
 
 
   function ProgressDots(){
     return (
       <div className="progress-dots">
-      {moveHistory.map((move, index) => (
+      {correctMoves.map((move, index) => (
           <div key={index} className="progress-dot completed" title={`Move ${move} - Correct`}></div>
       ))}
       
@@ -104,7 +122,12 @@ function Board({ moveHistory, botMove, initialFen, playerAlliance, playerMoveFee
     <div className="board-container">
       <div className="board-wrapper">
         <div className="chessboard" id="board1">
-            <ChessBoard fen={initialFen} botMove={botMove} playerAlliance={playerAlliance} playerMoveFeedback={playerMoveFeedback} onPlayerMove={onMoveDetected}/>
+            <ChessBoard 
+            fen={initialFen} 
+            moveHistory={moveHistory} 
+            playerAlliance={playerAlliance} 
+            playerMoveFeedback={playerMoveFeedback} 
+            onPlayerMove={onMoveDetected}/>
         </div>
       </div>
 
@@ -170,10 +193,6 @@ function RightPanel({ puzzle, sendUserMessage, aiReply }: RightPanelProps) {
   );
 }
 
-const attempts: Attempt[] = [
-  { id: 89231, finishedTime: "In Progress", status: "attempted"},
-  { id: 89201, finishedTime: "2m 30s", status: "solved"}
-];
 
 interface AttemptResponse {
   id: string;
@@ -236,6 +255,7 @@ function PromotionModal({isOpen, selectPromotion}: PromotionModalProp){
 // --- Main Page ---
 export default function PuzzleSolverPage() {
   const [currentAttempt, setCurrentAttempt] = useState<number>(-1);
+  const [attempts, setAttempts] = useState<Attempt[]>([]);
   const [puzzle, setPuzzle] = useState<Puzzle>();
   const [playerMoveFeedback, setPlayerMoveFeedback] = useState<PlayerMoveFeedback>();
   const [isSolved, setIsSolved] = useState<boolean>(false);
@@ -248,8 +268,8 @@ export default function PuzzleSolverPage() {
 
   const [promotionPiece, setPromotionPiece] = useState<string | null>(null);
 
-
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
+  const [correctMoves, setCorrectMoves] = useState<string[]>([]);
   const params = useParams<{ puzzleId: string }>(); // get URL params
   const puzzleId = params.puzzleId; // string value of "1" from /puzzles/1/solve
 
@@ -267,7 +287,20 @@ export default function PuzzleSolverPage() {
       }
 
       loadPuzzle();
+
+      axios.get(`http://localhost:8082/puzzles/${puzzleId}/attempts`, {withCredentials: true})
+        .then(response => {
+          setAttempts(response.data.content);
+        })
+        .catch(() => {
+          setAttempts([]);
+        });
+
+
   }, []);
+
+
+
 
   const onPromotionSelect = (piece: string) => {
     if (!pendingPromotion) return;
@@ -363,7 +396,7 @@ export default function PuzzleSolverPage() {
     }
 
     if (json.isCorrect){
-      setMoveHistory([...moveHistory, move]);
+      setCorrectMoves([...correctMoves, move]);
     }
 
 
@@ -391,9 +424,9 @@ export default function PuzzleSolverPage() {
                   <Board
                       playerMoveFeedback={playerMoveFeedback}
                       playerAlliance={puzzle.playerAlliance} 
-                      moveHistory={moveHistory} 
+                      correctMoves={correctMoves}
+                      moveHistory={[puzzle.botMove]} 
                       initialFen={puzzle.fen} 
-                      botMove={puzzle.botMove} 
                       onMoveDetected={onMoveDetected} />
                   <RightPanel 
                     puzzle={puzzle}
