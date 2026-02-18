@@ -8,7 +8,7 @@ Progress so far
 - integrate: send move to backend for validation
 - handle promotion UI (11/2)
 - add login/logout with OAuth2 Google (13/2)
-- AI consultant (?)
+- AI consultant (18/3)
 - scheduled removal of anonymous attempts (?)
 
 ## Consideration
@@ -35,7 +35,6 @@ The puzzle solver uses a hybrid frontend-backend approach for efficient and secu
 ## Extra libraries:
 - chessboard.js for chessboard interface
 - chess.js for frontend side chess engine
-  Data Source & Disclaimer
 
 
 # Data source & Disclaimer

@@ -93,6 +93,10 @@ public class PuzzleService {
         }
     }
 
+    public static String getAlliance(Puzzle puzzle){
+        return puzzle.getFen().split(" ")[1];
+    }
+
 
     private Set<Puzzle> parseFromInputStream(InputStream inputStream){
         try (Reader reader = new BufferedReader(new InputStreamReader(inputStream))){

@@ -28,6 +28,4 @@ public class Puzzle {
     )
     private Set<Theme> themes;
 
-
-
 }
