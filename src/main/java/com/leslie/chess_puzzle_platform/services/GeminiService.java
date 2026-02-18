@@ -35,17 +35,24 @@ public class GeminiService {
     public String answerAttemptQuestion(long puzzleId, long attemptId, String question){
 
 
-        PuzzleAttempt attempt = attemptRepository.findById(attemptId).orElseThrow();
         Puzzle puzzle = puzzleRepository.findById(puzzleId).orElseThrow();
         final String[] moves = puzzle.getMoves().split(" ");
 
 
+        String[] movesPlayed = attemptRepository.findById(attemptId)
+                .map(attempt -> Arrays.copyOfRange(moves, 0, attempt.getMovesPlayed()))
+                .orElseGet(() -> Arrays.copyOfRange(moves, 0, 1));
+
+        String updatedFen = ChessGameUtils.getUpdatedFen(puzzle.getFen(), movesPlayed);
+
+        String userAlliance = PuzzleService.getAlliance(puzzle).equals("b")
+                ? "white"
+                : "black";
 
         String userPrompt = buildPrompt(
-                puzzle.getFen(),
-                Arrays.copyOfRange(moves, 0, attempt.getMovesPlayed()),
+                updatedFen,
                 question,
-                PuzzleService.getAlliance(puzzle)
+                userAlliance
         );
 
         System.out.println(userPrompt);
@@ -61,21 +68,20 @@ public class GeminiService {
     }
 
 
-    private String buildPrompt(String fen, String[] previousMoves, String question, String alliance){
+    private String buildPrompt(String fen, String question, String alliance){
         return """
                 Process this question from the player:
                 
-                Starter board FEN: %s
-                Moves played so far: %s
+                Current board FEN: %s
                 User question: %s
-                Opponent's alliance: %s
+                User's alliance: %s
                 
                 Instructions:
                 - Focus on positional ideas, tactics, and piece activity.
                 - Explain reasoning clearly in a way a learner can understand, but do NOT reveal the exact solution
                 - Optional: provide insight into threats, weak pieces, and plans.
                 - Answer using the language used to ask the question. For example: if the question is in French, answer in French.
-                """.formatted(fen, String.join(", ", previousMoves), question, alliance);
+                """.formatted(fen, question, alliance);
     }
 
 
