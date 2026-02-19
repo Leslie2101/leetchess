@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 import Chat from "../components/Chat";
 import type { ChatProps } from "../components/Chat";
 import axios from "axios";
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 // errors, time completion, 
 
@@ -278,7 +279,7 @@ export default function PuzzleSolverPage() {
 
       async function loadPuzzle() {
           try {
-              const res = await fetch(`http://localhost:8082/puzzles/${puzzleId}`);
+              const res = await fetch(`${API_BASE}/puzzles/${puzzleId}`);
               const json = await res.json();
               setPuzzle(json);
           } catch (err) {
@@ -288,7 +289,7 @@ export default function PuzzleSolverPage() {
 
       loadPuzzle();
 
-      axios.get(`http://localhost:8082/puzzles/${puzzleId}/attempts`, {withCredentials: true})
+      axios.get(`${API_BASE}/puzzles/${puzzleId}/attempts`, {withCredentials: true})
         .then(response => {
           setAttempts(response.data.content);
         })
@@ -332,7 +333,7 @@ export default function PuzzleSolverPage() {
   
   async function sendAIQuestion(question: string){
 
-    const res = await fetch(`http://localhost:8082/puzzles/${puzzleId}/attempts/${currentAttempt}/ai-questions`,
+    const res = await fetch(`${API_BASE}/puzzles/${puzzleId}/attempts/${currentAttempt}/ai-questions`,
         {
           method: "POST",
           credentials: 'include',
@@ -359,10 +360,10 @@ export default function PuzzleSolverPage() {
   async function sendMoveToApi(move: string) {
     // first move being made 
 
-    let url = `http://localhost:8082/puzzles/${puzzleId}/attempts`;
+    let url = `${API_BASE}/puzzles/${puzzleId}/attempts`;
 
     if (currentAttempt != -1){
-      url = `http://localhost:8082/puzzles/${puzzleId}/attempts/${currentAttempt}/moves`;
+      url = `${API_BASE}/puzzles/${puzzleId}/attempts/${currentAttempt}/moves`;
     }
 
     const res = await fetch(url,

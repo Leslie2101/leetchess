@@ -4,6 +4,7 @@ import com.leslie.chess_puzzle_platform.services.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,6 +22,9 @@ import java.util.List;
 @EnableWebSecurity
 public class OAuthConfig {
 
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
     private final CustomOAuth2UserService oAuth2Service;
 
     @Bean
@@ -37,7 +41,7 @@ public class OAuthConfig {
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(userInfo ->
                                 userInfo.userService(oAuth2Service))
-                        .defaultSuccessUrl("http://localhost:5173/", true))
+                        .defaultSuccessUrl(frontendUrl, true))
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessHandler((request, response, authentication) -> {
@@ -55,7 +59,7 @@ public class OAuthConfig {
     @Bean
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedOrigins(List.of(frontendUrl));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

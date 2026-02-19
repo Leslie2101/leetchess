@@ -6,6 +6,8 @@ import type { FilterState } from './FilterWidget/FilterWidget';
 import { useCallback, useEffect, useState } from 'react';
 import { SearchBar } from './FilterWidget/SearchBar';
 import { useNavigate } from 'react-router-dom';
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
 
 interface DailyChallengeProps {
     onClick: () => void;
@@ -119,6 +121,7 @@ export default function PuzzleListPage(){
     const [pageNumber, setPageNumber] = useState<number>(0);
     const [dailyId, setDailyId] = useState<number>(0);
 
+
     async function loadPuzzles() {
         try {
 
@@ -137,10 +140,10 @@ export default function PuzzleListPage(){
                 params.append("themes", theme);
             });
 
-            console.log(`http://localhost:8082/puzzles?${params.toString()}`);
+            console.log(`${API_BASE}/puzzles?${params.toString()}`);
 
 
-            const res = await fetch(`http://localhost:8082/puzzles?${params.toString()}`, {
+            const res = await fetch(`${API_BASE}/puzzles?${params.toString()}`, {
                 method: 'GET',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' }
@@ -161,7 +164,7 @@ export default function PuzzleListPage(){
 
     async function loadDailyChallenge(){
         try {
-            const res = await fetch(`http://localhost:8082/puzzles/daily-puzzle-id`, {
+            const res = await fetch(`${API_BASE}/puzzles/daily-puzzle-id`, {
                 method: 'GET',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' }

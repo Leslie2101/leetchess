@@ -1,5 +1,7 @@
 import axios from "axios";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
 
 interface User {
   name: string;
@@ -20,7 +22,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         // request now being done with authentication information
-        axios.get('http://localhost:8082/user-info', {withCredentials: true})
+        axios.get(`${API_BASE}/user-info`, {withCredentials: true})
         .then(response => {
             setUser(response.data);
         })
