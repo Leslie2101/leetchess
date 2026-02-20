@@ -1,20 +1,21 @@
 # Notes
 
 Progress so far
-- Load puzzles from Lichess database when server is starting 
-- fetch puzzles with id, get all puzzles with search/filter (rating, theme) + pagination
-- create/resume an attempt to solve a puzzle
-- fetch all attempts (default sort by recent change time)
-- integrate: send move to backend for validation
-- handle promotion UI (11/2)
-- add login/logout with OAuth2 Google (13/2)
-- AI consultant (18/3)
-- AWS for server, database (20/02)
-- AWS S3 for frontend (?)
-- scheduled removal of anonymous attempts (?)
-- resolve OAuth2 for AWS connect (?) integrate AWS cognito
-- redis for caching requests (?)
-- role-based authorisation for admin creating puzzles
+
+- [x] Load puzzles from Lichess database when server is starting 
+- [x] fetch puzzles with id, get all puzzles with search/filter (rating, theme) + pagination
+- [x] create/resume an attempt to solve a puzzle
+- [x] fetch all attempts (default sort by recent change time)
+- [x] integrate: send move to backend for validation
+- [x] handle promotion UI (11/2)
+- [x] add login/logout with OAuth2 Google (13/2)
+- [x] AI consultant (18/3)
+- [x] AWS for server, database (20/02)
+- [ ] AWS S3 for frontend (?)
+- [ ] scheduled removal of anonymous attempts (?)
+- [ ] resolve OAuth2 for AWS connect (?) integrate AWS cognito
+- [ ] redis for caching requests (?)
+- [ ] role-based authorisation for admin creating puzzles
 
 ## Consideration
 
@@ -37,13 +38,14 @@ The puzzle solver uses a hybrid frontend-backend approach for efficient and secu
 
 ### Search Puzzle 
 
-Consider between LIKE and FullTextSearch
+Consider between LIKE and FullTextSearch for searching by title
 
 
 
 ## Extra libraries:
 - chessboard.js for chessboard interface
 - chess.js for frontend side chess engine
+- [Wolfram chess engine](https://github.com/wolfraam/chess-game)
 
 
 # Data source & Disclaimer
