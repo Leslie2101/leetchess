@@ -9,7 +9,12 @@ Progress so far
 - handle promotion UI (11/2)
 - add login/logout with OAuth2 Google (13/2)
 - AI consultant (18/3)
+- AWS for server, database (20/02)
+- AWS S3 for frontend (?)
 - scheduled removal of anonymous attempts (?)
+- resolve OAuth2 for AWS connect (?) integrate AWS cognito
+- redis for caching requests (?)
+- role-based authorisation for admin creating puzzles
 
 ## Consideration
 

@@ -4,6 +4,8 @@ import './Navbar.css'
 import ProfileModal from './ProfileModal'
 import { useAuth } from '../AuthContext';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
 
 export default function Navbar() {
     const [profileModalOpen, setProfileModalOpen] = useState(false);
@@ -16,13 +18,13 @@ export default function Navbar() {
 
     function handleLogin(provider: string){
         console.log(`Login with ${provider}`);
-        window.location.href = `http://localhost:8082/oauth2/authorization/${provider}`;
+        window.location.href = `${API_BASE}/oauth2/authorization/${provider}`;
     }
 
 
     function handleLogout(){
         console.log("Logout");
-        axios.post("http://localhost:8082/logout", {}, {withCredentials: true})
+        axios.post(`${API_BASE}/logout`, {}, {withCredentials: true})
         .then(() => {
             auth?.setUser(null);
         });

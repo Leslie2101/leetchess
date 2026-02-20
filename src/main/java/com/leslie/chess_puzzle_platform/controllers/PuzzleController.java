@@ -68,6 +68,11 @@ public class PuzzleController {
                                                              @RequestBody MoveRequest moveRequest,
                                                              @AuthenticationPrincipal OAuth2User principal){
 
+        if (principal == null){
+            return ResponseEntity.ok(puzzleAttemptService.makeMove(null, puzzleId, null, moveRequest.move()));
+        }
+
+
         Optional<User> optionalUser = userRepository.findByUsername(principal.getAttribute("email"));
 
 
@@ -80,6 +85,10 @@ public class PuzzleController {
                                                            @PathVariable long attemptId,
                                                            @RequestBody MoveRequest moveRequest,
                                                            @AuthenticationPrincipal OAuth2User principal){
+
+        if (principal == null){
+            return ResponseEntity.ok(puzzleAttemptService.makeMove(null, puzzleId, attemptId, moveRequest.move()));
+        }
 
         Optional<User> optionalUser = userRepository.findByUsername(principal.getAttribute("email"));
 
