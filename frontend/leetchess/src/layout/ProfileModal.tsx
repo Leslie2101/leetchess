@@ -1,5 +1,4 @@
 import './ProfileModal.css';
-import axios from "axios";
 import { useAuth } from '../AuthContext';
 
 interface ProfileModalProp {

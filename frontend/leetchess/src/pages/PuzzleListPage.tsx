@@ -203,14 +203,6 @@ export default function PuzzleListPage(){
         setPageNumber(0); 
     }, []);
 
-    const handleResetFilters = useCallback(() => {
-        setFilters({
-            ratingMin: 400,
-            ratingMax: 3000,
-            themes: [],
-        });
-        setPageNumber(0);
-    }, []);
 
     const navigate = useNavigate();
     const handleSolveClick = (puzzleId: string) => {
@@ -296,7 +288,6 @@ export default function PuzzleListPage(){
                 <FilterWidget
                     filters={filters}
                     onApply={handleApplyFilters}
-                    onReset={handleResetFilters}
                 />
                 <SearchBar
                     value={searchTerm}

@@ -1,11 +1,10 @@
 // PuzzleSolverPage.tsx
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import ChessBoard from "../components/ChessBoard";
-import type { onDropParams, PlayerMoveFeedback } from "../components/ChessBoard";
+import type { PlayerMoveFeedback } from "../components/ChessBoard";
 import './PuzzleSolverPage.css';
 import { useParams } from "react-router-dom";
 import Chat from "../components/Chat";
-import type { ChatProps } from "../components/Chat";
 import axios from "axios";
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
@@ -35,7 +34,6 @@ interface Puzzle {
 interface SidebarProps {
   attempts: Attempt[];
   currentAttempt: number;
-  setCurrentAttempt: (id: number) => void;
 }
 
 interface BoardProps {
@@ -43,8 +41,8 @@ interface BoardProps {
     moveHistory: string[];
     correctMoves: string[];
     playerAlliance: string;
-    playerMoveFeedback: PlayerMoveFeedback;
-    onMoveDetected: (params: onDropParams) => void;
+    playerMoveFeedback?: PlayerMoveFeedback;
+    onMoveDetected: (move: string) => void;
 }
 
 interface RightPanelProps {
@@ -66,7 +64,7 @@ function formatDateTime(isoString: string) {
 
 
 // --- Sidebar Component ---
-function Sidebar({ attempts, currentAttempt, setCurrentAttempt }: SidebarProps) {
+function Sidebar({ attempts, currentAttempt }: SidebarProps) {
 
   console.log(attempts);
   function Attempts(){
@@ -209,67 +207,17 @@ interface AIResponse {
 }
 
 
-interface PromotionModalProp {
-  isOpen: boolean;
-  selectPromotion: (piece: string) => void;  
-}
-
-function PromotionModal({isOpen, selectPromotion}: PromotionModalProp){
-  return (
-    <>
-      { isOpen && 
-        <div className="promotion-overlay active" id="promotionOverlay">
-            <div className="promotion-modal" onClick={(e) => {e.preventDefault();}}>
-                <h2 className="promotion-title">Promote Your Pawn! 👑</h2>
-                <p className="promotion-subtitle">Choose which piece to promote to</p>
-                
-                <div className="promotion-pieces">
-                    <div className="promotion-piece" onClick={() => selectPromotion('q')} data-piece="queen">
-                        <div className="piece-icon" id="queenIcon">♕</div>
-                        <div className="piece-name">Queen</div>
-                    </div>
-                    
-                    <div className="promotion-piece" onClick={() => selectPromotion('r')} data-piece="rook">
-                        <div className="piece-icon" id="rookIcon">♖</div>
-                        <div className="piece-name">Rook</div>
-                    </div>
-                    
-                    <div className="promotion-piece" onClick={() => selectPromotion('b')} data-piece="bishop">
-                        <div className="piece-icon" id="bishopIcon">♗</div>
-                        <div className="piece-name">Bishop</div>
-                    </div>
-                    
-                    <div className="promotion-piece" onClick={() => selectPromotion('n')} data-piece="knight">
-                        <div className="piece-icon" id="knightIcon">♘</div>
-                        <div className="piece-name">Knight</div>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-      }
-    </>
-  )
-}
-
-
 // --- Main Page ---
 export default function PuzzleSolverPage() {
   const [currentAttempt, setCurrentAttempt] = useState<number>(-1);
   const [attempts, setAttempts] = useState<Attempt[]>([]);
   const [puzzle, setPuzzle] = useState<Puzzle>();
-  const [playerMoveFeedback, setPlayerMoveFeedback] = useState<PlayerMoveFeedback>();
+  const [playerMoveFeedback, setPlayerMoveFeedback] = useState<PlayerMoveFeedback | undefined>();
   const [isSolved, setIsSolved] = useState<boolean>(false);
   const [aiReply, setAIReply] = useState<string>("");
-  const [playerMove, setPlayerMove] = useState<onDropParams>();
-  const [pendingPromotion, setPendingPromotion] = useState<{
-    from: string;
-    to: string;
-  } | null>(null);
+  const [playerMove, setPlayerMove] = useState<string>();
 
-  const [promotionPiece, setPromotionPiece] = useState<string | null>(null);
 
-  const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const [correctMoves, setCorrectMoves] = useState<string[]>([]);
   const params = useParams<{ puzzleId: string }>(); // get URL params
   const puzzleId = params.puzzleId; // string value of "1" from /puzzles/1/solve
@@ -302,33 +250,15 @@ export default function PuzzleSolverPage() {
 
 
 
-
-  const onPromotionSelect = (piece: string) => {
-    if (!pendingPromotion) return;
-    sendMoveToApi(pendingPromotion.from + pendingPromotion.to + piece);
-    setPendingPromotion(null);
-    setPlayerMove(undefined);
-  };
-
   // send move to backend when playerMove state updates, which happens when a move is detected on the chessboard
   useEffect(() => {
     if (!playerMove) return;
     if (isSolved) return;
 
-    // Pawn reached last rank -> promotion needed
-    if (playerMove.piece === "wP" && playerMove.target[1] === "8") {
-      setPendingPromotion({ from: playerMove.source, to: playerMove.target });
-      return; 
-    }
-
-    if (playerMove.piece === "bP" && playerMove.target[1] === "1") {
-      setPendingPromotion({ from: playerMove.source, to: playerMove.target });
-      return;
-    }
     
-    sendMoveToApi(playerMove.source + playerMove.target);
+    sendMoveToApi(playerMove);
     setPlayerMove(undefined); // reset playerMove state after sending to API
-  }, [playerMove, isSolved]);
+  }, [playerMove]);
 
   
   async function sendAIQuestion(question: string){
@@ -406,21 +336,22 @@ export default function PuzzleSolverPage() {
 
   
 
-  function onMoveDetected(params: onDropParams) {
-    console.log("Player move detected:", params.source, params.target);    
+  function onMoveDetected(move: string) {
+    console.log("Player move detected:", move);    
     // sent move to backend for validation and response
-    setPlayerMove(params);
+    setPlayerMove(move);
+    
   }
 
   return (
       <div className="solver-container">
-          <Sidebar attempts={attempts} currentAttempt={currentAttempt} setCurrentAttempt={setCurrentAttempt} />
+          <Sidebar attempts={attempts} currentAttempt={currentAttempt} />
           {puzzle && (
               <>
-                  <PromotionModal
+                  {/* <PromotionModal
                     isOpen={!!pendingPromotion}
                     selectPromotion={onPromotionSelect}
-                  />
+                  /> */}
                   
                   <Board
                       playerMoveFeedback={playerMoveFeedback}

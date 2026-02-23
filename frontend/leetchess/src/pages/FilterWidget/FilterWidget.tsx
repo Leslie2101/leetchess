@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback, use } from "react";
+import { useState, useEffect } from "react";
 import {RatingRangeSlider} from "./RatingRangeSlider";
 import { ThemeFilter } from "./ThemeFilter";
 import './FilterWidget.css';
 import { createPortal } from "react-dom";
-import ThreeSixtyIcon from '@mui/icons-material/ThreeSixty';
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
 
 interface FilterModalProps {
   filters: FilterState;
@@ -75,7 +76,6 @@ function FilterModalBody({ filters, onChange, themes, loadingThemes}: FilterModa
 interface FilterWidgetProps {
   filters: FilterState;
   onApply: (filters: FilterState) => void;
-  onReset: () => void;
 }
 
 function getFilterTags(filterState: FilterState) {
@@ -97,7 +97,7 @@ function getFilterTags(filterState: FilterState) {
 
 
 
-export function FilterWidget({filters, onApply, onReset}: FilterWidgetProps){
+export function FilterWidget({filters, onApply}: FilterWidgetProps){
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -158,7 +158,7 @@ export function FilterModal({ filters, onClose, onApply }: FilterModalProps) {
       console.log("MODAL MOUNTED");
       async function loadThemes() {
         try {
-            const res = await fetch("http://localhost:8082/themes");
+            const res = await fetch(`${API_BASE}/themes`);
             const data: Theme[] = await res.json();
             setThemes(data);
         } catch (err) {
@@ -174,14 +174,6 @@ export function FilterModal({ filters, onClose, onApply }: FilterModalProps) {
     function applyFilters() {
         onApply(localFilters);
         onClose();
-    }
-
-    function clearFilters() {
-        setLocalFilters({
-            ratingMin: 10,
-            ratingMax: 3000,
-            themes: []
-        });
     }
 
     const handleFilterChange = (newFilters: FilterState) => {

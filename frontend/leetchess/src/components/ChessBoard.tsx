@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { Chess } from 'chess.js'
+import { Chess, type PieceSymbol, type Square } from 'chess.js';
+import { Chessboard, chessColumnToColumnIndex, defaultPieces, type PieceDropHandlerArgs, type PieceHandlerArgs, type PieceRenderObject} from 'react-chessboard';
+
 
 
 import './ChessBoard.css';
+
 export interface onDropParams {
-  source: string;
-  target: string;
-  piece: any;
+  move: string;
 }
 
 interface ChessBoardProps {
@@ -14,7 +15,7 @@ interface ChessBoardProps {
   moveHistory: string[];
   playerAlliance: string;
   playerMoveFeedback?: PlayerMoveFeedback;
-  onPlayerMove: (params: onDropParams) => void;
+  onPlayerMove: (move: string) => void;
 }
 
 
@@ -26,165 +27,215 @@ export interface PlayerMoveFeedback {
   botResponseMove: string;
 }
 
-function extractSquaresFromSAN(san: string): {
-  from?: string;
-  to?: string;
-} {
-  // match all board squares like e4, g1, h8
-  const squares = san.match(/[a-h][1-8]/g) || [];
-
-  if (squares.length === 0) {
-    return {};
-  }
-
-  if (squares.length === 1) {
-    return { to: squares[0] };
-  }
-
-  return {
-    from: squares[0],
-    to: squares[squares.length - 1],
-  };
-}
-
 const ChessBoard = ({ fen, moveHistory, playerAlliance, playerMoveFeedback, onPlayerMove}: ChessBoardProps) => {
 
-  const boardRef = useRef<any>(null);
-  const gameRef = useRef<Chess>(new Chess());
+  const [boardOrientation, setBoardOrientation] = useState<'white' | 'black'>('white');
+  const [position, setPosition] = useState(fen);
+  const gameRef = useRef<Chess>(new Chess(fen));
+  const [isEndGame, setIsEndGame] = useState<boolean>(false);
+  const [squareStyles, setSquareStyles] = useState<Record<string, React.CSSProperties>>({});
+  const [promotionMove, setPromotionMove] = useState<Omit<PieceDropHandlerArgs, 'piece'> | null>(null);
 
-  function highlightLastMove(from: string, to: string) {
-      [from, to].forEach(coord => {
-          const squareEl = document.querySelector(`[data-square="${coord}"]`);
-          if (squareEl) {
-              squareEl.classList.add('highlight-last-move');
-          }
-      });
-  }
 
   function highlightCheckmate(square: string) {
-    const boardEl = document.getElementById("board1"); // get by ID
-    const el = boardEl?.querySelector(`[data-square='${square}']`);
-    if (!el) {
-      console.log("Square element not found:", square);
-      return;
-    }
-    el.classList.add(`highlight-checkmate-deliver`);
+    setSquareStyles(prev => {
+      const newSquareStyles = {
+        ...prev
+      };
+
+      newSquareStyles[square] = {
+        backgroundColor: 'rgba(255,0,0,0.2)',
+      }
+      return newSquareStyles;
+    });
   }
 
-  function clearHighlights() {
-    const boardEl = document.getElementById("board1"); // get by ID
-
-    boardEl?.querySelectorAll(".square-55d63")
-      .forEach(el => el.classList.remove("highlight-legal-move", "highlight-last-move"));
-  }
-
-
-
-
-  // ensure piece is only draggable if it's the player's turn
-  function onDragStart (source, piece, position, orientation) {
-    if ((playerAlliance.toLowerCase() === 'white' && piece.search(/^w/) === -1) ||
-        (playerAlliance.toLowerCase() === 'black' && piece.search(/^b/) === -1)) {
-      return false
-    }
-  }
-
-
-  function onDrop (source, target, piece, newPos, oldPos, orientation) {    
-    // snapback if the move is incorrect or not valid
-    if (source === target) {
-      return 'snapback';
+  function highlightLastMove(from: string, to: string) {
+    const highlightStyle = {
+      backgroundColor: 'rgba(168, 203, 183, 0.2)',
+      boxShadow: 'inset 0 0 0 2px var(--secondary-sage)'
     };
 
-    console.log(piece);
-
-    onPlayerMove({ source, target, piece });
-    
+    setSquareStyles(() => ({
+      [from]: highlightStyle,
+      [to]: highlightStyle
+    }));
   }
+
+  // handle piece drop
+  function onPieceDrop({
+    sourceSquare,
+    targetSquare  
+  }: PieceDropHandlerArgs) {
+    // type narrow targetSquare potentially being null (e.g. if dropped off board)
+    if (!targetSquare) {
+      return false;
+    }
+
+    // target square is a promotion square, check if valid and show promotion dialog
+    if (targetSquare.match(/\d+$/)?.[0] === '8') {
+      // get all possible moves for the source square
+      const possibleMoves = gameRef.current.moves({
+        square: sourceSquare as Square
+      });
+
+      // check if target square is in possible moves (accounting for promotion notation)
+      if (possibleMoves.some(move => move.startsWith(`${targetSquare}=`))) {
+        setPromotionMove({
+          sourceSquare,
+          targetSquare
+        });
+      }
+
+      // return true so that the promotion move is not animated
+      // the downside to this is that any other moves made first will not be animated and will reset our move to be animated again e.g. if you are premoving a promotion move and the opponent makes a move afterwards
+      return true;
+    }
+
+    // not a promotion square, try to make the move now
+    try {
+      gameRef.current.move({
+        from: sourceSquare,
+        to: targetSquare
+      });
+
+      // update the game state
+      setPosition(gameRef.current.fen());
+
+      // return true if the move was successful and send for validation
+      // submit move
+      onPlayerMove(sourceSquare + targetSquare);
+
+      return true;
+    } catch {
+      // return false if the move was not successful
+      return false;
+    }
+  }
+
+  // only allow alliance pieces to be dragged
+  function canDragPiece({
+    piece
+  }: PieceHandlerArgs) {
+    return !isEndGame && piece.pieceType[0] === playerAlliance.toLowerCase().charAt(0);
+  }
+
+
+
+  // handle promotion piece select
+  function onPromotionPieceSelect(piece: PieceSymbol) {
+    try {
+      gameRef.current.move({
+        from: promotionMove!.sourceSquare,
+        to: promotionMove!.targetSquare as Square,
+        promotion: piece
+      });
+
+      // update the game state
+      setPosition(gameRef.current.fen());
+
+      // submit move
+      onPlayerMove(promotionMove!.sourceSquare + (promotionMove!.targetSquare as Square) + piece);
+
+    } catch {
+      // do nothing
+    }
+
+    // reset the promotion move to clear the promotion dialog
+    setPromotionMove(null);
+  }
+
+
+  // calculate the left position of the promotion square
+  const squareWidth = document.querySelector(`[data-column="a"][data-row="1"]`)?.getBoundingClientRect()?.width ?? 0;
+  const promotionSquareLeft = promotionMove?.targetSquare ? squareWidth * chessColumnToColumnIndex(promotionMove.targetSquare.match(/^[a-z]+/)?.[0] ?? '', 8,
+  // number of columns
+  playerAlliance == 'white' ? 'white' : 'black'// board orientation
+  ) : 0;
+
+
+  // chessboard options
+  const chessboardOptions = {
+    position: position,
+    boardOrientation,
+    onPieceDrop,
+    canDragPiece,
+    squareStyles: squareStyles,
+    lightSquareStyle: {
+      backgroundColor: 'var(--board-light)'
+    },
+    darkSquareStyle: {
+      backgroundColor: 'var(--board-dark)'
+    },
+    dropSquareStyle: {
+      backgroundColor: 'var(--highlight-yellow)',
+      boxShadow: 'inset 0 0 3px 3px var(--primary-peach-hover)'
+    },
+    
+    
+    id: 'on-piece-drop',
+    
+  };
+
+  
 
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      const board = Chessboard("board1", {
-        onDragStart: onDragStart,
-        draggable: true,
-        position: fen,
-        onDrop: onDrop,
-        moveSpeed: 'slow',
-        pieceTheme: "/img/chesspieces/{piece}.png",
-      });
+    gameRef.current = new Chess(fen);
+    setBoardOrientation(playerAlliance.toLowerCase()=== 'white' ? 'white' : 'black');
+    // initial moves
 
-      gameRef.current = new Chess(fen);
-
-      boardRef.current = board;
-
-      // initial moves
-
-      moveHistory.forEach(move => {
-        gameRef.current.move(move);
-        board.position(gameRef.current.fen());
-
-        clearHighlights();
-        highlightLastMove(move.slice(0, 2), move.slice(2));
-        
-      });
+    setTimeout(() => {
+      gameRef.current.move(moveHistory[0]);
+      setPosition(gameRef.current.fen());
+      highlightLastMove(moveHistory[0].slice(0,2), moveHistory[0].slice(2));
       
-
-      // highlightSquare(botMove.slice(0, 2));
-      // highlightSquare(botMove.slice(2))
-      
-
-      return () => board?.destroy?.();
-    }, 200);
+    }, 400);
     
+      
   }, []);
+
+
+  function makeBotRespond(botMove: string) {
+    setTimeout(() => {
+      gameRef.current.move(botMove);
+      setPosition(gameRef.current.fen());
+      highlightLastMove(botMove.slice(0,2), botMove.slice(2));
+      
+    }, 400);
+    
+  }
+
+    
 
   useEffect(() => {
     if (!playerMoveFeedback) return;
+
+    gameRef.current.undo();
 
     console.log("Received player move feedback in ChessBoard component:", playerMoveFeedback);
     if (playerMoveFeedback.isCorrect) {
 
       // player make move
       gameRef.current.move(playerMoveFeedback.playerMove);
-      boardRef.current.position(gameRef.current.fen(), false);
-      // clearHighlights();
-      // console.log(playerMoveFeedback.playerMove);
-      // highlightLastMove(playerMoveFeedback.playerMove.slice(0,2), playerMoveFeedback.playerMove.slice(2));
+      setPosition(gameRef.current.fen());
+      highlightLastMove(playerMoveFeedback.playerMove.slice(0,2), playerMoveFeedback.playerMove.slice(2));
+
         
       if (!playerMoveFeedback.isFinalMove) {
         
         // play bot response move
-        console.log(gameRef.current.fen());
-        gameRef.current.move(playerMoveFeedback.botResponseMove);
-        boardRef.current.position(gameRef.current.fen());
-
-
-        // highlight bot previous move
-        clearHighlights();
-        highlightLastMove(playerMoveFeedback.botResponseMove.slice(0,2), playerMoveFeedback.botResponseMove.slice(2));
-
+        makeBotRespond(playerMoveFeedback.botResponseMove);
+        
           
       } else {
         console.log("Puzzle solved! Disabling board.");
-        const currentFEN = boardRef.current.fen();
-        boardRef.current.destroy();
-        const board = Chessboard("board1", {
-          draggable: false,
-          position: currentFEN,
-          pieceTheme: "/img/chesspieces/{piece}.png",
-        });
-
-        boardRef.current = board;
+        setIsEndGame(true);
         
-        // highlight last user move
-        clearHighlights();
-        highlightLastMove(playerMoveFeedback.playerMove.slice(0,2), playerMoveFeedback.playerMove.slice(2));
-
-
         if (gameRef.current.isCheckmate()){
           const opponentColor = playerAlliance.toLowerCase() === 'black' ? 'w' : 'b';
           const kingPosition = gameRef.current.findPiece({ type: 'k', color: opponentColor })[0];
+          console.log("king checkmate at", kingPosition);
           highlightCheckmate(kingPosition);
 
         }
@@ -192,13 +243,57 @@ const ChessBoard = ({ fen, moveHistory, playerAlliance, playerMoveFeedback, onPl
         
       }
     } else {
-      
-      // gameRef.current.undo();
-      boardRef.current.position(gameRef.current.fen());
+      setPosition(gameRef.current.fen());
     }
   }, [playerMoveFeedback]);
 
-  return <div id="board1" style={{ width: 400 }} />;
+  return <div style={{
+    position: 'relative'
+  }}>
+      {promotionMove ? <div onClick={() => setPromotionMove(null)} onContextMenu={e => {
+      e.preventDefault();
+      setPromotionMove(null);
+    }} style={{
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.1)',
+      zIndex: 1000
+    }} /> : null}
+
+      {promotionMove ? <div style={{
+      position: 'absolute',
+      top: 0,
+      left: promotionSquareLeft,
+      backgroundColor: 'white',
+      width: squareWidth,
+      zIndex: 1001,
+      display: 'flex',
+      flexDirection: 'column',
+      boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.5)'
+    }}>
+          {(['q', 'r', 'n', 'b'] as PieceSymbol[]).map(piece => <button key={piece} onClick={() => {
+        onPromotionPieceSelect(piece);
+      }} onContextMenu={e => {
+        e.preventDefault();
+      }} style={{
+        width: '100%',
+        aspectRatio: '1',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 0,
+        border: 'none',
+        cursor: 'pointer'
+      }}>
+              {defaultPieces[`w${piece.toUpperCase()}` as keyof PieceRenderObject]()}
+            </button>)}
+        </div> : null}
+
+      <Chessboard options={chessboardOptions} />
+    </div>;
 };
 
 export default ChessBoard;

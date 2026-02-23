@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import './App.css'
 
 import Navbar from './layout/Navbar';
@@ -8,7 +7,6 @@ import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import PuzzleSolverPage from './pages/PuzzleSolverPage';
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
@@ -17,9 +15,9 @@ function App() {
       <Navbar/>  
 
       <Routes>
-        <Route exact path= "/" element={<PuzzleListPage/>} />
-        <Route exact path= "/puzzles" element={<PuzzleListPage/>} />
-        <Route exact path= "/puzzles/:puzzleId/solve" element={<PuzzleSolverPage/>} />
+        <Route path= "/" element={<PuzzleListPage/>} />
+        <Route path= "/puzzles" element={<PuzzleListPage/>} />
+        <Route path= "/puzzles/:puzzleId/solve" element={<PuzzleSolverPage/>} />
       </Routes>
 
     </Router>
