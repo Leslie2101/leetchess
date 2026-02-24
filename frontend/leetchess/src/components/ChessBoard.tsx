@@ -73,7 +73,7 @@ const ChessBoard = ({ fen, moveHistory, playerAlliance, playerMoveFeedback, onPl
     }
 
     // target square is a promotion square, check if valid and show promotion dialog
-    if (targetSquare.match(/\d+$/)?.[0] === '8') {
+    if (targetSquare.match(/\d+$/)?.[0] === '8' && playerAlliance === 'white' || targetSquare.match(/\d+$/)?.[0] === '1' && playerAlliance === 'black') {
       // get all possible moves for the source square
       const possibleMoves = gameRef.current.moves({
         square: sourceSquare as Square
@@ -213,7 +213,6 @@ const ChessBoard = ({ fen, moveHistory, playerAlliance, playerMoveFeedback, onPl
 
     gameRef.current.undo();
 
-    console.log("Received player move feedback in ChessBoard component:", playerMoveFeedback);
     if (playerMoveFeedback.isCorrect) {
 
       // player make move
@@ -235,7 +234,6 @@ const ChessBoard = ({ fen, moveHistory, playerAlliance, playerMoveFeedback, onPl
         if (gameRef.current.isCheckmate()){
           const opponentColor = playerAlliance.toLowerCase() === 'black' ? 'w' : 'b';
           const kingPosition = gameRef.current.findPiece({ type: 'k', color: opponentColor })[0];
-          console.log("king checkmate at", kingPosition);
           highlightCheckmate(kingPosition);
 
         }

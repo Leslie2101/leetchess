@@ -17,7 +17,6 @@ export default function Navbar() {
     }
 
     function handleLogin(provider: string){
-        console.log(`Login with ${provider}`);
         window.location.href = `${API_BASE}/oauth2/authorization/${provider}`;
     }
 

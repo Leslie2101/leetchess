@@ -140,7 +140,6 @@ export default function PuzzleListPage(){
                 params.append("themes", theme);
             });
 
-            console.log(`${API_BASE}/puzzles?${params.toString()}`);
 
 
             const res = await fetch(`${API_BASE}/puzzles?${params.toString()}`, {
@@ -154,7 +153,6 @@ export default function PuzzleListPage(){
             }
             const json = await res.json();
             const data = json.content;
-            console.log(data);
             setTotalPage(json.page.totalPages);
             setPuzzles(data);
         } catch (err) {

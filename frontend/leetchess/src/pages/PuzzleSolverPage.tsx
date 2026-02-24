@@ -66,7 +66,6 @@ function formatDateTime(isoString: string) {
 // --- Sidebar Component ---
 function Sidebar({ attempts, currentAttempt }: SidebarProps) {
 
-  console.log(attempts);
   function Attempts(){
     return (
       <div id="attemptsList">
@@ -311,7 +310,6 @@ export default function PuzzleSolverPage() {
       throw new Error(`HTTP error! status: ${res.status}`);
     }
     const json: AttemptResponse = await res.json();
-    console.log("Received response for the move:", json);
     setCurrentAttempt(json.attemptId);
     setIsSolved(json.isSolved);
     setPlayerMoveFeedback({
@@ -337,7 +335,6 @@ export default function PuzzleSolverPage() {
   
 
   function onMoveDetected(move: string) {
-    console.log("Player move detected:", move);    
     // sent move to backend for validation and response
     setPlayerMove(move);
     

@@ -155,7 +155,6 @@ export function FilterModal({ filters, onClose, onApply }: FilterModalProps) {
     
 
     useEffect(() => {
-      console.log("MODAL MOUNTED");
       async function loadThemes() {
         try {
             const res = await fetch(`${API_BASE}/themes`);
