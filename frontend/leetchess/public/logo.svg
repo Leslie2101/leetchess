@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <!-- 135deg gradient -->
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F2A7A0"/>
+      <stop offset="100%" stop-color="#A8CBB7"/>
+    </linearGradient>
+
+    <!-- Soft shadow -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="1.2" stdDeviation="1.2" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Rounded square background -->
+  <rect
+    width="32"
+    height="32"
+    rx="10"
+    fill="url(#grad)"
+    filter="url(#shadow)"
+  />
+
+  <!-- Centered King -->
+  <text
+    x="50%"
+    y="52%"
+    text-anchor="middle"
+    dominant-baseline="middle"
+    font-size="20"
+    fill="white"
+  >
+    ♔
+  </text>
+</svg>
