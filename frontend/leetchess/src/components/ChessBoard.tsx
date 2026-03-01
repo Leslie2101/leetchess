@@ -73,7 +73,7 @@ const ChessBoard = ({ fen, moveHistory, playerAlliance, playerMoveFeedback, onPl
     }
 
     // target square is a promotion square, check if valid and show promotion dialog
-    if (targetSquare.match(/\d+$/)?.[0] === '8' && playerAlliance === 'white' || targetSquare.match(/\d+$/)?.[0] === '1' && playerAlliance === 'black') {
+    if (targetSquare.match(/\d+$/)?.[0] === '8' && playerAlliance.toLowerCase() === 'white' || targetSquare.match(/\d+$/)?.[0] === '1' && playerAlliance.toLowerCase() === 'black') {
       // get all possible moves for the source square
       const possibleMoves = gameRef.current.moves({
         square: sourceSquare as Square

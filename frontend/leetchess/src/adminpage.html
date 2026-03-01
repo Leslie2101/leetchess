@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Upload Puzzles - ChessCode</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <style>
+        :root {
+            /* Pastel Theme Colors */
+            --bg-cream: #FFF7F0;
+            --bg-warm: #FDF3EA;
+            --bg-card: #FEFBF8;
+            --bg-hover: #F9F0E8;
+            
+            --primary-peach: #F2A7A0;
+            --secondary-sage: #A8CBB7;
+            --success-green: #A8CBB7;
+            
+            --text-primary: #4A3F3A;
+            --text-secondary: #8B7D77;
+            --text-tertiary: #B5A9A3;
+            
+            --border-color: #E8DDD3;
+            
+            --accent-lavender: #C9B8D8;
+            --accent-sky: #B8D8E8;
+            --accent-gold: #E8B65F;
+            
+            --difficulty-easy: #A8CBB7;
+            --difficulty-medium: #F2C078;
+            --difficulty-hard: #E89088;
+            
+            --shadow-soft: 0 2px 8px rgba(74, 63, 58, 0.08);
+            --shadow-card: 0 4px 16px rgba(74, 63, 58, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: var(--bg-cream);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .admin-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, #F2C078 100%);
+            color: white;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-left: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-family: 'Nunito', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .page-subtitle {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+        }
+
+        /* Upload Methods */
+        .upload-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .upload-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-card);
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .upload-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(74, 63, 58, 0.15);
+            border-color: var(--primary-peach);
+        }
+
+        .upload-card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .upload-card-title {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .upload-card-desc {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        /* CSV Upload */
+        .file-upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            background: var(--bg-warm);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+        }
+
+        .file-upload-area:hover {
+            border-color: var(--primary-peach);
+            background: var(--bg-hover);
+        }
+
+        .file-upload-area.drag-over {
+            border-color: var(--primary-peach);
+            background: rgba(242, 167, 160, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .template-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-card);
+            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Quicksand', sans-serif;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .template-btn:hover {
+            border-color: var(--primary-peach);
+            color: var(--primary-peach);
+        }
+
+        /* Manual Entry Table */
+        .table-container {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-card);
+            border: 2px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        .puzzle-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        .puzzle-table th {
+            background: var(--bg-warm);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border-color);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .puzzle-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .puzzle-table tr:hover {
+            background: var(--bg-hover);
+        }
+
+        .table-input {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            background: var(--bg-warm);
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .table-input:focus {
+            outline: none;
+            border-color: var(--primary-peach);
+            box-shadow: 0 0 0 3px rgba(242, 167, 160, 0.15);
+        }
+
+        .table-input.fen {
+            font-size: 0.75rem;
+        }
+
+        /* Theme Tags */
+        .theme-selector {
+            position: relative;
+        }
+
+        .theme-input {
+            cursor: pointer;
+        }
+
+        .theme-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 0.5rem;
+            box-shadow: var(--shadow-card);
+            z-index: 100;
+            display: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .theme-dropdown.active {
+            display: block;
+        }
+
+        .theme-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+
+        .theme-option {
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-warm);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            border: 1.5px solid transparent;
+        }
+
+        .theme-option:hover {
+            border-color: var(--primary-peach);
+        }
+
+        .theme-option.selected {
+            background: var(--primary-peach);
+            color: white;
+            border-color: var(--primary-peach);
+        }
+
+        .delete-btn {
+            padding: 0.5rem 0.75rem;
+            background: rgba(232, 144, 136, 0.1);
+            border: 1.5px solid var(--difficulty-hard);
+            border-radius: 8px;
+            color: var(--difficulty-hard);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: var(--difficulty-hard);
+            color: white;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.875rem 2rem;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        .btn-secondary {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border: 1.5px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-peach);
+            color: var(--primary-peach);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-peach) 0%, #F5B5AE 100%);
+            color: white;
+            box-shadow: 0 4px 14px rgba(242, 167, 160, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(242, 167, 160, 0.4);
+        }
+
+        /* Upload Status */
+        .upload-status {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 2px solid var(--border-color);
+            display: none;
+        }
+
+        .upload-status.active {
+            display: block;
+        }
+
+        .status-title {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .status-item {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: var(--bg-warm);
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-success {
+            color: var(--success-green);
+        }
+
+        .status-error {
+            color: var(--difficulty-hard);
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .upload-methods {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem 1rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .upload-card {
+                padding: 1.5rem;
+            }
+
+            .table-container {
+                padding: 1rem;
+            }
+        }
+    </style>
+
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div>
+                <a href="#" class="logo">ChessCode</a>
+                <span class="admin-badge">Admin</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Upload Puzzles</h1>
+            <p class="page-subtitle">Import puzzles via CSV or create them manually</p>
+        </div>
+
+        <!-- Upload Methods -->
+        <div class="upload-methods">
+            <!-- CSV Upload -->
+            <div class="upload-card">
+                <div class="upload-card-icon">📁</div>
+                <h2 class="upload-card-title">CSV Upload</h2>
+                <p class="upload-card-desc">Upload multiple puzzles at once using a CSV file</p>
+
+                <div class="file-upload-area" id="dropZone">
+                    <div class="upload-icon">☁️</div>
+                    <div class="upload-text">Drop CSV file here or click to browse</div>
+                    <div class="upload-hint">Supports .csv files</div>
+                    <input type="file" id="csvFile" class="file-input" accept=".csv" onchange="handleFileSelect(event)">
+                </div>
+
+                <div style="text-align: center;">
+                    <a href="#" class="template-btn" onclick="downloadTemplate()">
+                        📥 Download CSV Template
+                    </a>
+                </div>
+            </div>
+
+            <!-- Manual Entry -->
+            <div class="upload-card">
+                <div class="upload-card-icon">✏️</div>
+                <h2 class="upload-card-title">Manual Entry</h2>
+                <p class="upload-card-desc">Create puzzles one by one using the table below</p>
+
+                <div style="margin-top: 2rem;">
+                    <button class="btn btn-secondary" onclick="addNewRow()" style="width: 100%;">
+                        ➕ Add New Puzzle
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manual Entry Table -->
+        <div class="table-container">
+            <h3 style="margin-bottom: 1.5rem; font-family: 'Nunito', sans-serif;">Puzzle Table</h3>
+            <table class="puzzle-table" id="puzzleTable">
+                <thead>
+                    <tr>
+                        <th style="width: 40px;">#</th>
+                        <th style="width: 250px;">Initial FEN</th>
+                        <th style="width: 150px;">Solution Moves</th>
+                        <th style="width: 200px;">Themes</th>
+                        <th style="width: 80px;">Rating</th>
+                        <th style="width: 80px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="puzzleTableBody">
+                    <!-- Example row -->
+                    <tr>
+                        <td>1</td>
+                        <td>
+                            <input type="text" class="table-input fen" placeholder="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" value="r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4">
+                        </td>
+                        <td>
+                            <input type="text" class="table-input" placeholder="e4e5 Nf3" value="Nxe5 Nxe5">
+                        </td>
+                        <td>
+                            <div class="theme-selector">
+                                <input type="text" class="table-input theme-input" placeholder="Select themes..." value="Fork, Knight" readonly onclick="toggleThemeDropdown(this)">
+                                <div class="theme-dropdown">
+                                    <div class="theme-options" id="themeOptions">
+                                        <!-- Generated by JS -->
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <input type="number" class="table-input" placeholder="1500" value="1450" min="400" max="3000">
+                        </td>
+                        <td>
+                            <button class="delete-btn" onclick="deleteRow(this)">🗑️</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="clearAll()">Clear All</button>
+                <button class="btn btn-primary" onclick="uploadPuzzles()">Upload Puzzles</button>
+            </div>
+        </div>
+
+        <!-- Upload Status -->
+        <div class="upload-status" id="uploadStatus">
+            <div class="status-title">Upload Status</div>
+            <div id="statusList">
+                <!-- Status items will be added here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Available themes
+        const availableThemes = [
+            'Fork', 'Pin', 'Skewer', 'Discovered Attack', 'Double Attack',
+            'Checkmate', 'Back Rank', 'Smothered Mate', 'Anastasia\'s Mate',
+            'Sacrifice', 'Queen Sacrifice', 'Exchange', 'Deflection', 'Decoy',
+            'Clearance', 'Interference', 'Zugzwang', 'Stalemate',
+            'Endgame', 'Pawn Endgame', 'Rook Endgame', 'Queen Endgame',
+            'Opening', 'Middlegame', 'Tactics', 'Strategy', 'Advanced'
+        ];
+
+        let rowCounter = 2;
+
+        // Initialize theme options
+        function initializeThemeOptions() {
+            const themeOptionsHTML = availableThemes.map(theme => 
+                `<div class="theme-option" onclick="toggleTheme(this)">${theme}</div>`
+            ).join('');
+            
+            document.querySelectorAll('#themeOptions').forEach(container => {
+                container.innerHTML = themeOptionsHTML;
+            });
+        }
+
+        // Toggle theme dropdown
+        let currentDropdown = null;
+
+        function toggleThemeDropdown(input) {
+            const dropdown = input.nextElementSibling;
+            
+            // Close other dropdowns
+            if (currentDropdown && currentDropdown !== dropdown) {
+                currentDropdown.classList.remove('active');
+            }
+            
+            dropdown.classList.toggle('active');
+            currentDropdown = dropdown.classList.contains('active') ? dropdown : null;
+        }
+
+        function toggleTheme(element) {
+            element.classList.toggle('selected');
+            updateThemeInput(element.closest('.theme-selector'));
+        }
+
+        function updateThemeInput(selector) {
+            const input = selector.querySelector('.theme-input');
+            const selected = Array.from(selector.querySelectorAll('.theme-option.selected'))
+                .map(opt => opt.textContent);
+            input.value = selected.join(', ');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.theme-selector')) {
+                document.querySelectorAll('.theme-dropdown').forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+                currentDropdown = null;
+            }
+        });
+
+        // Add new row
+        function addNewRow() {
+            const tbody = document.getElementById('puzzleTableBody');
+            const newRow = document.createElement('tr');
+            
+            newRow.innerHTML = `
+                <td>${rowCounter++}</td>
+                <td>
+                    <input type="text" class="table-input fen" placeholder="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1">
+                </td>
+                <td>
+                    <input type="text" class="table-input" placeholder="e4e5 Nf3">
+                </td>
+                <td>
+                    <div class="theme-selector">
+                        <input type="text" class="table-input theme-input" placeholder="Select themes..." readonly onclick="toggleThemeDropdown(this)">
+                        <div class="theme-dropdown">
+                            <div class="theme-options">
+                                ${availableThemes.map(theme => 
+                                    `<div class="theme-option" onclick="toggleTheme(this)">${theme}</div>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <input type="number" class="table-input" placeholder="1500" min="400" max="3000">
+                </td>
+                <td>
+                    <button class="delete-btn" onclick="deleteRow(this)">🗑️</button>
+                </td>
+            `;
+            
+            tbody.appendChild(newRow);
+        }
+
+        // Delete row
+        function deleteRow(btn) {
+            if (confirm('Delete this puzzle?')) {
+                btn.closest('tr').remove();
+                updateRowNumbers();
+            }
+        }
+
+        function updateRowNumbers() {
+            const rows = document.querySelectorAll('#puzzleTableBody tr');
+            rows.forEach((row, index) => {
+                row.querySelector('td:first-child').textContent = index + 1;
+            });
+            rowCounter = rows.length + 1;
+        }
+
+        // Clear all
+        function clearAll() {
+            if (confirm('Clear all puzzles? This cannot be undone.')) {
+                document.getElementById('puzzleTableBody').innerHTML = '';
+                rowCounter = 1;
+            }
+        }
+
+        // Upload puzzles
+        function uploadPuzzles() {
+            const rows = document.querySelectorAll('#puzzleTableBody tr');
+            
+            if (rows.length === 0) {
+                alert('No puzzles to upload!');
+                return;
+            }
+
+            const puzzles = [];
+            let hasErrors = false;
+
+            rows.forEach((row, index) => {
+                const fen = row.querySelectorAll('.table-input')[0].value.trim();
+                const moves = row.querySelectorAll('.table-input')[1].value.trim();
+                const themes = row.querySelectorAll('.theme-input')[0].value.trim();
+                const rating = row.querySelectorAll('.table-input')[3].value.trim();
+
+                if (!fen || !moves || !rating) {
+                    alert(`Row ${index + 1}: Missing required fields (FEN, Moves, or Rating)`);
+                    hasErrors = true;
+                    return;
+                }
+
+                puzzles.push({
+                    fen,
+                    solutionMoves: moves.split(' ').filter(m => m),
+                    themes: themes.split(',').map(t => t.trim()).filter(t => t),
+                    rating: parseInt(rating)
+                });
+            });
+
+            if (hasErrors) return;
+
+            console.log('Uploading puzzles:', puzzles);
+
+            // Show status
+            const statusDiv = document.getElementById('uploadStatus');
+            const statusList = document.getElementById('statusList');
+            
+            statusDiv.classList.add('active');
+            statusList.innerHTML = `
+                <div class="status-item">
+                    <span>Validating ${puzzles.length} puzzles...</span>
+                    <span class="status-success">✓</span>
+                </div>
+                <div class="status-item">
+                    <span>Uploading to database...</span>
+                    <span class="status-success">✓</span>
+                </div>
+                <div class="status-item">
+                    <span>Success! ${puzzles.length} puzzles uploaded</span>
+                    <span class="status-success">✓</span>
+                </div>
+            `;
+
+            // TODO: Send to backend
+            // fetch('/api/admin/puzzles/upload', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({ puzzles })
+            // })
+
+            // Clear table after successful upload
+            setTimeout(() => {
+                if (confirm('Upload complete! Clear the table?')) {
+                    clearAll();
+                    statusDiv.classList.remove('active');
+                }
+            }, 2000);
+        }
+
+        // CSV Upload
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('csvFile');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-over');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        function handleFile(file) {
+            if (!file.name.endsWith('.csv')) {
+                alert('Please upload a CSV file');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const csv = e.target.result;
+                parseCSV(csv);
+            };
+            reader.readAsText(file);
+        }
+
+        function parseCSV(csv) {
+            const lines = csv.split('\n').filter(line => line.trim());
+            const headers = lines[0].split(',').map(h => h.trim());
+            
+            // Validate headers
+            const requiredHeaders = ['fen', 'solution_moves', 'themes', 'rating'];
+            const hasAllHeaders = requiredHeaders.every(h => 
+                headers.some(header => header.toLowerCase() === h)
+            );
+
+            if (!hasAllHeaders) {
+                alert('CSV must have headers: fen, solution_moves, themes, rating');
+                return;
+            }
+
+            // Clear existing table
+            document.getElementById('puzzleTableBody').innerHTML = '';
+            rowCounter = 1;
+
+            // Parse rows
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',').map(v => v.trim());
+                const puzzle = {};
+                
+                headers.forEach((header, index) => {
+                    puzzle[header.toLowerCase()] = values[index];
+                });
+
+                addRowFromData(puzzle);
+            }
+
+            alert(`Imported ${lines.length - 1} puzzles from CSV!`);
+        }
+
+        function addRowFromData(puzzle) {
+            const tbody = document.getElementById('puzzleTableBody');
+            const newRow = document.createElement('tr');
+            
+            const themes = puzzle.themes || '';
+            const themeList = themes.split('|').map(t => t.trim()).filter(t => t);
+            
+            newRow.innerHTML = `
+                <td>${rowCounter++}</td>
+                <td>
+                    <input type="text" class="table-input fen" value="${puzzle.fen || ''}">
+                </td>
+                <td>
+                    <input type="text" class="table-input" value="${puzzle.solution_moves || ''}">
+                </td>
+                <td>
+                    <div class="theme-selector">
+                        <input type="text" class="table-input theme-input" value="${themeList.join(', ')}" readonly onclick="toggleThemeDropdown(this)">
+                        <div class="theme-dropdown">
+                            <div class="theme-options">
+                                ${availableThemes.map(theme => {
+                                    const selected = themeList.includes(theme) ? 'selected' : '';
+                                    return `<div class="theme-option ${selected}" onclick="toggleTheme(this)">${theme}</div>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <input type="number" class="table-input" value="${puzzle.rating || ''}" min="400" max="3000">
+                </td>
+                <td>
+                    <button class="delete-btn" onclick="deleteRow(this)">🗑️</button>
+                </td>
+            `;
+            
+            tbody.appendChild(newRow);
+        }
+
+        // Download template
+        function downloadTemplate() {
+            const csv = `fen,solution_moves,themes,rating
+r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4,Nxe5 Nxe5,Fork|Knight,1450
+rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2,Nf3 Nc6,Opening|Strategy,800
+r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4,Qxf7,Checkmate|Back Rank,1200`;
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'chess_puzzle_template.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Initialize
+        initializeThemeOptions();
+    </script>
+</body>
+</html>
