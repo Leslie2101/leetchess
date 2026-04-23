@@ -28,6 +28,11 @@ public class PuzzleAttemptService {
         return attemptRepository.findByPuzzleId(puzzleId, pageable);
     }
 
+
+    public int getPuzzleSolvedCount(User user){
+        return attemptRepository.getPuzzleSolvedCount(user.getId());
+    }
+
     public AttemptResponseDTO makeMove(User user, Long puzzleId, Long attemptId, String move){
 
         Puzzle puzzle = puzzleRepository.findById(puzzleId).orElseThrow();

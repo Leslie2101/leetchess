@@ -1,6 +1,7 @@
 package com.leslie.chess_puzzle_platform.controllers;
 
 import com.leslie.chess_puzzle_platform.dto.*;
+import com.leslie.chess_puzzle_platform.models.Puzzle;
 import com.leslie.chess_puzzle_platform.models.User;
 import com.leslie.chess_puzzle_platform.repository.UserRepository;
 import com.leslie.chess_puzzle_platform.services.PuzzleAttemptService;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PagedModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -59,8 +61,13 @@ public class PuzzleController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Optional<PuzzleViewDTO>> getPuzzle(@PathVariable("id") long puzzleId){
-        return ResponseEntity.ok(puzzleService.findById(puzzleId).map(mapper::toDTO));
+    ResponseEntity<PuzzleViewDTO> getPuzzle(@PathVariable("id") long puzzleId){
+
+        Optional<Puzzle> puzzle = puzzleService.findById(puzzleId);
+
+        return puzzle.map(value -> ResponseEntity.ok(mapper.toDTO(value)))
+                .orElseGet(() -> new ResponseEntity<>((PuzzleViewDTO) null, HttpStatus.NOT_FOUND));
+
     }
 
     @PostMapping("/{puzzleId}/attempts")

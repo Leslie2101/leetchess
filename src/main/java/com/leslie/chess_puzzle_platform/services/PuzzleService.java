@@ -39,6 +39,10 @@ public class PuzzleService {
         return randomGenerator.nextLong(1, puzzleRepository.count()+1);
     }
 
+    public Long getPuzzleCount(){
+        return puzzleRepository.count();
+    }
+
     public Integer uploadPuzzles(MultipartFile file) throws IOException {
         List<Puzzle> puzzles = parseCSV(file);
         puzzleRepository.saveAll(puzzles);
