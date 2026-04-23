@@ -1,5 +1,10 @@
 import './ProfileModal.css';
 import { useAuth } from '../AuthContext';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
+
 
 interface ProfileModalProp {
     open: boolean;
@@ -8,10 +13,30 @@ interface ProfileModalProp {
     onClose: () => void;
 }
 
+
+
 export default function ProfileModal({open, handleLogin, handleLogout,  onClose}: ProfileModalProp) {
     if (!open) return null;
+    const [rating, setRating] = useState<number>(0);
+    const [solvedCount, setSolvedCount] = useState<number>(0);
+    const [unsolvedCount, setUnsolvedCount] = useState<number>(0);
 
     const auth = useAuth();
+
+    useEffect(() => {
+        axios.get(`${API_BASE}/stats/me`, {withCredentials: true})
+        .then(response => {
+            setRating(response.data.rating);
+            setSolvedCount(response.data.solved);
+            setUnsolvedCount(response.data.unsolved);
+        })
+        .catch(() => {
+            setRating(0);
+            setSolvedCount(0);
+            setUnsolvedCount(0);
+            console.error("Failed to fetch user stats");
+        });
+    }, []);
 
 
     return (
@@ -31,16 +56,15 @@ export default function ProfileModal({open, handleLogin, handleLogout,  onClose}
 
                     <div className="profile-stats">
                         <div className="profile-stat">
-                            <span className="profile-stat-value">1,450</span>
+                            <span className="profile-stat-value">{rating}</span>
                             <span className="profile-stat-label">Rating</span>
                         </div>
                         <div className="profile-stat">
-                            <span className="profile-stat-value">247</span>
+                            <span className="profile-stat-value">{solvedCount}</span>
                             <span className="profile-stat-label">Solved</span>
                         </div>
-                        
-                        <div className="profile-stat"> 
-                            <span className="profile-stat-value">12</span>
+                        <div className="profile-stat">
+                            <span className="profile-stat-value">{unsolvedCount}</span>
                             <span className="profile-stat-label">Unsolved</span>
                         </div>
                     </div>

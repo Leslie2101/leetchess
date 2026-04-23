@@ -187,7 +187,6 @@ const ChessBoard = ({ fen, moveHistory, playerAlliance, playerMoveFeedback, onPl
 
   useEffect(() => {
     gameRef.current = new Chess(fen);
-    console.log("Rendering ChessBoard with position:", fen);
     setBoardOrientation(playerAlliance.toLowerCase()=== 'white' ? 'white' : 'black');
     // initial moves
 

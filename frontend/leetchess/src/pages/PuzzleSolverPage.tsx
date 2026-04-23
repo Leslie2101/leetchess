@@ -116,7 +116,6 @@ function Board({ correctMoves, moveHistory, initialFen, playerAlliance, playerMo
     )
   }
 
-  console.log("Initial FEN in Board component:", initialFen);
 
   return (
     <div className="board-container">
