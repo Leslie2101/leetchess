@@ -73,9 +73,7 @@ const ChessBoard = ({ fen, moveHistory, playerAlliance, playerMoveFeedback, onPl
       return false;
     }
 
-    console.log("Attempting move from", sourceSquare, "to", targetSquare);
     const movingPiece = gameRef.current.get(sourceSquare as Square);
-
     const isPawnPromotion = movingPiece?.type === 'p' && (targetSquare.match(/\d+$/)?.[0] === '8' && playerAlliance.toLowerCase() === 'white' || targetSquare.match(/\d+$/)?.[0] === '1' && playerAlliance.toLowerCase() === 'black');
 
 
