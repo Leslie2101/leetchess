@@ -36,6 +36,7 @@ const ChessBoard = ({ fen, moveHistory, playerAlliance, playerMoveFeedback, onPl
   const [squareStyles, setSquareStyles] = useState<Record<string, React.CSSProperties>>({});
   const [promotionMove, setPromotionMove] = useState<Omit<PieceDropHandlerArgs, 'piece'> | null>(null);
 
+  
 
   function highlightCheckmate(square: string) {
     setSquareStyles(prev => {
@@ -72,8 +73,14 @@ const ChessBoard = ({ fen, moveHistory, playerAlliance, playerMoveFeedback, onPl
       return false;
     }
 
+    console.log("Attempting move from", sourceSquare, "to", targetSquare);
+    const movingPiece = gameRef.current.get(sourceSquare as Square);
+
+    const isPawnPromotion = movingPiece?.type === 'p' && (targetSquare.match(/\d+$/)?.[0] === '8' && playerAlliance.toLowerCase() === 'white' || targetSquare.match(/\d+$/)?.[0] === '1' && playerAlliance.toLowerCase() === 'black');
+
+
     // target square is a promotion square, check if valid and show promotion dialog
-    if (targetSquare.match(/\d+$/)?.[0] === '8' && playerAlliance.toLowerCase() === 'white' || targetSquare.match(/\d+$/)?.[0] === '1' && playerAlliance.toLowerCase() === 'black') {
+    if (isPawnPromotion) {
       // get all possible moves for the source square
       const possibleMoves = gameRef.current.moves({
         square: sourceSquare as Square
@@ -182,15 +189,11 @@ const ChessBoard = ({ fen, moveHistory, playerAlliance, playerMoveFeedback, onPl
 
   useEffect(() => {
     gameRef.current = new Chess(fen);
+    console.log("Rendering ChessBoard with position:", fen);
     setBoardOrientation(playerAlliance.toLowerCase()=== 'white' ? 'white' : 'black');
     // initial moves
 
-    setTimeout(() => {
-      gameRef.current.move(moveHistory[0]);
-      setPosition(gameRef.current.fen());
-      highlightLastMove(moveHistory[0].slice(0,2), moveHistory[0].slice(2));
-      
-    }, 400);
+   makeBotRespond(moveHistory[0]);
     
       
   }, []);
