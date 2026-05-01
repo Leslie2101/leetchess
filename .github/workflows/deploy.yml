@@ -24,7 +24,7 @@ jobs:
 
       - name: Build frontend
         run: |
-          cd frontend
+          cd frontend/leetchess
           npm install
           npm run build
 
