@@ -85,7 +85,7 @@ const ChessBoard = ({ fen, moveHistory, playerAlliance, playerMoveFeedback, onPl
       });
 
       // check if target square is in possible moves (accounting for promotion notation)
-      if (possibleMoves.some(move => move.startsWith(`${targetSquare}=`))) {
+      if (possibleMoves.some((move : any) => move.startsWith(`${targetSquare}=`))) {
         setPromotionMove({
           sourceSquare,
           targetSquare
