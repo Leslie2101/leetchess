@@ -99,11 +99,11 @@ Now the website will run at http://localhost:5173
 - [x] add login/logout with OAuth2 Google (13/2)
 - [x] AI consultant (18/3)
 - [x] AWS for server, database (20/02)
+- [x] resolve OAuth2 for AWS connect (01/04)
 - [ ] scheduled removal of anonymous attempts (?)
-- [ ] resolve OAuth2 for AWS connect (?) integrate AWS cognito
 - [ ] redis for caching requests (?)
 - [ ] role-based authorisation for admin creating puzzles
-
+- [ ] application monitoring feature 
 ## Learning Progress Documentation
 [Learning document](LEARN.md): this tracks what I have learned while building this application, including techniques for response time optimisation and other techniques. 
 

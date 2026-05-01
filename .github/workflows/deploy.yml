@@ -2,40 +2,61 @@ name: Build and Deploy
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-  deploy:
+  build-deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '17'   # adjust if needed
 
-      - name: Build JAR
+      - name: Build backend
         run: mvn clean package -DskipTests
 
-      - name: Copy JAR to EC2
-        uses: appleboy/scp-action@v0.1.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          source: "target/*.jar"
-          target: "/home/ec2-user/app/"
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build
 
-      - name: Restart application
-        uses: appleboy/ssh-action@v0.1.6
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            pkill -f '.jar' || true
-            nohup java -jar /home/ec2-user/app/*.jar > app.log 2>&1 &
+      # Save PEM key
+      - name: Setup SSH key
+        run: |
+          echo "${{ secrets.EC2_KEY }}" > key.pem
+          chmod 600 key.pem
+
+      # Copy backend JAR
+      - name: Copy backend to EC2
+        run: |
+          scp -i key.pem -o StrictHostKeyChecking=no \
+          target/chess-puzzle-platform-0.0.1-SNAPSHOT.jar \
+          ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ec2-user/
+
+      # Copy frontend build
+      - name: Copy frontend to EC2
+        run: |
+          scp -i key.pem -o StrictHostKeyChecking=no -r \
+          frontend/dist/* \
+          ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ec2-user/var/www/leetchess.net/html/
+
+      # SSH and restart app
+      - name: Restart app on EC2
+        run: |
+          ssh -i key.pem -o StrictHostKeyChecking=no \
+          ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+
+          # Stop existing app
+          pkill -f chess-puzzle-platform || true
+
+          # Start new app
+          nohup projects/run.sh > myapp.log 2>&1 & 
+          EOF
