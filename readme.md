@@ -9,7 +9,7 @@ This application is a personal, non-commercial project and is not affiliated wit
 https://github.com/user-attachments/assets/31db80c3-3d5f-4cfc-a405-8d1f3240bca2
 
 🌐 https://leetchess.net 
-
+Note: the website is currently under maintenance. 
 
 ## 🛠 Tech Stack
 
